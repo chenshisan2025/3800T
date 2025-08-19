@@ -1,0 +1,94 @@
+/* pages/asset/asset.wxss */
+.container {
+  padding: 0 0 120rpx 0;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 搜索栏 */
+.search-bar {
+  padding: 20rpx;
+  background-color: #fff;
+  border-bottom: 1rpx solid #e5e5e5;
+}
+
+.search-input-wrapper {
+  position: relative;
+  background-color: #f8f8f8;
+  border-radius: 40rpx;
+  padding: 20rpx 60rpx 20rpx 30rpx;
+}
+
+.search-input {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.search-icon {
+  position: absolute;
+  right: 30rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 32rpx;
+  color: #999;
+}
+
+/* 股票列表 */
+.stock-list {
+  background-color: #fff;
+  margin-top: 20rpx;
+}
+
+.stock-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  background-color: #fff;
+}
+
+.stock-item:active {
+  background-color: #f8f8f8;
+}
+
+.stock-info {
+  flex: 1;
+}
+
+.stock-symbol {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.stock-name {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.stock-price {
+  text-align: right;
+}
+
+.price {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.change {
+  font-size: 26rpx;
+}
+
+.change.up {
+  color: #ff4444;
+}
+
+.change.down {
+  color: #00aa44;
+}
+
+/* 底部免责声明样式已移至全局 app.wxss */

@@ -1,0 +1,99 @@
+/* pages/protocol/protocol.wxss */
+.protocol-container {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding-bottom: 120rpx;
+}
+
+.protocol-content {
+  padding: 40rpx;
+  background: #fff;
+  margin: 20rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+  line-height: 1.8;
+}
+
+/* rich-text 内容样式 */
+.protocol-content >>> h1 {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #2166A5;
+  margin: 40rpx 0 30rpx 0;
+  text-align: center;
+  border-bottom: 2rpx solid #2166A5;
+  padding-bottom: 20rpx;
+}
+
+.protocol-content >>> h2 {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin: 40rpx 0 20rpx 0;
+  padding-left: 20rpx;
+  border-left: 6rpx solid #2166A5;
+}
+
+.protocol-content >>> h3 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #555;
+  margin: 30rpx 0 15rpx 0;
+}
+
+.protocol-content >>> p {
+  font-size: 28rpx;
+  color: #666;
+  margin: 15rpx 0;
+  text-indent: 2em;
+}
+
+.protocol-content >>> ul {
+  margin: 20rpx 0;
+  padding-left: 40rpx;
+}
+
+.protocol-content >>> li {
+  font-size: 28rpx;
+  color: #666;
+  margin: 10rpx 0;
+  list-style-type: disc;
+}
+
+.protocol-content >>> strong {
+  font-weight: bold;
+  color: #333;
+}
+
+.protocol-content >>> em {
+  font-style: italic;
+  color: #2166A5;
+}
+
+.protocol-content >>> hr {
+  border: none;
+  height: 2rpx;
+  background: #e5e5e5;
+  margin: 40rpx 0;
+}
+
+/* 底部免责声明样式已移至全局 app.wxss */
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6rpx;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3rpx;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3rpx;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

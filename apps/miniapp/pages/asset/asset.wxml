@@ -1,0 +1,43 @@
+<!--pages/asset/asset.wxml-->
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input-wrapper">
+      <input 
+        class="search-input" 
+        placeholder="搜索股票代码或名称" 
+        value="{{searchValue}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+      />
+      <view class="search-icon">🔍</view>
+    </view>
+  </view>
+
+  <!-- 股票列表 -->
+  <view class="stock-list">
+    <view 
+      class="stock-item" 
+      wx:for="{{stocks}}" 
+      wx:key="symbol"
+      data-symbol="{{item.symbol}}"
+      bindtap="onStockTap"
+    >
+      <view class="stock-info">
+        <view class="stock-symbol">{{item.symbol}}</view>
+        <view class="stock-name">{{item.name}}</view>
+      </view>
+      <view class="stock-price">
+        <view class="price">{{item.price}}</view>
+        <view class="change {{item.isUp ? 'up' : 'down'}}">
+          {{item.change}} ({{item.changePercent}})
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部免责声明 -->
+  <view class="disclaimer">
+    <text>本应用所提供的信息仅供参考，不构成投资建议</text>
+  </view>
+</view>

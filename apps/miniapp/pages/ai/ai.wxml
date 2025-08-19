@@ -1,0 +1,85 @@
+<!--pages/ai/ai.wxml-->
+<view class="container">
+  <!-- 分析类型选择 -->
+  <view class="analysis-types">
+    <view class="section-title">选择分析类型</view>
+    <view class="type-grid">
+      <view 
+        class="type-item" 
+        wx:for="{{analysisTypes}}" 
+        wx:key="id"
+        data-type="{{item.id}}"
+        bindtap="onAnalysisTypeTap"
+      >
+        <view class="type-icon" style="color: {{item.color}}">{{item.icon}}</view>
+        <view class="type-name">{{item.name}}</view>
+        <view class="type-desc">{{item.description}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 消息列表 -->
+  <view class="message-list">
+    <view class="section-title">分析对话</view>
+    <view 
+      class="message-item {{item.type}}"
+      wx:for="{{messages}}"
+      wx:key="id"
+    >
+      <view class="message-header">
+        <view class="message-avatar">
+          <text wx:if="{{item.type === 'user'}}">👤</text>
+          <text wx:elif="{{item.type === 'ai'}}">🤖</text>
+          <text wx:else>ℹ️</text>
+        </view>
+        <view class="message-info">
+          <view class="message-sender">
+            <text wx:if="{{item.type === 'user'}}">您</text>
+            <text wx:elif="{{item.type === 'ai'}}">AI助手</text>
+            <text wx:else>系统</text>
+          </view>
+          <view class="message-time">{{item.timestamp}}</view>
+        </view>
+      </view>
+      <view class="message-content">
+        <text>{{item.content}}</text>
+      </view>
+    </view>
+    
+    <!-- 分析中状态 -->
+    <view class="analyzing" wx:if="{{isAnalyzing}}">
+      <view class="analyzing-icon">🤖</view>
+      <view class="analyzing-text">AI正在分析中...</view>
+      <view class="analyzing-dots">
+        <view class="dot"></view>
+        <view class="dot"></view>
+        <view class="dot"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 输入框 -->
+  <view class="input-area">
+    <view class="input-wrapper">
+      <input 
+        class="message-input" 
+        placeholder="输入股票代码或问题..." 
+        value="{{inputValue}}"
+        bindinput="onInputChange"
+        bindconfirm="onSendMessage"
+      />
+      <button 
+        class="send-btn {{inputValue ? 'active' : ''}}"
+        bindtap="onSendMessage"
+        disabled="{{!inputValue || isAnalyzing}}"
+      >
+        发送
+      </button>
+    </view>
+  </view>
+
+  <!-- 底部免责声明 -->
+  <view class="disclaimer">
+    <text>AI分析结果仅供参考，不构成投资建议，投资有风险</text>
+  </view>
+</view>

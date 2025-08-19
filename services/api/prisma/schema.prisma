@@ -1,0 +1,209 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 用户表
+model User {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email            String   @unique
+  name             String
+  avatarUrl        String?  @map("avatar_url")
+  subscriptionPlan String   @default("free") @map("subscription_plan")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  subscriptions Subscription[]
+  watchlist     Watchlist[]
+  portfolios    Portfolio[]
+  aiReports     AiReport[]
+  alerts        Alert[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+// 股票表
+model Stock {
+  symbol        String   @id
+  name          String
+  market        String
+  industry      String?
+  currentPrice  Decimal? @map("current_price") @db.Decimal(10, 3)
+  changePercent Decimal? @map("change_percent") @db.Decimal(5, 2)
+  volume        BigInt?
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  watchlist     Watchlist[]
+  portfolioItems PortfolioItem[]
+  aiReports     AiReport[]
+  stockData     StockData[]
+  alerts        Alert[]
+
+  @@map("stocks")
+}
+
+// 订阅表
+model Subscription {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  planType  String   @map("plan_type")
+  startDate DateTime @map("start_date")
+  endDate   DateTime @map("end_date")
+  status    String
+
+  // 关联关系
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+// 自选股表
+model Watchlist {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  stockSymbol String   @map("stock_symbol")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stock Stock @relation(fields: [stockSymbol], references: [symbol])
+  alerts Alert[]
+
+  @@unique([userId, stockSymbol])
+  @@map("watchlist")
+}
+
+// 提醒规则表
+model Alert {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  watchlistId String   @map("watchlist_id") @db.Uuid
+  stockSymbol String   @map("stock_symbol")
+  condition   String   // "gte" (>=) or "lte" (<=)
+  targetPrice Decimal  @map("target_price") @db.Decimal(10, 3)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchlist Watchlist   @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  stock     Stock       @relation(fields: [stockSymbol], references: [symbol])
+  notifications Notification[]
+
+  @@map("alerts")
+}
+
+// 通知表
+model Notification {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  alertId   String?  @map("alert_id") @db.Uuid
+  type      String   // "price_alert", "system", etc.
+  title     String
+  message   String
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  alert Alert? @relation(fields: [alertId], references: [id], onDelete: SetNull)
+
+  @@map("notifications")
+}
+
+// 投资组合表
+model Portfolio {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  name       String
+  totalValue Decimal? @map("total_value") @db.Decimal(15, 2)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items PortfolioItem[]
+
+  @@map("portfolios")
+}
+
+// 投资组合项目表
+model PortfolioItem {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  portfolioId String   @map("portfolio_id") @db.Uuid
+  stockSymbol String   @map("stock_symbol")
+  quantity    Int
+  avgCost     Decimal  @map("avg_cost") @db.Decimal(10, 3)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  stock     Stock     @relation(fields: [stockSymbol], references: [symbol])
+
+  @@map("portfolio_items")
+}
+
+// AI报告表
+model AiReport {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  stockSymbol  String   @map("stock_symbol")
+  reportType   String   @map("report_type")
+  analysisData Json     @map("analysis_data")
+  score        Int?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stock Stock @relation(fields: [stockSymbol], references: [symbol])
+
+  @@map("ai_reports")
+}
+
+// 股票数据表
+model StockData {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  stockSymbol String   @map("stock_symbol")
+  openPrice   Decimal  @map("open_price") @db.Decimal(10, 3)
+  highPrice   Decimal  @map("high_price") @db.Decimal(10, 3)
+  lowPrice    Decimal  @map("low_price") @db.Decimal(10, 3)
+  closePrice  Decimal  @map("close_price") @db.Decimal(10, 3)
+  volume      BigInt
+  tradeDate   DateTime @map("trade_date") @db.Date
+
+  // 关联关系
+  stock Stock @relation(fields: [stockSymbol], references: [symbol])
+
+  @@map("stock_data")
+}
+
+// 审计日志表
+model AuditLog {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id")
+  userName   String   @map("user_name")
+  userRole   String   @map("user_role")
+  action     String   // CREATE, READ, UPDATE, DELETE, LOGIN, LOGOUT, EXPORT
+  resource   String   // USER, SUBSCRIPTION, WATCHLIST, REPORT, DATASOURCE, AUTH
+  resourceId String?  @map("resource_id")
+  details    String
+  ipAddress  String   @map("ip_address")
+  userAgent  String   @map("user_agent")
+  status     String   @default("success") // success, failed, warning
+  duration   Int?     // 操作耗时(毫秒)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+}

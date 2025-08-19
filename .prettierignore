@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Generated files
+packages/shared-sdk/generated/
+
+# Flutter
+apps/mobile/.dart_tool/
+apps/mobile/build/
+apps/mobile/ios/
+apps/mobile/android/
+apps/mobile/pubspec.lock
+
+# WeChat MiniProgram
+apps/miniapp/miniprogram_npm/
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files
+.env*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma
+services/api/prisma/migrations/
+
+# Package lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

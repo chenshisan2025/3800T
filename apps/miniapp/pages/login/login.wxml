@@ -1,0 +1,151 @@
+<!--pages/login/login.wxml-->
+<view class="login-container">
+  <!-- 顶部logo区域 -->
+  <view class="logo-section">
+    <image class="logo" src="/images/logo.png" mode="aspectFit"></image>
+    <text class="app-name">股灵通</text>
+    <text class="app-desc">专业的股票分析工具</text>
+  </view>
+  
+  <!-- 登录方式切换 -->
+  <view class="login-tabs">
+    <view 
+      class="tab-item {{loginType === 'phone' ? 'active' : ''}}"
+      data-type="phone"
+      bindtap="switchLoginType"
+    >
+      手机号登录
+    </view>
+    <view 
+      class="tab-item {{loginType === 'wechat' ? 'active' : ''}}"
+      data-type="wechat"
+      bindtap="switchLoginType"
+    >
+      微信登录
+    </view>
+  </view>
+  
+  <!-- 手机号登录表单 -->
+  <view class="login-form" wx:if="{{loginType === 'phone'}}">
+    <!-- 手机号输入 -->
+    <view class="input-group">
+      <view class="input-label">
+        <text class="icon">📱</text>
+        <text>手机号</text>
+      </view>
+      <input 
+        class="input-field"
+        type="number"
+        placeholder="请输入手机号"
+        value="{{phoneNumber}}"
+        bindinput="onPhoneInput"
+        maxlength="11"
+      />
+    </view>
+    
+    <!-- 验证码输入 -->
+    <view class="input-group">
+      <view class="input-label">
+        <text class="icon">🔐</text>
+        <text>验证码</text>
+      </view>
+      <view class="code-input-wrapper">
+        <input 
+          class="input-field code-input"
+          type="number"
+          placeholder="请输入验证码"
+          value="{{verifyCode}}"
+          bindinput="onCodeInput"
+          maxlength="6"
+        />
+        <button 
+          class="send-code-btn {{!canSendCode ? 'disabled' : ''}}"
+          bindtap="sendVerifyCode"
+          disabled="{{!canSendCode}}"
+        >
+          {{countdown > 0 ? countdown + 's' : '发送验证码'}}
+        </button>
+      </view>
+    </view>
+    
+    <!-- 登录按钮 -->
+    <button 
+      class="login-btn {{isLogging ? 'loading' : ''}}"
+      bindtap="phoneLogin"
+      disabled="{{isLogging}}"
+    >
+      {{isLogging ? '登录中...' : '登录'}}
+    </button>
+  </view>
+  
+  <!-- 微信登录 -->
+  <view class="login-form" wx:if="{{loginType === 'wechat'}}">
+    <view class="wechat-login-section">
+      <view class="wechat-icon">
+        <text class="icon">💬</text>
+      </view>
+      <text class="wechat-desc">使用微信账号快速登录</text>
+      
+      <button 
+        class="wechat-login-btn {{isLogging ? 'loading' : ''}}"
+        bindtap="wechatLogin"
+        disabled="{{isLogging}}"
+      >
+        {{isLogging ? '登录中...' : '微信登录'}}
+      </button>
+    </view>
+  </view>
+  
+  <!-- 协议同意 -->
+  <view class="protocol-section">
+    <view class="protocol-checkbox" bindtap="toggleProtocol">
+      <view class="checkbox {{agreeProtocol ? 'checked' : ''}}">
+        <text class="checkmark" wx:if="{{agreeProtocol}}">✓</text>
+      </view>
+      <text class="protocol-text">
+        我已阅读并同意
+        <text class="protocol-link" bindtap="viewProtocol">《用户协议》</text>
+        和
+        <text class="protocol-link" bindtap="viewPrivacy">《隐私政策》</text>
+      </text>
+    </view>
+  </view>
+  
+  <!-- 其他登录方式 -->
+  <view class="other-login" wx:if="{{loginType === 'phone'}}">
+    <view class="divider">
+      <text>其他登录方式</text>
+    </view>
+    <view class="other-login-buttons">
+      <button 
+        class="other-login-btn"
+        data-type="wechat"
+        bindtap="switchLoginType"
+      >
+        <text class="icon">💬</text>
+        <text>微信</text>
+      </button>
+    </view>
+  </view>
+  
+  <view class="other-login" wx:if="{{loginType === 'wechat'}}">
+    <view class="divider">
+      <text>其他登录方式</text>
+    </view>
+    <view class="other-login-buttons">
+      <button 
+        class="other-login-btn"
+        data-type="phone"
+        bindtap="switchLoginType"
+      >
+        <text class="icon">📱</text>
+        <text>手机号</text>
+      </button>
+    </view>
+  </view>
+  
+  <!-- 底部免责声明 -->
+  <view class="disclaimer">
+    <text>本应用提供的信息仅供参考，不构成投资建议</text>
+  </view>
+</view>

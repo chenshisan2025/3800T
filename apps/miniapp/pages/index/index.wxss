@@ -1,0 +1,310 @@
+/* pages/index/index.wxss */
+.index-page {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 搜索栏 */
+.search-bar {
+  background-color: #2166A5;
+  padding: 20rpx 30rpx;
+  padding-top: calc(20rpx + env(safe-area-inset-top));
+}
+
+.search-input {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50rpx;
+  padding: 20rpx 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search-placeholder {
+  color: #999;
+  font-size: 28rpx;
+}
+
+.search-icon {
+  font-size: 32rpx;
+  color: #666;
+}
+
+/* 加载状态 */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200rpx;
+  color: #999;
+}
+
+/* 主要内容 */
+.content {
+  height: calc(100vh - 120rpx - env(safe-area-inset-top));
+}
+
+/* 轮播图 */
+.banner-section {
+  margin-bottom: 20rpx;
+}
+
+.banner-swiper {
+  height: 300rpx;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+}
+
+.banner-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+  padding: 40rpx 30rpx 20rpx;
+}
+
+.banner-title {
+  color: white;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+/* 通用区块样式 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  background-color: white;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.section-more {
+  font-size: 26rpx;
+  color: #2166A5;
+}
+
+/* 市场概览 */
+.market-section {
+  margin-bottom: 20rpx;
+}
+
+.market-list {
+  background-color: white;
+  padding: 0 30rpx;
+}
+
+.market-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.market-item:last-child {
+  border-bottom: none;
+}
+
+.market-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.market-name {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.market-code {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.market-data {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.market-price {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.market-change {
+  font-size: 24rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+/* 热门股票 */
+.hot-stocks-section {
+  margin-bottom: 20rpx;
+}
+
+.stock-list {
+  background-color: white;
+  padding: 0 30rpx;
+}
+
+.stock-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.stock-item:last-child {
+  border-bottom: none;
+}
+
+.stock-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stock-name {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.stock-code {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.stock-data {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.stock-price {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.stock-change {
+  font-size: 24rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+/* 最新资讯 */
+.news-section {
+  margin-bottom: 20rpx;
+}
+
+.news-list {
+  background-color: white;
+}
+
+.news-item {
+  display: flex;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.news-item:last-child {
+  border-bottom: none;
+}
+
+.news-content {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.news-title {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: bold;
+  line-height: 1.4;
+  margin-bottom: 15rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.news-summary {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.4;
+  margin-bottom: 15rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.news-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.news-source {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.news-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.news-image {
+  width: 160rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+  flex-shrink: 0;
+}
+
+/* 空状态 */
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200rpx;
+  background-color: white;
+}
+
+.empty-text {
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 股票涨跌颜色 */
+.stock-up {
+  background-color: #FF4444;
+  color: white;
+}
+
+.stock-down {
+  background-color: #00C851;
+  color: white;
+}
+
+.stock-flat {
+  background-color: #f0f0f0;
+  color: #666;
+}

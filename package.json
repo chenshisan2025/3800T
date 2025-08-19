@@ -1,0 +1,57 @@
+{
+  "name": "gulingtong",
+  "version": "1.0.0",
+  "description": "古灵通 - 综合性股票投资服务平台",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm dev:api\" \"pnpm dev:admin\"",
+    "dev:api": "pnpm --filter @gulingtong/api dev",
+    "dev:admin": "pnpm --filter @gulingtong/admin dev",
+    "dev:mobile": "cd apps/mobile && flutter run",
+    "dev:miniapp": "echo \"请在微信开发者工具中打开 apps/miniapp 目录\"",
+    "build": "pnpm build:shared && pnpm build:api && pnpm build:admin",
+    "build:shared": "pnpm --filter @gulingtong/shared-sdk build",
+    "build:api": "pnpm --filter @gulingtong/api build",
+    "build:admin": "pnpm --filter @gulingtong/admin build",
+    "build:mobile": "cd apps/mobile && flutter build apk",
+    "build:miniapp": "echo \"请在微信开发者工具中构建小程序\"",
+    "test": "pnpm --filter \"./apps/*\" --filter \"./services/*\" test",
+    "test:admin": "pnpm --filter @gulingtong/admin test",
+    "test:api": "pnpm --filter @gulingtong/api test",
+    "test:mobile": "cd apps/mobile && flutter test",
+    "test:coverage": "pnpm --filter \"./apps/*\" --filter \"./services/*\" test:coverage",
+    "lint": "pnpm --filter \"./apps/*\" --filter \"./services/*\" --filter \"./packages/*\" lint",
+    "lint:fix": "pnpm --filter \"./apps/*\" --filter \"./services/*\" --filter \"./packages/*\" lint:fix",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "type-check": "pnpm --filter \"./apps/*\" --filter \"./services/*\" --filter \"./packages/*\" type-check",
+    "clean": "pnpm --filter \"./apps/*\" --filter \"./services/*\" --filter \"./packages/*\" clean",
+    "db:generate": "pnpm --filter @gulingtong/api db:generate",
+    "db:migrate": "pnpm --filter @gulingtong/api db:migrate",
+    "db:studio": "pnpm --filter @gulingtong/api db:studio",
+    "db:seed": "pnpm --filter @gulingtong/api db:seed",
+    "postinstall": "pnpm db:generate"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@typescript-eslint/parser": "^8.39.1",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "stock",
+    "investment",
+    "ai",
+    "flutter",
+    "nextjs",
+    "miniprogram"
+  ],
+  "author": "GuLingTong Team",
+  "license": "MIT"
+}

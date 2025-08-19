@@ -1,0 +1,81 @@
+<!--pages/me/me.wxml-->
+<view class="container">
+  <!-- 用户信息区域 -->
+  <view class="user-section">
+    <view class="user-info" bindtap="onAvatarTap">
+      <view class="avatar">
+        <image 
+          wx:if="{{isLoggedIn && userInfo.avatarUrl}}"
+          src="{{userInfo.avatarUrl}}"
+          class="avatar-img"
+        />
+        <view wx:else class="avatar-placeholder">👤</view>
+      </view>
+      <view class="user-details">
+        <view wx:if="{{isLoggedIn}}" class="user-name">
+          {{userInfo.nickName || '用户'}}
+        </view>
+        <view wx:else class="login-prompt" bindtap="onLoginTap">
+          点击登录
+        </view>
+        <view class="user-desc">
+          <text wx:if="{{isLoggedIn && subscription}}">{{subscription.plan === 'pro' ? 'Pro会员' : '免费用户'}} | {{userInfo.phone || '未绑定手机'}}</text>
+          <text wx:elif="{{isLoggedIn}}">{{userInfo.phone || '未绑定手机'}}</text>
+          <text wx:else>登录后享受更多功能</text>
+        </view>
+        <!-- 会员状态标识 -->
+        <view wx:if="{{isLoggedIn && subscription && subscription.plan === 'pro'}}" class="pro-badge">
+          Pro
+        </view>
+      </view>
+      <view class="arrow">></view>
+    </view>
+    
+    <!-- 订阅状态卡片 -->
+    <view wx:if="{{isLoggedIn && subscription}}" class="subscription-card">
+      <view class="subscription-info">
+        <view class="plan-name">{{subscription.plan === 'pro' ? 'Pro会员' : '免费版'}}</view>
+        <view class="plan-desc">
+          <text wx:if="{{subscription.plan === 'pro'}}">享受所有高级功能</text>
+          <text wx:else>升级Pro解锁更多功能</text>
+        </view>
+      </view>
+      <view wx:if="{{subscription.plan === 'free'}}" class="upgrade-btn-mini" bindtap="handleMembership">
+        升级
+      </view>
+    </view>
+    
+    <!-- 退出登录按钮 -->
+    <view wx:if="{{isLoggedIn}}" class="logout-btn" bindtap="onLogoutTap">
+      退出登录
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section">
+    <view 
+      class="menu-item"
+      wx:for="{{menuItems}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onMenuItemTap"
+    >
+      <view class="menu-icon">{{item.icon}}</view>
+      <view class="menu-content">
+        <view class="menu-title">{{item.title}}</view>
+        <view class="menu-desc">{{item.desc}}</view>
+      </view>
+      <view wx:if="{{item.arrow}}" class="menu-arrow">></view>
+    </view>
+  </view>
+
+  <!-- 版本信息 -->
+  <view class="version-info">
+    <text>古灵通 v{{appVersion}}</text>
+  </view>
+
+  <!-- 底部免责声明 -->
+  <view class="disclaimer">
+    <text>本应用所提供的信息仅供参考，不构成投资建议</text>
+  </view>
+</view>

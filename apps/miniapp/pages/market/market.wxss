@@ -1,0 +1,296 @@
+/* pages/market/market.wxss */
+.market-page {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 搜索栏 */
+.search-bar {
+  background-color: #2166A5;
+  padding: 20rpx 30rpx;
+  padding-top: calc(20rpx + env(safe-area-inset-top));
+}
+
+.search-input {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 50rpx;
+  padding: 20rpx 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search-placeholder {
+  color: #999;
+  font-size: 28rpx;
+}
+
+.search-icon {
+  font-size: 32rpx;
+  color: #666;
+}
+
+/* 加载状态 */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200rpx;
+  color: #999;
+}
+
+/* 主要内容 */
+.content {
+  height: calc(100vh - 120rpx - env(safe-area-inset-top));
+  display: flex;
+  flex-direction: column;
+}
+
+/* 市场概览 */
+.market-overview {
+  background-color: white;
+  margin-bottom: 20rpx;
+  padding: 0 30rpx;
+}
+
+.market-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.market-item:last-child {
+  border-bottom: none;
+}
+
+.market-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.market-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.market-code {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.market-data {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.market-price {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.market-change {
+  font-size: 22rpx;
+  padding: 4rpx 8rpx;
+  border-radius: 6rpx;
+}
+
+/* 标签栏 */
+.tab-bar {
+  display: flex;
+  background-color: white;
+  margin-bottom: 20rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 30rpx 0;
+  border-bottom: 4rpx solid transparent;
+}
+
+.tab-item.active {
+  border-bottom-color: #2166A5;
+}
+
+.tab-text {
+  font-size: 30rpx;
+  color: #666;
+}
+
+.tab-item.active .tab-text {
+  color: #2166A5;
+  font-weight: bold;
+}
+
+/* 排序栏 */
+.sort-bar {
+  display: flex;
+  background-color: white;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.sort-item {
+  flex: 1;
+  text-align: center;
+  padding: 10rpx 0;
+}
+
+.sort-item:first-child {
+  text-align: left;
+  padding-left: 30rpx;
+}
+
+.sort-item:last-child {
+  text-align: right;
+  padding-right: 30rpx;
+}
+
+.sort-text {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: bold;
+}
+
+/* 股票列表 */
+.stock-scroll {
+  flex: 1;
+  background-color: white;
+}
+
+.stock-list {
+  padding: 0 30rpx;
+}
+
+.stock-item {
+  display: flex;
+  align-items: center;
+  padding: 25rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.stock-item:last-child {
+  border-bottom: none;
+}
+
+.stock-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stock-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stock-code {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.stock-price {
+  flex: 0 0 120rpx;
+  text-align: center;
+}
+
+.price-value {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.stock-change {
+  flex: 0 0 140rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.change-percent {
+  font-size: 26rpx;
+  font-weight: bold;
+  margin-bottom: 4rpx;
+}
+
+.change-value {
+  font-size: 22rpx;
+}
+
+.stock-volume {
+  flex: 0 0 100rpx;
+  text-align: right;
+}
+
+.volume-value {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 空状态 */
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300rpx;
+}
+
+.empty-text {
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 加载更多 */
+.load-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100rpx;
+}
+
+.load-more-text {
+  color: #999;
+  font-size: 26rpx;
+}
+
+/* 股票涨跌颜色 */
+.stock-up {
+  color: #FF4444;
+}
+
+.stock-down {
+  color: #00C851;
+}
+
+.stock-flat {
+  color: #666;
+}
+
+/* 市场概览涨跌颜色 */
+.market-change.stock-up {
+  background-color: #FF4444;
+  color: white;
+}
+
+.market-change.stock-down {
+  background-color: #00C851;
+  color: white;
+}
+
+.market-change.stock-flat {
+  background-color: #f0f0f0;
+  color: #666;
+}

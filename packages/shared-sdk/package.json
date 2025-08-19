@@ -1,0 +1,63 @@
+{
+  "name": "@gulingtong/shared-sdk",
+  "version": "1.0.0",
+  "description": "古灵通共享 SDK - OpenAPI 契约和客户端代码生成",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "openapi.yaml",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc && npm run generate:client",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist",
+    "generate:client": "openapi-generator-cli generate -i openapi.yaml -g typescript-fetch -o src/generated --additional-properties=typescriptThreePlus=true,supportsES6=true,npmName=@gulingtong/shared-sdk",
+    "generate:docs": "redoc-cli build openapi.yaml --output docs/index.html",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
+  "keywords": [
+    "gulingtong",
+    "stock",
+    "investment",
+    "api",
+    "sdk",
+    "openapi",
+    "typescript"
+  ],
+  "author": "古灵通团队",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.7.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "redoc-cli": "^0.13.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.5.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gulingtong/gulingtong.git",
+    "directory": "packages/shared-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/gulingtong/gulingtong/issues"
+  },
+  "homepage": "https://github.com/gulingtong/gulingtong/tree/main/packages/shared-sdk#readme"
+}

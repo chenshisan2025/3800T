@@ -1,0 +1,119 @@
+<!--pages/market/market.wxml-->
+<view class="market-page">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input" bindtap="onSearchTap">
+      <text class="search-placeholder">搜索股票代码/名称</text>
+      <text class="search-icon">🔍</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 主要内容 -->
+  <view wx:else class="content">
+    <!-- 市场概览 -->
+    <view class="market-overview">
+      <view 
+        class="market-item" 
+        wx:for="{{[marketData.sh, marketData.sz, marketData.cy]}}" 
+        wx:key="code"
+        bindtap="onMarketTap" 
+        data-code="{{item.code}}"
+      >
+        <view class="market-info">
+          <text class="market-name">{{item.name}}</text>
+          <text class="market-code">{{item.code}}</text>
+        </view>
+        <view class="market-data">
+          <text class="market-price">{{formatPrice(item.price)}}</text>
+          <text class="market-change {{getChangeColorClass(item.change)}}">
+            {{formatChange(item.change)}} ({{formatChangePercent(item.changePercent)}})
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 标签切换 -->
+    <view class="tab-bar">
+      <view 
+        class="tab-item {{currentTab === index ? 'active' : ''}}" 
+        wx:for="{{tabs}}" 
+        wx:key="*this"
+        bindtap="onTabChange" 
+        data-index="{{index}}"
+      >
+        <text class="tab-text">{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 排序栏 -->
+    <view class="sort-bar">
+      <view class="sort-item" bindtap="onSort" data-field="name">
+        <text class="sort-text">名称</text>
+      </view>
+      <view class="sort-item" bindtap="onSort" data-field="price">
+        <text class="sort-text">现价 {{getSortIcon('price')}}</text>
+      </view>
+      <view class="sort-item" bindtap="onSort" data-field="changePercent">
+        <text class="sort-text">涨跌幅 {{getSortIcon('changePercent')}}</text>
+      </view>
+      <view class="sort-item" bindtap="onSort" data-field="volume">
+        <text class="sort-text">成交量 {{getSortIcon('volume')}}</text>
+      </view>
+    </view>
+
+    <!-- 股票列表 -->
+    <scroll-view 
+      scroll-y="true" 
+      class="stock-scroll" 
+      refresher-enabled="{{true}}" 
+      refresher-triggered="{{refreshing}}" 
+      bindrefresherrefresh="refreshData"
+      bindscrolltolower="onReachBottom"
+    >
+      <view wx:if="{{stockList.length === 0}}" class="empty">
+        <text class="empty-text">暂无数据</text>
+      </view>
+      <view wx:else class="stock-list">
+        <view 
+          class="stock-item" 
+          wx:for="{{stockList}}" 
+          wx:key="code"
+          bindtap="onStockTap" 
+          data-code="{{item.code}}"
+        >
+          <view class="stock-info">
+            <text class="stock-name">{{item.name}}</text>
+            <text class="stock-code">{{item.code}}</text>
+          </view>
+          <view class="stock-price">
+            <text class="price-value">{{formatPrice(item.price)}}</text>
+          </view>
+          <view class="stock-change">
+            <text class="change-percent {{getChangeColorClass(item.change)}}">
+              {{formatChangePercent(item.changePercent)}}
+            </text>
+            <text class="change-value {{getChangeColorClass(item.change)}}">
+              {{formatChange(item.change)}}
+            </text>
+          </view>
+          <view class="stock-volume">
+            <text class="volume-value">{{formatVolume(item.volume)}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 加载更多 -->
+      <view wx:if="{{hasMore && stockList.length > 0}}" class="load-more">
+        <text class="load-more-text">加载更多...</text>
+      </view>
+      <view wx:elif="{{!hasMore && stockList.length > 0}}" class="load-more">
+        <text class="load-more-text">没有更多数据了</text>
+      </view>
+    </scroll-view>
+  </view>
+</view>

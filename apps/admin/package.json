@@ -1,0 +1,63 @@
+{
+  "name": "@gulingtong/admin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "古灵通管理后台 - Next.js + TypeScript + Ant Design",
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start -p 3002",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "check": "npm run type-check && npm run lint",
+    "clean": "rm -rf .next out dist"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.2.0",
+    "@ant-design/nextjs-registry": "^1.0.0",
+    "@gulingtong/shared-sdk": "workspace:*",
+    "ahooks": "^3.7.0",
+    "antd": "^5.12.0",
+    "classnames": "^2.3.0",
+    "dayjs": "^1.11.0",
+    "jose": "^6.0.12",
+    "js-cookie": "^3.0.0",
+    "lodash-es": "^4.17.0",
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "recharts": "^2.8.0",
+    "swr": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.0",
+    "@types/lodash-es": "^4.17.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "autoprefixer": "^10.4.0",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.0.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

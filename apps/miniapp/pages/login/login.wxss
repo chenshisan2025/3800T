@@ -1,0 +1,326 @@
+/* pages/login/login.wxss */
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 40rpx 60rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 顶部logo区域 */
+.logo-section {
+  text-align: center;
+  margin-bottom: 80rpx;
+  margin-top: 60rpx;
+}
+
+.logo {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.app-name {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #2166A5;
+  margin-bottom: 10rpx;
+}
+
+.app-desc {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 登录方式切换 */
+.login-tabs {
+  display: flex;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 8rpx;
+  margin-bottom: 60rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 32rpx;
+  color: #666;
+  border-radius: 8rpx;
+  transition: all 0.3s ease;
+}
+
+.tab-item.active {
+  background: #2166A5;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* 登录表单 */
+.login-form {
+  flex: 1;
+}
+
+.input-group {
+  margin-bottom: 40rpx;
+}
+
+.input-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  font-size: 32rpx;
+  color: #333;
+}
+
+.input-label .icon {
+  margin-right: 12rpx;
+  font-size: 36rpx;
+}
+
+.input-field {
+  width: 100%;
+  height: 88rpx;
+  background: #fff;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 32rpx;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: #2166A5;
+}
+
+.code-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.code-input {
+  flex: 1;
+}
+
+.send-code-btn {
+  width: 200rpx;
+  height: 88rpx;
+  background: #2166A5;
+  color: #fff;
+  border: none;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-code-btn.disabled {
+  background: #ccc;
+  color: #999;
+}
+
+.login-btn {
+  width: 100%;
+  height: 96rpx;
+  background: #2166A5;
+  color: #fff;
+  border: none;
+  border-radius: 12rpx;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-top: 40rpx;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:active {
+  background: #1a5490;
+}
+
+.login-btn.loading {
+  background: #ccc;
+}
+
+/* 微信登录 */
+.wechat-login-section {
+  text-align: center;
+  padding: 60rpx 0;
+}
+
+.wechat-icon {
+  margin-bottom: 30rpx;
+}
+
+.wechat-icon .icon {
+  font-size: 120rpx;
+}
+
+.wechat-desc {
+  display: block;
+  font-size: 32rpx;
+  color: #666;
+  margin-bottom: 60rpx;
+}
+
+.wechat-login-btn {
+  width: 100%;
+  height: 96rpx;
+  background: #07c160;
+  color: #fff;
+  border: none;
+  border-radius: 12rpx;
+  font-size: 36rpx;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.wechat-login-btn:active {
+  background: #06ad56;
+}
+
+.wechat-login-btn.loading {
+  background: #ccc;
+}
+
+/* 协议同意 */
+.protocol-section {
+  margin: 40rpx 0;
+}
+
+.protocol-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+}
+
+.checkbox {
+  width: 36rpx;
+  height: 36rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 6rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 4rpx;
+  transition: all 0.3s ease;
+}
+
+.checkbox.checked {
+  background: #2166A5;
+  border-color: #2166A5;
+}
+
+.checkmark {
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+.protocol-text {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.protocol-link {
+  color: #2166A5;
+  text-decoration: underline;
+}
+
+/* 其他登录方式 */
+.other-login {
+  margin: 60rpx 0 40rpx;
+}
+
+.divider {
+  text-align: center;
+  position: relative;
+  margin-bottom: 40rpx;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1rpx;
+  background: #e5e5e5;
+}
+
+.divider text {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 0 30rpx;
+  font-size: 28rpx;
+  color: #999;
+}
+
+.other-login-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 40rpx;
+}
+
+.other-login-btn {
+  width: 120rpx;
+  height: 120rpx;
+  background: #fff;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.other-login-btn:active {
+  transform: scale(0.95);
+}
+
+.other-login-btn .icon {
+  font-size: 48rpx;
+}
+
+.other-login-btn text:last-child {
+  font-size: 24rpx;
+  color: #666;
+}
+
+/* 底部免责声明样式已移至全局 app.wxss */
+
+/* 响应式适配 */
+@media screen and (max-height: 600px) {
+  .logo-section {
+    margin-top: 20rpx;
+    margin-bottom: 40rpx;
+  }
+  
+  .logo {
+    width: 80rpx;
+    height: 80rpx;
+  }
+  
+  .app-name {
+    font-size: 36rpx;
+  }
+  
+  .wechat-login-section {
+    padding: 40rpx 0;
+  }
+  
+  .wechat-icon .icon {
+    font-size: 80rpx;
+  }
+}
