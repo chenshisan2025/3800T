@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../stock/providers/stock_provider.dart';
 
 /// 成交记录列表
@@ -67,7 +68,7 @@ class TradeRecordsList extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '加载失败',
+              AppStrings.loadFailed,
               style: AppTextStyles.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -83,7 +84,7 @@ class TradeRecordsList extends ConsumerWidget {
               onPressed: () {
                 // 重新加载数据的逻辑
               },
-              child: const Text('重试'),
+              child: Text(AppStrings.retry),
             ),
           ],
         ),
@@ -106,12 +107,12 @@ class TradeRecordsList extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '暂无成交记录',
+              AppStrings.noTradeRecords,
               style: AppTextStyles.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              '您还没有任何交易记录',
+              AppStrings.noTradeRecordsDesc,
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -119,7 +120,7 @@ class TradeRecordsList extends ConsumerWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => context.go('/market'),
-              child: const Text('去交易'),
+              child: Text(AppStrings.goTrade),
             ),
           ],
         ),
@@ -221,7 +222,7 @@ class TradeRecordItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
-                    isBuy ? '买入' : '卖出',
+                    isBuy ? AppStrings.buy : AppStrings.sell,
                     style: AppTextStyles.bodySmall.copyWith(
                       color: sideColor,
                       fontWeight: FontWeight.w600,
@@ -238,25 +239,25 @@ class TradeRecordItem extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildInfoItem(
-                    '成交价',
+                    AppStrings.tradePrice,
                     '¥${record.price.toStringAsFixed(2)}',
                   ),
                 ),
                 Expanded(
                   child: _buildInfoItem(
-                    '数量',
+                    AppStrings.quantity,
                     '${record.quantity}股',
                   ),
                 ),
                 Expanded(
                   child: _buildInfoItem(
-                    '成交额',
+                    AppStrings.tradeAmount,
                     '¥${record.amount.toStringAsFixed(2)}',
                   ),
                 ),
                 Expanded(
                   child: _buildInfoItem(
-                    '手续费',
+                    AppStrings.commission,
                     '¥${record.commission.toStringAsFixed(2)}',
                   ),
                 ),
@@ -270,7 +271,7 @@ class TradeRecordItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '成交时间',
+                  AppStrings.tradeTime,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.textSecondary,
                   ),

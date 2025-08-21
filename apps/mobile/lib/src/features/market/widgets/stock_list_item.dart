@@ -100,7 +100,7 @@ class StockListItem extends ConsumerWidget {
                   ),
                   
                   // 成交量信息
-                  if (stock.volume > 0) ..[
+                  if (stock.volume > 0) ...[
                     const SizedBox(height: 4),
                     Text(
                       '量 ${stock.formatVolume}',

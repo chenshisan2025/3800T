@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/widgets.dart';
+import '../../../core/constants/app_strings.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -9,7 +10,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('股灵通'),
+        title: Text(AppStrings.appName),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -27,9 +28,9 @@ class HomePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '市场概览',
-                  style: TextStyle(
+                Text(
+                  AppStrings.marketOverview,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -38,9 +39,9 @@ class HomePage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildMarketItem('上证指数', '3245.67', '+1.23%', true),
-                    _buildMarketItem('深证成指', '12456.78', '-0.45%', false),
-                    _buildMarketItem('创业板指', '2567.89', '+2.10%', true),
+                    _buildMarketItem(context, AppStrings.shanghaiIndex, '3245.67', '+1.23%', true),
+                    _buildMarketItem(context, AppStrings.shenzhenIndex, '12456.78', '-0.45%', false),
+                    _buildMarketItem(context, AppStrings.chinextIndex, '2567.89', '+2.10%', true),
                   ],
                 ),
               ],
@@ -56,24 +57,24 @@ class HomePage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      '热门股票',
-                      style: TextStyle(
+                    Text(
+                      AppStrings.hotStocks,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     CustomTag(
-                      text: '实时',
+                      text: AppStrings.realTime,
                       type: TagType.info,
                       size: TagSize.small,
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                _buildStockItem(context, '000001', '平安银行', '12.34', '+0.56', '+4.76%'),
-                _buildStockItem(context, '000002', '万科A', '23.45', '-0.23', '-0.97%'),
-                _buildStockItem(context, '600036', '招商银行', '45.67', '+1.23', '+2.77%'),
+                _buildStockItem(context, '000001', AppStrings.pinganBank, '12.34', '+0.56', '+4.76%'),
+                _buildStockItem(context, '000002', AppStrings.vankeA, '23.45', '-0.23', '-0.97%'),
+                _buildStockItem(context, '600036', AppStrings.cmb, '45.67', '+1.23', '+2.77%'),
               ],
             ),
           ),
@@ -82,7 +83,7 @@ class HomePage extends StatelessWidget {
     );
   }
   
-  Widget _buildMarketItem(String name, String value, String change, bool isRise) {
+  Widget _buildMarketItem(BuildContext context, String name, String value, String change, bool isRise) {
     return Column(
       children: [
         Text(

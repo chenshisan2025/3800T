@@ -34,11 +34,13 @@ class AppConfig {
   static const String tokenKey = 'auth_token';
   static const String refreshTokenKey = 'refresh_token';
   static const String userKey = 'user_info';
+  static const String userDataKey = 'user_data';
   static const String settingsKey = 'app_settings';
   static const String cacheKey = 'app_cache';
   
   // 缓存配置
   static const int cacheMaxAge = 300; // 5分钟
+  static const int cacheTTL = 300; // 5分钟
   static const int imageCacheMaxAge = 86400; // 24小时
   static const int maxCacheSize = 100 * 1024 * 1024; // 100MB
   

@@ -55,7 +55,7 @@ class CustomButton extends StatelessWidget {
             : Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (icon != null) ..[
+                  if (icon != null) ...[
                     icon!,
                     const SizedBox(width: 8),
                   ],

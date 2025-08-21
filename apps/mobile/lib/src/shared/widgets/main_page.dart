@@ -13,9 +13,9 @@ class MainPage extends StatelessWidget {
   
   static final List<String> _routes = [
     '/',
-    '/watchlist',
+    '/market',
     '/ai',
-    '/alerts',
+    '/watchlist',
     '/profile',
   ];
   
@@ -54,16 +54,16 @@ class MainPage extends StatelessWidget {
                 label: '首页',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.star),
-                label: '自选',
+                icon: Icon(Icons.trending_up),
+                label: '行情',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.psychology),
                 label: 'AI分析',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.notifications),
-                label: '提醒',
+                icon: Icon(Icons.star),
+                label: '自选',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),

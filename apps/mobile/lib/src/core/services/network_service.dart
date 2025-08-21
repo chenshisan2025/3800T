@@ -30,9 +30,9 @@ class NetworkService {
   void _setupOptions() {
     _dio.options = BaseOptions(
       baseUrl: AppConfig.apiBaseUrl,
-      connectTimeout: Duration(milliseconds: AppConfig.apiTimeout),
-      receiveTimeout: Duration(milliseconds: AppConfig.apiTimeout),
-      sendTimeout: Duration(milliseconds: AppConfig.apiTimeout),
+      connectTimeout: Duration(milliseconds: AppConfig.connectTimeout),
+      receiveTimeout: Duration(milliseconds: AppConfig.receiveTimeout),
+      sendTimeout: Duration(milliseconds: AppConfig.sendTimeout),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -235,6 +235,23 @@ class NetworkService {
     CancelToken? cancelToken,
   }) {
     return _dio.delete<T>(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+    );
+  }
+
+  /// PATCH 请求
+  Future<Response<T>> patch<T>(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) {
+    return _dio.patch<T>(
       path,
       data: data,
       queryParameters: queryParameters,

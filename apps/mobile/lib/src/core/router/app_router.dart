@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/pages/login_page.dart';
 import '../../features/auth/pages/register_page.dart';
+import '../../features/auth/pages/magic_link_verify_page.dart';
 import '../../features/splash/pages/splash_page.dart';
 import '../../features/main/pages/main_page.dart';
 import '../../features/home/pages/home_page.dart';
@@ -16,6 +17,7 @@ import '../../features/stock/pages/stock_detail_page.dart';
 import '../../features/watchlist/pages/watchlist_page.dart';
 import '../../features/settings/pages/settings_page.dart';
 import '../../features/alerts/pages/alerts_page.dart';
+import '../../features/watchlist/pages/price_alerts_page.dart';
 import 'app_routes.dart';
 
 /// 路由配置提供者
@@ -81,6 +83,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegisterPage(),
       ),
       
+      // Magic Link验证页面
+      GoRoute(
+        path: '/auth/verify/:token',
+        name: 'magic_link_verify',
+        builder: (context, state) {
+          final token = state.pathParameters['token']!;
+          return MagicLinkVerifyPage(token: token);
+        },
+      ),
+      
       // 主页面路由（包含底部导航）
       ShellRoute(
         builder: (context, state, child) => MainPage(child: child),
@@ -125,6 +137,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/alerts',
             name: 'alerts',
             builder: (context, state) => const AlertsPage(),
+          ),
+          
+          // 价格提醒
+          GoRoute(
+            path: '/price-alerts',
+            name: 'price_alerts',
+            builder: (context, state) => const PriceAlertsPage(),
           ),
           
           // 个人中心
@@ -205,7 +224,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 bool _isAuthRoute(String location) {
   return location == AppRoutes.login || 
          location == AppRoutes.register ||
-         location == AppRoutes.splash;
+         location == AppRoutes.splash ||
+         location.startsWith('/auth/verify/');
 }
 
 /// 路由扩展方法

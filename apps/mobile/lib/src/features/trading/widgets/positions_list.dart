@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/router/app_routes.dart';
@@ -67,7 +68,7 @@ class PositionsList extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '加载失败',
+              AppStrings.loadFailed,
               style: AppTextStyles.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -83,7 +84,7 @@ class PositionsList extends ConsumerWidget {
               onPressed: () {
                 // 重新加载数据的逻辑
               },
-              child: const Text('重试'),
+              child: Text(AppStrings.retry),
             ),
           ],
         ),
@@ -106,12 +107,12 @@ class PositionsList extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '暂无持仓',
+              AppStrings.noPositions,
               style: AppTextStyles.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              '您还没有任何股票持仓',
+              AppStrings.noPositionsDescription,
               style: AppTextStyles.bodySmall.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -119,7 +120,7 @@ class PositionsList extends ConsumerWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () => context.go('/market'),
-              child: const Text('去选股'),
+              child: Text(AppStrings.goSelectStock),
             ),
           ],
         ),
@@ -238,25 +239,25 @@ class PositionItem extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildInfoItem(
-                    '持仓',
+                    AppStrings.position,
                     '${position.quantity}股',
                   ),
                 ),
                 Expanded(
                   child: _buildInfoItem(
-                    '成本',
+                    AppStrings.cost,
                     '¥${position.avgCost.toStringAsFixed(2)}',
                   ),
                 ),
                 Expanded(
                   child: _buildInfoItem(
-                    '市值',
+                    AppStrings.marketValue,
                     '¥${position.marketValue.toStringAsFixed(2)}',
                   ),
                 ),
                 Expanded(
                   child: _buildInfoItem(
-                    '盈亏',
+                    AppStrings.profitLoss,
                     '${isProfit ? '+' : ''}¥${position.unrealizedPnL.toStringAsFixed(2)}',
                     color: pnlColor,
                   ),

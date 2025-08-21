@@ -1,187 +1,272 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_text_styles.dart';
-import '../../../core/router/app_routes.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/constants/app_strings.dart';
+import '../models/watchlist_model.dart';
+import '../providers/watchlist_provider.dart';
+import 'stock_search_dialog.dart';
 
-/// 自选空状态组件
-class WatchlistEmpty extends StatelessWidget {
-  const WatchlistEmpty({super.key});
+class WatchlistEmpty extends ConsumerWidget {
+  final VoidCallback? onAddStock;
+  final VoidCallback? onBrowseMarket;
+  
+  const WatchlistEmpty({
+    super.key,
+    this.onAddStock,
+    this.onBrowseMarket,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // 空状态图标
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(60),
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.star_border,
+              size: 80,
+              color: Colors.grey[400],
             ),
-            child: Icon(
-              Icons.star_border_outlined,
-              size: 60,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          
-          const SizedBox(height: 24),
-          
-          // 标题
-          Text(
-            '还没有自选股',
-            style: AppTextStyles.titleLarge.copyWith(
-              color: AppColors.textPrimary,
-            ),
-          ),
-          
-          const SizedBox(height: 8),
-          
-          // 描述
-          Text(
-            '添加感兴趣的股票到自选，\n方便随时查看行情变化',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          
-          const SizedBox(height: 32),
-          
-          // 操作按钮
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // 搜索股票按钮
-              ElevatedButton.icon(
-                onPressed: () {
-                  context.push(AppRoutes.stockSearch);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                ),
-                icon: const Icon(Icons.search, size: 20),
-                label: const Text('搜索股票'),
+            const SizedBox(height: 24),
+            Text(
+              AppStrings.noWatchlistYet,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
               ),
-              
-              const SizedBox(width: 16),
-              
-              // 浏览市场按钮
-              OutlinedButton.icon(
-                onPressed: () {
-                  // 切换到市场页面
-                  DefaultTabController.of(context)?.animateTo(1);
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.primary,
-                  side: BorderSide(color: AppColors.primary),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              AppStrings.addInterestedStocksToWatchlist + '\n' + AppStrings.quickViewStockPriceChanges,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[500],
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 32),
+            
+            // 操作按钮
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: onAddStock ?? () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => const StockSearchDialog(),
+                    );
+                  },
+                  icon: const Icon(Icons.search),
+                  label: Text(AppStrings.searchStocks),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                   ),
                 ),
-                icon: const Icon(Icons.trending_up, size: 20),
-                label: const Text('浏览市场'),
+                const SizedBox(width: 16),
+                OutlinedButton.icon(
+                  onPressed: onBrowseMarket ?? () {
+                    context.go('/market');
+                  },
+                  icon: const Icon(Icons.trending_up),
+                  label: Text(AppStrings.browseMarket),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 48),
+            
+            // 热门股票推荐
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                AppStrings.hotRecommendations,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // 推荐股票列表
+            ...[
+              _buildRecommendedStock(
+                context,
+                ref,
+                name: '贵州茅台',
+                symbol: '600519',
+                market: MarketType.sh,
+              ),
+              _buildRecommendedStock(
+                context,
+                ref,
+                name: '五粮液',
+                symbol: '000858',
+                market: MarketType.sz,
+              ),
+              _buildRecommendedStock(
+                context,
+                ref,
+                name: '宁德时代',
+                symbol: '300750',
+                market: MarketType.gem,
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecommendedStock(
+    BuildContext context,
+    WidgetRef ref, {
+    required String name,
+    required String symbol,
+    required MarketType market,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Text(
+                      symbol,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getMarketColor(market),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        _getMarketName(market),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          
-          const SizedBox(height: 40),
-          
-          // 推荐股票
-          _buildRecommendedStocks(context),
+          IconButton(
+              onPressed: () => _addToWatchlist(
+                context,
+                ref,
+                symbol: symbol,
+                name: name,
+                market: market,
+              ),
+              icon: const Icon(
+                Icons.add_circle_outline,
+                color: Colors.blue,
+              ),
+              tooltip: AppStrings.addToWatchlist,
+            ),
         ],
       ),
     );
   }
 
-  /// 构建推荐股票
-  Widget _buildRecommendedStocks(BuildContext context) {
-    final recommendedStocks = [
-      {'symbol': '000001', 'name': '平安银行'},
-      {'symbol': '000002', 'name': '万科A'},
-      {'symbol': '600036', 'name': '招商银行'},
-      {'symbol': '600519', 'name': '贵州茅台'},
-    ];
+  Color _getMarketColor(MarketType market) {
+    switch (market) {
+      case MarketType.sh:
+        return Colors.orange;
+      case MarketType.sz:
+        return Colors.purple;
+      case MarketType.gem:
+        return Colors.green;
+      case MarketType.star:
+        return Colors.blue;
+    }
+  }
 
-    return Column(
-      children: [
-        Text(
-          '热门股票推荐',
-          style: AppTextStyles.titleSmall.copyWith(
-            color: AppColors.textSecondary,
+  String _getMarketName(MarketType market) {
+    switch (market) {
+      case MarketType.sh:
+        return '沪';
+      case MarketType.sz:
+        return '深';
+      case MarketType.gem:
+        return '创';
+      case MarketType.star:
+        return '科';
+    }
+  }
+
+  Future<void> _addToWatchlist(
+    BuildContext context,
+    WidgetRef ref, {
+    required String symbol,
+    required String name,
+    required MarketType market,
+  }) async {
+    try {
+      await ref.read(watchlistProvider.notifier).addToWatchlist(
+        symbol: symbol,
+        name: name,
+        market: market,
+      );
+      
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppStrings.addedToWatchlist.replaceFirst('{name}', name)),
+            backgroundColor: Colors.green,
           ),
-        ),
-        
-        const SizedBox(height: 16),
-        
-        Wrap(
-          spacing: 12,
-          runSpacing: 8,
-          children: recommendedStocks.map((stock) {
-            return GestureDetector(
-              onTap: () {
-                context.push('${AppRoutes.stockDetail}/${stock['symbol']}');
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppColors.outline,
-                    width: 1,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      stock['name'] as String,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      stock['symbol'] as String,
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppStrings.addFailed.replaceFirst('{error}', e.toString())),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

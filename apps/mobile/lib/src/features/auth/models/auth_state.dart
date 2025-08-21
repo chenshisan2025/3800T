@@ -21,14 +21,6 @@ class AuthState with _$AuthState {
   
   /// 错误状态
   const factory AuthState.error(String message) = _Error;
-  
-  /// 通用状态（包含所有字段）
-  const factory AuthState({
-    @Default(false) bool isLoading,
-    @Default(false) bool isAuthenticated,
-    UserModel? user,
-    String? error,
-  }) = _AuthState;
 }
 
 /// 认证状态扩展方法
@@ -40,7 +32,6 @@ extension AuthStateX on AuthState {
     authenticated: (_) => false,
     unauthenticated: () => false,
     error: (_) => false,
-    () => this.isLoading,
   );
   
   /// 是否已认证
@@ -50,7 +41,6 @@ extension AuthStateX on AuthState {
     authenticated: (_) => true,
     unauthenticated: () => false,
     error: (_) => false,
-    () => this.isAuthenticated,
   );
   
   /// 获取用户信息
@@ -60,7 +50,6 @@ extension AuthStateX on AuthState {
     authenticated: (user) => user,
     unauthenticated: () => null,
     error: (_) => null,
-    () => this.user,
   );
   
   /// 获取错误信息
@@ -70,7 +59,6 @@ extension AuthStateX on AuthState {
     authenticated: (_) => null,
     unauthenticated: () => null,
     error: (message) => message,
-    () => this.error,
   );
   
   /// 是否有错误
@@ -83,11 +71,12 @@ extension AuthStateX on AuthState {
     UserModel? user,
     String? error,
   }) {
-    return AuthState(
-      isLoading: isLoading ?? this.isLoading,
-      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
-      user: user ?? this.user,
-      error: error,
+    return when(
+      initial: () => const AuthState.initial(),
+      loading: () => const AuthState.loading(),
+      authenticated: (currentUser) => AuthState.authenticated(user ?? currentUser),
+      unauthenticated: () => const AuthState.unauthenticated(),
+      error: (currentError) => AuthState.error(error ?? currentError),
     );
   }
 }

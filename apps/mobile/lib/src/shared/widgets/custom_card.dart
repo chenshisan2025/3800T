@@ -95,7 +95,7 @@ class StockInfoCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              if (icon != null) ..[
+              if (icon != null) ...[
                 icon!,
                 const SizedBox(width: 8),
               ],
@@ -117,7 +117,7 @@ class StockInfoCard extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          if (subtitle != null) ..[
+          if (subtitle != null) ...[
             const SizedBox(height: 4),
             Text(
               subtitle!,

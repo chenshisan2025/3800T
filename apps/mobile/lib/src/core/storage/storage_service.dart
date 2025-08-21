@@ -400,6 +400,26 @@ class StorageService {
   
   // ==================== 通用存储方法 ====================
   
+  /// 保存字符串数据
+  Future<void> setString(String key, String value) async {
+    try {
+      await _settingsBox.put(key, value);
+    } catch (e) {
+      Logger.e('字符串数据保存失败: $key', error: e);
+      rethrow;
+    }
+  }
+  
+  /// 获取字符串数据
+  Future<String?> getString(String key) async {
+    try {
+      return _settingsBox.get(key);
+    } catch (e) {
+      Logger.e('字符串数据获取失败: $key', error: e);
+      return null;
+    }
+  }
+  
   /// 保存任意数据到指定盒子
   Future<void> save(String boxName, String key, dynamic value) async {
     try {

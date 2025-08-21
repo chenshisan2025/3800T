@@ -49,7 +49,7 @@ class CustomTag extends StatelessWidget {
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             ),
           ),
-          if (onClose != null) ..[
+          if (onClose != null) ...[
             const SizedBox(width: 4),
             GestureDetector(
               onTap: onClose,

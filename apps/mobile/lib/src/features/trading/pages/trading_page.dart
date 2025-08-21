@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../stock/models/stock_model.dart';
 import '../../stock/providers/stock_provider.dart';
 import '../widgets/portfolio_overview.dart';
@@ -91,7 +92,7 @@ class _TradingPageState extends ConsumerState<TradingPage>
                 ),
               ),
               title: Text(
-                '交易',
+                AppStrings.trading,
                 style: AppTextStyles.titleLarge.copyWith(
                   color: innerBoxIsScrolled ? AppColors.textPrimary : Colors.white,
                 ),
@@ -130,9 +131,9 @@ class _TradingPageState extends ConsumerState<TradingPage>
                   indicatorWeight: 3,
                   labelStyle: AppTextStyles.titleSmall,
                   unselectedLabelStyle: AppTextStyles.bodyMedium,
-                  tabs: const [
-                    Tab(text: '持仓'),
-                    Tab(text: '成交'),
+                  tabs: [
+                    Tab(text: AppStrings.positions),
+                    Tab(text: AppStrings.transactions),
                   ],
                 ),
               ),

@@ -165,7 +165,7 @@ class MarketFilterBar extends StatelessWidget {
                               color: isSelected ? AppColors.primary : AppColors.textPrimary,
                             ),
                           ),
-                          if (isSelected) ..[
+                          if (isSelected) ...[
                             const SizedBox(width: 4),
                             Icon(
                               isAscending ? Icons.arrow_upward : Icons.arrow_downward,

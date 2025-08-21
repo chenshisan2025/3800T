@@ -61,7 +61,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
   
   /// 用户登录
-  Future<bool> login(String email, String password) async {
+  Future<bool> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       state = state.copyWith(isLoading: true, error: null);
       Logger.auth('开始登录', userId: email);
@@ -155,6 +158,62 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
   
+  /// 发送Magic Link
+  Future<void> sendMagicLink(String email) async {
+    state = state.copyWith(isLoading: true, error: null);
+    
+    try {
+      final result = await _authService.sendMagicLink(email);
+      
+      if (result.success) {
+        state = state.copyWith(
+          isLoading: false,
+          error: null,
+        );
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          error: result.message ?? 'Magic Link发送失败',
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+    }
+  }
+  
+  /// 验证Magic Link并登录
+  Future<void> verifyMagicLinkAndLogin(String token) async {
+    state = state.copyWith(isLoading: true, error: null);
+    
+    try {
+      final result = await _authService.verifyMagicLink(token);
+      
+      if (result.success && result.user != null) {
+        // 保存认证信息
+        await _storageService.saveToken(result.token!);
+        if (result.refreshToken != null) {
+          await _storageService.saveRefreshToken(result.refreshToken!);
+        }
+        await _storageService.saveUserData(result.user!.toJson());
+        
+        state = AuthState.authenticated(result.user!);
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          error: result.message ?? 'Magic Link验证失败',
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+    }
+  }
+  
   /// 刷新 Token
   Future<bool> refreshToken() async {
     try {
@@ -229,7 +288,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(isLoading: true, error: null);
       
       final result = await _authService.changePassword(
-        oldPassword: oldPassword,
+        currentPassword: oldPassword,
         newPassword: newPassword,
       );
       

@@ -47,7 +47,8 @@ class TechnicalIndicator with _$TechnicalIndicator {
   const factory TechnicalIndicator({
     required String name,
     required List<double> values,
-    required Color color,
+    @JsonKey(includeFromJson: false, includeToJson: false)
+    Color? color,
   }) = _TechnicalIndicator;
 
   factory TechnicalIndicator.fromJson(Map<String, dynamic> json) =>

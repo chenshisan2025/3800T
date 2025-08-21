@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../models/watchlist_model.dart';
+import '../providers/watchlist_provider.dart';
+import '../../../core/constants/app_strings.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
-import '../../stock/models/stock_model.dart';
-import '../../stock/providers/stock_provider.dart';
 
-/// 自选列表项组件
 class WatchlistItemWidget extends ConsumerWidget {
   final WatchlistItem item;
   final bool isEditMode;
   final bool isSelected;
   final VoidCallback? onTap;
-  final VoidCallback? onToggleSelection;
+  final VoidCallback? onLongPress;
 
   const WatchlistItemWidget({
     super.key,
@@ -20,180 +20,185 @@ class WatchlistItemWidget extends ConsumerWidget {
     this.isEditMode = false,
     this.isSelected = false,
     this.onTap,
-    this.onToggleSelection,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stockQuote = ref.watch(stockQuoteProvider(item.symbol));
+    // 获取股票报价
+    final quoteAsync = ref.watch(stockQuoteProvider(item.symbol));
     
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withOpacity(0.1) : Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: isSelected
-              ? Border.all(color: AppColors.primary, width: 1)
-              : null,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // 选择框（编辑模式）
-            if (isEditMode) ..[
-              GestureDetector(
-                onTap: onToggleSelection,
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : Colors.transparent,
-                    border: Border.all(
-                      color: isSelected ? AppColors.primary : AppColors.outline,
-                      width: 2,
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+      child: InkWell(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // 编辑模式下的选择框
+              if (isEditMode) ...[
+                Checkbox(
+                  value: isSelected,
+                  onChanged: (_) => onTap?.call(),
+                ),
+                const SizedBox(width: 8),
+              ],
+              
+              // 股票信息
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            item.name,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getMarketColor(item.market),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            _getMarketName(item.market),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: isSelected
-                      ? const Icon(
-                          Icons.check,
-                          color: Colors.white,
-                          size: 16,
-                        )
-                      : null,
+                    const SizedBox(height: 4),
+                    Text(
+                      item.symbol,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 12),
-            ],
-            
-            // 拖拽手柄（编辑模式）
-            if (isEditMode) ..[
-              Icon(
-                Icons.drag_handle,
-                color: AppColors.textSecondary,
-                size: 20,
-              ),
-              const SizedBox(width: 12),
-            ],
-            
-            // 股票信息
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              
+              // 价格信息
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // 股票名称和代码
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          item.name,
-                          style: AppTextStyles.titleSmall,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Text(
-                        item.symbol,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  
-                  // 市场标签
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getMarketColor(item.market).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      _getMarketName(item.market),
-                      style: AppTextStyles.caption.copyWith(
-                        color: _getMarketColor(item.market),
-                      ),
-                    ),
-                  ),
+                  _buildPriceInfo(context, quoteAsync),
                 ],
               ),
-            ),
-            
-            const SizedBox(width: 16),
-            
-            // 价格信息
-            stockQuote.when(
-              data: (quote) => _buildPriceInfo(quote),
-              loading: () => _buildPriceLoading(),
-              error: (_, __) => _buildPriceError(),
-            ),
-          ],
+              
+              // 编辑模式下的拖拽手柄
+              if (isEditMode) ...[
+                const SizedBox(width: 8),
+                const Icon(
+                  Icons.drag_handle,
+                  color: Colors.grey,
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  /// 构建价格信息
-  Widget _buildPriceInfo(StockQuote quote) {
-    final changePercent = quote.changePercent;
-    final color = changePercent > 0
-        ? AppColors.error
-        : (changePercent < 0 ? AppColors.success : AppColors.textSecondary);
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        // 当前价格
-        Text(
-          quote.price.toStringAsFixed(2),
-          style: AppTextStyles.titleMedium.copyWith(
-            color: color,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 4),
+  Widget _buildPriceInfo(BuildContext context, AsyncValue<StockQuote> quoteAsync) {
+    return quoteAsync.when(
+      data: (quote) {
+        final isPositive = quote.change >= 0;
+        final color = isPositive ? Colors.red : Colors.green;
         
-        // 涨跌额
-        Text(
-          '${quote.change > 0 ? '+' : ''}${quote.change.toStringAsFixed(2)}',
-          style: AppTextStyles.bodySmall.copyWith(
-            color: color,
-          ),
-        ),
-        const SizedBox(height: 2),
-        
-        // 涨跌幅
-        Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 6,
-            vertical: 2,
-          ),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            '${changePercent > 0 ? '+' : ''}${changePercent.toStringAsFixed(2)}%',
-            style: AppTextStyles.caption.copyWith(
-              color: color,
-              fontWeight: FontWeight.w500,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              '¥${quote.price.toStringAsFixed(2)}',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              '${isPositive ? '+' : ''}${quote.change.toStringAsFixed(2)}',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: color,
+              ),
+            ),
+            Text(
+              '${isPositive ? '+' : ''}${quote.changePercent.toStringAsFixed(2)}%',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: color,
+              ),
+            ),
+          ],
+        );
+      },
+      loading: () => Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            width: 60,
+            height: 16,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(4),
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 4),
+          Container(
+            width: 40,
+            height: 12,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Container(
+            width: 50,
+            height: 12,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ],
+      ),
+      error: (error, stack) => Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            '--',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            AppStrings.loadFailed,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -261,35 +266,29 @@ class WatchlistItemWidget extends ConsumerWidget {
     );
   }
 
-  /// 获取市场颜色
   Color _getMarketColor(MarketType market) {
     switch (market) {
       case MarketType.sh:
-        return AppColors.primary;
+        return Colors.orange;
       case MarketType.sz:
-        return AppColors.success;
+        return Colors.purple;
       case MarketType.gem:
-        return AppColors.warning;
+        return Colors.green;
       case MarketType.star:
-        return AppColors.error;
-      default:
-        return AppColors.textSecondary;
+        return Colors.blue;
     }
   }
 
-  /// 获取市场名称
   String _getMarketName(MarketType market) {
     switch (market) {
       case MarketType.sh:
-        return '沪市';
+        return '沪股';
       case MarketType.sz:
-        return '深市';
+        return '深股';
       case MarketType.gem:
         return '创业板';
       case MarketType.star:
         return '科创板';
-      default:
-        return '未知';
     }
   }
 }

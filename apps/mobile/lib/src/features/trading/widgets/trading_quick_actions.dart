@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/constants/app_strings.dart';
 
 /// 交易快捷操作
 class TradingQuickActions extends StatelessWidget {
@@ -17,7 +18,7 @@ class TradingQuickActions extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '快捷操作',
+            AppStrings.quickActions,
             style: AppTextStyles.titleMedium.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -29,8 +30,8 @@ class TradingQuickActions extends StatelessWidget {
                 child: _buildActionItem(
                   context,
                   icon: Icons.add_circle_outline,
-                  title: '买入',
-                  subtitle: '股票买入',
+                  title: AppStrings.buy,
+                  subtitle: AppStrings.stockBuy,
                   color: AppColors.error,
                   onTap: () => _navigateToTrade(context, 'buy'),
                 ),
@@ -40,8 +41,8 @@ class TradingQuickActions extends StatelessWidget {
                 child: _buildActionItem(
                   context,
                   icon: Icons.remove_circle_outline,
-                  title: '卖出',
-                  subtitle: '股票卖出',
+                  title: AppStrings.sell,
+                  subtitle: AppStrings.stockSell,
                   color: AppColors.success,
                   onTap: () => _navigateToTrade(context, 'sell'),
                 ),
@@ -55,8 +56,8 @@ class TradingQuickActions extends StatelessWidget {
                 child: _buildActionItem(
                   context,
                   icon: Icons.account_balance_wallet_outlined,
-                  title: '资金',
-                  subtitle: '银证转账',
+                  title: AppStrings.funds,
+                  subtitle: AppStrings.bankSecuritiesTransfer,
                   color: AppColors.primary,
                   onTap: () => _navigateToFund(context),
                 ),
@@ -66,8 +67,8 @@ class TradingQuickActions extends StatelessWidget {
                 child: _buildActionItem(
                   context,
                   icon: Icons.assignment_outlined,
-                  title: '委托',
-                  subtitle: '委托查询',
+                  title: AppStrings.orders,
+                  subtitle: AppStrings.orderQuery,
                   color: AppColors.warning,
                   onTap: () => _navigateToOrders(context),
                 ),
@@ -145,7 +146,7 @@ class TradingQuickActions extends StatelessWidget {
     // 暂时使用占位符路由
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${type == 'buy' ? '买入' : '卖出'}功能开发中'),
+        content: Text('${type == 'buy' ? AppStrings.buy : AppStrings.sell}${AppStrings.functionInDevelopment}'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -156,7 +157,7 @@ class TradingQuickActions extends StatelessWidget {
     // 这里应该导航到资金管理页面
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('资金管理功能开发中'),
+        content: Text('${AppStrings.fundManagement}${AppStrings.functionInDevelopment}'),
         duration: Duration(seconds: 2),
       ),
     );
@@ -167,7 +168,7 @@ class TradingQuickActions extends StatelessWidget {
     // 这里应该导航到委托查询页面
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('委托查询功能开发中'),
+        content: Text('${AppStrings.orderQuery}${AppStrings.functionInDevelopment}'),
         duration: Duration(seconds: 2),
       ),
     );

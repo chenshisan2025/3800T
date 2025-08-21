@@ -44,6 +44,10 @@ class AppColors {
   static const Color onSurface = Color(0xFF1A1A1A);
   static const Color onSurfaceVariant = Color(0xFF666666);
   
+  // 文本颜色
+  static const Color textSecondary = Color(0xFF666666);
+  static const Color textSecondaryDark = Color(0xFFB0B0B0);
+  
   // 边框和分割线
   static const Color outline = Color(0xFFE0E0E0);
   static const Color outlineVariant = Color(0xFFF0F0F0);

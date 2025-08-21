@@ -207,7 +207,7 @@ class PriceChangeCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (symbol != null) ..[
+          if (symbol != null) ...[
             Text(
               symbol!,
               style: theme.textTheme.bodySmall,
@@ -287,7 +287,7 @@ class StatCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              if (icon != null) ..[
+              if (icon != null) ...[
                 Icon(
                   icon,
                   size: 20,
@@ -311,7 +311,7 @@ class StatCard extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          if (subtitle != null) ..[
+          if (subtitle != null) ...[
             const SizedBox(height: 4),
             Text(
               subtitle!,
@@ -355,7 +355,7 @@ class ListItemCard extends StatelessWidget {
       margin: margin,
       child: Row(
         children: [
-          if (leading != null) ..[
+          if (leading != null) ...[
             leading!,
             const SizedBox(width: 12),
           ],
@@ -367,7 +367,7 @@ class ListItemCard extends StatelessWidget {
                   title,
                   style: theme.textTheme.titleMedium,
                 ),
-                if (subtitle != null) ..[
+                if (subtitle != null) ...[
                   const SizedBox(height: 4),
                   Text(
                     subtitle!,
@@ -377,7 +377,7 @@ class ListItemCard extends StatelessWidget {
               ],
             ),
           ),
-          if (trailing != null) ..[
+          if (trailing != null) ...[
             const SizedBox(width: 12),
             trailing!,
           ],

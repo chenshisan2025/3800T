@@ -60,7 +60,7 @@ class AppTag extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) ..[
+          if (icon != null) ...[
             Icon(
               icon,
               size: _getIconSize(),

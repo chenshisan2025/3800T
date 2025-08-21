@@ -42,7 +42,7 @@ class DisclaimerFooter extends StatelessWidget {
   Widget _buildFullContent(ThemeData theme, bool isDark) {
     return Column(
       children: [
-        if (showIcon) ..[
+        if (showIcon) ...[
           Icon(
             Icons.info_outline,
             size: 20,
@@ -73,7 +73,7 @@ class DisclaimerFooter extends StatelessWidget {
   Widget _buildCompactContent(ThemeData theme, bool isDark) {
     return Row(
       children: [
-        if (showIcon) ..[
+        if (showIcon) ...[
           Icon(
             Icons.info_outline,
             size: 16,
