@@ -1,6 +1,10 @@
-# 古灵通 Shared SDK
+# 古灵通共享 SDK
 
-古灵通项目的共享 SDK，提供统一的 API 类型定义、客户端和工具函数。
+[![npm version](https://badge.fury.io/js/@gulingtong%2Fshared-sdk.svg)](https://badge.fury.io/js/@gulingtong%2Fshared-sdk)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+古灵通项目的共享 SDK，基于 OpenAPI 规范自动生成，提供类型安全的 API 客户端和完整的类型定义。
 
 ## 功能特性
 
@@ -27,18 +31,21 @@ pnpm add @gulingtong/shared-sdk
 ### 基础使用
 
 ```typescript
-import { createGulingtongClient, getEnvironmentConfig } from '@gulingtong/shared-sdk';
+import {
+  createGulingtongClient,
+  getEnvironmentConfig,
+} from '@gulingtong/shared-sdk';
 
 // 创建客户端实例
 const client = createGulingtongClient({
   ...getEnvironmentConfig('development'),
   // 可选：添加请求拦截器
-  requestInterceptor: (config) => {
+  requestInterceptor: config => {
     console.log('发送请求:', config.url);
     return config;
   },
   // 可选：添加错误处理
-  errorHandler: (error) => {
+  errorHandler: error => {
     console.error('API 错误:', error.message);
   },
 });
@@ -57,7 +64,6 @@ async function example() {
       search: '腾讯',
     });
     console.log('股票列表:', stocks.data);
-
   } catch (error) {
     console.error('请求失败:', error);
   }
@@ -71,10 +77,10 @@ async function example() {
 async function login(email: string, password: string) {
   try {
     const response = await client.auth.login({ email, password });
-    
+
     // 设置认证令牌
     client.setAuthToken(response.data.accessToken);
-    
+
     console.log('登录成功:', response.data.user);
     return response.data;
   } catch (error) {
@@ -122,7 +128,7 @@ async function getStocks() {
     industry: '科技',
     search: '腾讯',
   });
-  
+
   return response.data;
 }
 
@@ -139,7 +145,7 @@ async function getStockHistory(code: string) {
     endDate: '2024-12-31',
     limit: 100,
   });
-  
+
   return response.data;
 }
 ```
@@ -152,18 +158,18 @@ async function manageWatchlist() {
   // 获取自选股列表
   const watchlist = await client.user.getWatchlist();
   console.log('自选股:', watchlist.data);
-  
+
   // 添加自选股
   await client.user.addToWatchlist({
     stockCode: '000001',
     notes: '关注这只股票的业绩表现',
   });
-  
+
   // 更新自选股备注
   await client.user.updateWatchlistItem('watchlist-id', {
     notes: '更新后的备注',
   });
-  
+
   // 删除自选股
   await client.user.removeFromWatchlist('watchlist-id');
 }
@@ -175,15 +181,15 @@ async function managePortfolio() {
     name: '我的投资组合',
     description: '长期价值投资组合',
   });
-  
+
   // 添加持仓
   await client.user.addPortfolioItem(portfolio.data.id, {
     stockCode: '000001',
     quantity: 1000,
-    averageCost: 15.50,
+    averageCost: 15.5,
     notes: '分批建仓',
   });
-  
+
   // 获取投资组合详情（包含统计数据）
   const portfolioDetail = await client.user.getPortfolio(portfolio.data.id);
   console.log('投资组合统计:', portfolioDetail.data.stats);
@@ -201,7 +207,7 @@ async function getAIReports() {
     stockCode: '000001',
     reportType: 'analysis',
   });
-  
+
   return response.data;
 }
 
@@ -231,7 +237,7 @@ try {
     } else if (error.isServerError()) {
       console.log('服务器错误');
     }
-    
+
     // 获取错误详情
     console.log('错误状态码:', error.status);
     console.log('错误代码:', error.code);
@@ -269,17 +275,16 @@ const handleUserData = (user: UserDetails) => {
 ## 环境配置
 
 ```typescript
-import { getEnvironmentConfig, createGulingtongClient } from '@gulingtong/shared-sdk';
+import {
+  getEnvironmentConfig,
+  createGulingtongClient,
+} from '@gulingtong/shared-sdk';
 
 // 开发环境
-const devClient = createGulingtongClient(
-  getEnvironmentConfig('development')
-);
+const devClient = createGulingtongClient(getEnvironmentConfig('development'));
 
 // 生产环境
-const prodClient = createGulingtongClient(
-  getEnvironmentConfig('production')
-);
+const prodClient = createGulingtongClient(getEnvironmentConfig('production'));
 
 // 自定义配置
 const customClient = createGulingtongClient({

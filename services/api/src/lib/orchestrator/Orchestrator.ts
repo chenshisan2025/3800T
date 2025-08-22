@@ -1,5 +1,11 @@
 import logger from '@/lib/logger';
-import { LLMProvider, LLMProviderFactory, LLMProviderType, LLMAnalysisConfig, LLMAnalysisResponse } from '../ai/providers/LLMProvider';
+import {
+  LLMProvider,
+  LLMProviderFactory,
+  LLMProviderType,
+  LLMAnalysisConfig,
+  LLMAnalysisResponse,
+} from '../ai/providers/LLMProvider';
 import { getDataProviderManager } from '../providers';
 
 /**
@@ -110,7 +116,10 @@ export class Orchestrator {
   /**
    * 初始化LLM提供商
    */
-  async initializeLLMProvider(providerType: LLMProviderType, config?: LLMAnalysisConfig): Promise<void> {
+  async initializeLLMProvider(
+    providerType: LLMProviderType,
+    config?: LLMAnalysisConfig
+  ): Promise<void> {
     try {
       const apiKeys = {
         openai: process.env.OPENAI_API_KEY,
@@ -124,8 +133,12 @@ export class Orchestrator {
         throw new Error(`API key not configured for ${providerType}`);
       }
 
-      this.llmProvider = LLMProviderFactory.createProvider(providerType, apiKey, config);
-      
+      this.llmProvider = LLMProviderFactory.createProvider(
+        providerType,
+        apiKey,
+        config
+      );
+
       // 健康检查
       const isHealthy = await this.llmProvider.healthCheck();
       if (!isHealthy) {
@@ -148,7 +161,10 @@ export class Orchestrator {
   /**
    * 执行AI分析（带重试和费用控制）
    */
-  async analyze(prompt: string, config: OrchestratorConfig): Promise<OrchestratorResponse> {
+  async analyze(
+    prompt: string,
+    config: OrchestratorConfig
+  ): Promise<OrchestratorResponse> {
     const startTime = Date.now();
     let retryCount = 0;
     const retryConfig = { ...this.defaultRetryConfig, ...config.retryConfig };
@@ -164,8 +180,11 @@ export class Orchestrator {
 
     while (retryCount <= retryConfig.maxRetries) {
       try {
-        const response = await this.llmProvider!.analyzeWithMetadata(prompt, config.llmConfig);
-        
+        const response = await this.llmProvider!.analyzeWithMetadata(
+          prompt,
+          config.llmConfig
+        );
+
         // 计算费用
         const cost = this.calculateCost(response);
         this.updateCostStats(cost, response.usage?.total_tokens || 0);
@@ -213,7 +232,7 @@ export class Orchestrator {
         };
       } catch (error) {
         retryCount++;
-        
+
         if (retryCount > retryConfig.maxRetries) {
           logger.error('Orchestrator分析最终失败', {
             provider: config.llmProvider,
@@ -225,7 +244,8 @@ export class Orchestrator {
 
         // 计算延迟时间（指数退避）
         const delay = Math.min(
-          retryConfig.baseDelay * Math.pow(retryConfig.backoffMultiplier, retryCount - 1),
+          retryConfig.baseDelay *
+            Math.pow(retryConfig.backoffMultiplier, retryCount - 1),
           retryConfig.maxDelay
         );
 
@@ -248,11 +268,15 @@ export class Orchestrator {
    */
   private checkCostLimits(): void {
     if (this.costStats.dailyCost >= this.defaultCostControl.maxDailyCost) {
-      throw new Error(`Daily cost limit exceeded: $${this.costStats.dailyCost.toFixed(2)}`);
+      throw new Error(
+        `Daily cost limit exceeded: $${this.costStats.dailyCost.toFixed(2)}`
+      );
     }
 
     if (this.costStats.monthlyCost >= this.defaultCostControl.maxMonthlyCost) {
-      throw new Error(`Monthly cost limit exceeded: $${this.costStats.monthlyCost.toFixed(2)}`);
+      throw new Error(
+        `Monthly cost limit exceeded: $${this.costStats.monthlyCost.toFixed(2)}`
+      );
     }
   }
 
@@ -269,9 +293,11 @@ export class Orchestrator {
       return 0;
     }
 
-    const inputCost = (response.usage.prompt_tokens / 1000) * pricing.inputTokenPrice;
-    const outputCost = (response.usage.completion_tokens / 1000) * pricing.outputTokenPrice;
-    
+    const inputCost =
+      (response.usage.prompt_tokens / 1000) * pricing.inputTokenPrice;
+    const outputCost =
+      (response.usage.completion_tokens / 1000) * pricing.outputTokenPrice;
+
     return inputCost + outputCost;
   }
 
@@ -283,50 +309,60 @@ export class Orchestrator {
     this.costStats.monthlyCost += cost;
     this.costStats.totalTokens += tokens;
     this.costStats.requestCount += 1;
-    
+
     this.saveCostStats();
   }
 
   /**
    * 提取引用信息
    */
-  private extractReferences(content: string): { content: string; refs: string[] } {
+  private extractReferences(content: string): {
+    content: string;
+    refs: string[];
+  } {
     const references: string[] = [];
     const referencePattern = /\[参考：([^\]]+)\]/g;
     let match;
-    
+
     while ((match = referencePattern.exec(content)) !== null) {
       references.push(match[1]);
     }
-    
+
     // 移除引用标记，保留干净的内容
     const cleanContent = content.replace(referencePattern, '').trim();
-    
+
     return { content: cleanContent, refs: references };
   }
 
   /**
    * 应用安全措辞
    */
-  private applySafetyWording(content: string): { content: string; notice: string } {
+  private applySafetyWording(content: string): {
+    content: string;
+    notice: string;
+  } {
     // 替换强烈的措辞为温和的表达
     const safetyReplacements = {
-      '必须': '建议',
-      '一定会': '倾向于',
-      '肯定': '可能',
-      '绝对': '相对',
-      '确定': '预期',
-      '保证': '预计',
-      '断定': '判断',
+      必须: '建议',
+      一定会: '倾向于',
+      肯定: '可能',
+      绝对: '相对',
+      确定: '预期',
+      保证: '预计',
+      断定: '判断',
     };
 
     let processedContent = content;
     for (const [original, replacement] of Object.entries(safetyReplacements)) {
-      processedContent = processedContent.replace(new RegExp(original, 'g'), replacement);
+      processedContent = processedContent.replace(
+        new RegExp(original, 'g'),
+        replacement
+      );
     }
 
-    const safetyNotice = '本分析仅供参考，投资有风险，决策需谨慎。市场情况瞬息万变，请结合实际情况做出投资决策。';
-    
+    const safetyNotice =
+      '本分析仅供参考，投资有风险，决策需谨慎。市场情况瞬息万变，请结合实际情况做出投资决策。';
+
     return { content: processedContent, notice: safetyNotice };
   }
 
@@ -347,7 +383,7 @@ export class Orchestrator {
 
     let llmStatus = false;
     let llmProvider = 'none';
-    
+
     if (this.llmProvider) {
       llmStatus = await this.llmProvider.healthCheck();
       llmProvider = this.llmProvider.getProviderType();
@@ -376,18 +412,21 @@ export class Orchestrator {
   private resetStatsIfNeeded(): void {
     const now = new Date();
     const lastReset = new Date(this.costStats.lastResetDate);
-    
+
     // 如果是新的一天，重置日费用
     if (now.toDateString() !== lastReset.toDateString()) {
       this.costStats.dailyCost = 0;
       this.costStats.lastResetDate = now.toISOString();
     }
-    
+
     // 如果是新的一月，重置月费用
-    if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
+    if (
+      now.getMonth() !== lastReset.getMonth() ||
+      now.getFullYear() !== lastReset.getFullYear()
+    ) {
       this.costStats.monthlyCost = 0;
     }
-    
+
     this.saveCostStats();
   }
 

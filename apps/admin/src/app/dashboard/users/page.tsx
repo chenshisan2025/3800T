@@ -1,7 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Select, Space, message, Popconfirm, Tag } from 'antd';
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Space,
+  message,
+  Popconfirm,
+  Tag,
+} from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useAuth } from '@/providers/AuthProvider';
 import { UserRole, Permission } from '@/types/rbac';
@@ -38,7 +49,7 @@ export default function UsersPage() {
         role: UserRole.ADMIN,
         status: 'active',
         createdAt: '2024-01-01T00:00:00Z',
-        lastLoginAt: '2024-01-15T10:30:00Z'
+        lastLoginAt: '2024-01-15T10:30:00Z',
       },
       {
         id: '2',
@@ -47,7 +58,7 @@ export default function UsersPage() {
         role: UserRole.ANALYST,
         status: 'active',
         createdAt: '2024-01-02T00:00:00Z',
-        lastLoginAt: '2024-01-14T15:20:00Z'
+        lastLoginAt: '2024-01-14T15:20:00Z',
       },
       {
         id: '3',
@@ -55,8 +66,8 @@ export default function UsersPage() {
         name: '客服专员',
         role: UserRole.SUPPORT,
         status: 'active',
-        createdAt: '2024-01-03T00:00:00Z'
-      }
+        createdAt: '2024-01-03T00:00:00Z',
+      },
     ]);
   }, []);
 
@@ -103,7 +114,8 @@ export default function UsersPage() {
       title: '最后登录',
       dataIndex: 'lastLoginAt',
       key: 'lastLoginAt',
-      render: (date?: string) => date ? new Date(date).toLocaleDateString('zh-CN') : '-',
+      render: (date?: string) =>
+        date ? new Date(date).toLocaleDateString('zh-CN') : '-',
     },
     {
       title: '操作',
@@ -112,7 +124,7 @@ export default function UsersPage() {
         <Space>
           <PermissionGuard permission={Permission.USER_WRITE}>
             <Button
-              type="link"
+              type='link'
               icon={<EditOutlined />}
               onClick={() => handleEdit(record)}
             >
@@ -121,16 +133,12 @@ export default function UsersPage() {
           </PermissionGuard>
           <PermissionGuard permission={Permission.USER_WRITE}>
             <Popconfirm
-              title="确定要删除这个用户吗？"
+              title='确定要删除这个用户吗？'
               onConfirm={() => handleDelete(record.id)}
-              okText="确定"
-              cancelText="取消"
+              okText='确定'
+              cancelText='取消'
             >
-              <Button
-                type="link"
-                danger
-                icon={<DeleteOutlined />}
-              >
+              <Button type='link' danger icon={<DeleteOutlined />}>
                 删除
               </Button>
             </Popconfirm>
@@ -167,9 +175,11 @@ export default function UsersPage() {
       setLoading(true);
       if (editingUser) {
         // TODO: 调用更新API
-        setUsers(users.map(user => 
-          user.id === editingUser.id ? { ...user, ...values } : user
-        ));
+        setUsers(
+          users.map(user =>
+            user.id === editingUser.id ? { ...user, ...values } : user
+          )
+        );
         message.success('用户更新成功');
       } else {
         // TODO: 调用创建API
@@ -191,10 +201,16 @@ export default function UsersPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+      <div
+        style={{
+          marginBottom: 16,
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <h2>用户管理</h2>
         <PermissionGuard permission={Permission.USER_WRITE}>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+          <Button type='primary' icon={<PlusOutlined />} onClick={handleAdd}>
             添加用户
           </Button>
         </PermissionGuard>
@@ -203,12 +219,12 @@ export default function UsersPage() {
       <Table
         columns={columns}
         dataSource={users}
-        rowKey="id"
+        rowKey='id'
         loading={loading}
         pagination={{
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total) => `共 ${total} 条记录`,
+          showTotal: total => `共 ${total} 条记录`,
         }}
       />
 
@@ -218,36 +234,32 @@ export default function UsersPage() {
         onCancel={() => setModalVisible(false)}
         footer={null}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-        >
+        <Form form={form} layout='vertical' onFinish={handleSubmit}>
           <Form.Item
-            name="email"
-            label="邮箱"
+            name='email'
+            label='邮箱'
             rules={[
               { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '请输入有效的邮箱地址' }
+              { type: 'email', message: '请输入有效的邮箱地址' },
             ]}
           >
-            <Input placeholder="请输入邮箱" />
+            <Input placeholder='请输入邮箱' />
           </Form.Item>
 
           <Form.Item
-            name="name"
-            label="姓名"
+            name='name'
+            label='姓名'
             rules={[{ required: true, message: '请输入姓名' }]}
           >
-            <Input placeholder="请输入姓名" />
+            <Input placeholder='请输入姓名' />
           </Form.Item>
 
           <Form.Item
-            name="role"
-            label="角色"
+            name='role'
+            label='角色'
             rules={[{ required: true, message: '请选择角色' }]}
           >
-            <Select placeholder="请选择角色">
+            <Select placeholder='请选择角色'>
               <Option value={UserRole.ADMIN}>管理员</Option>
               <Option value={UserRole.ANALYST}>分析师</Option>
               <Option value={UserRole.SUPPORT}>客服</Option>
@@ -255,24 +267,22 @@ export default function UsersPage() {
           </Form.Item>
 
           <Form.Item
-            name="status"
-            label="状态"
+            name='status'
+            label='状态'
             rules={[{ required: true, message: '请选择状态' }]}
           >
-            <Select placeholder="请选择状态">
-              <Option value="active">活跃</Option>
-              <Option value="inactive">禁用</Option>
+            <Select placeholder='请选择状态'>
+              <Option value='active'>活跃</Option>
+              <Option value='inactive'>禁用</Option>
             </Select>
           </Form.Item>
 
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit" loading={loading}>
+              <Button type='primary' htmlType='submit' loading={loading}>
                 {editingUser ? '更新' : '创建'}
               </Button>
-              <Button onClick={() => setModalVisible(false)}>
-                取消
-              </Button>
+              <Button onClick={() => setModalVisible(false)}>取消</Button>
             </Space>
           </Form.Item>
         </Form>

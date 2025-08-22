@@ -1,15 +1,15 @@
-import { 
-  IDataProvider, 
-  DataProviderConfig, 
-  IndexDataWithMetadata, 
-  QuoteDataWithMetadata, 
-  KlineDataWithMetadata, 
+import {
+  IDataProvider,
+  DataProviderConfig,
+  IndexDataWithMetadata,
+  QuoteDataWithMetadata,
+  KlineDataWithMetadata,
   NewsDataWithMetadata,
   IndicesQuery,
   QuotesQuery,
   KlineQuery,
   NewsQuery,
-  DataProviderMetadata
+  DataProviderMetadata,
 } from '@/types';
 import logger from '@/lib/logger';
 
@@ -58,10 +58,10 @@ export abstract class BaseProvider implements IDataProvider {
   /**
    * 创建元数据
    */
-  protected createMetadata(delay: number = 0): DataProviderMetadata {
+  protected createMetadata(lagMs: number = 0): DataProviderMetadata {
     return {
       source: this.name,
-      delay,
+      lagMs,
       timestamp: Date.now(),
     };
   }
@@ -92,14 +92,14 @@ export abstract class BaseProvider implements IDataProvider {
       return response;
     } catch (error) {
       clearTimeout(timeoutId);
-      
+
       if (retryCount > 0 && this.shouldRetry(error)) {
         logger.warn(`请求失败，正在重试 (剩余 ${retryCount} 次)`, {
           url,
           error: error instanceof Error ? error.message : String(error),
           provider: this.name,
         });
-        
+
         // 指数退避延迟
         await this.delay(Math.pow(2, this.retryCount - retryCount) * 1000);
         return this.fetchWithRetry(url, options, retryCount - 1);
@@ -115,11 +115,13 @@ export abstract class BaseProvider implements IDataProvider {
   protected shouldRetry(error: unknown): boolean {
     if (error instanceof Error) {
       // 网络错误或超时错误可以重试
-      return error.name === 'AbortError' || 
-             error.message.includes('fetch') ||
-             error.message.includes('timeout') ||
-             error.message.includes('ECONNRESET') ||
-             error.message.includes('ENOTFOUND');
+      return (
+        error.name === 'AbortError' ||
+        error.message.includes('fetch') ||
+        error.message.includes('timeout') ||
+        error.message.includes('ECONNRESET') ||
+        error.message.includes('ENOTFOUND')
+      );
     }
     return false;
   }
@@ -174,7 +176,7 @@ export abstract class BaseProvider implements IDataProvider {
   protected buildUrl(endpoint: string, params?: Record<string, any>): string {
     const baseUrl = this.config.baseUrl?.replace(/\/$/, '') || '';
     const url = new URL(endpoint, baseUrl || 'https://api.example.com');
-    
+
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {

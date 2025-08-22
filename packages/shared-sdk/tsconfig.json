@@ -15,7 +15,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "removeComments": false,
-    "noEmitOnError": true,
+    "noEmitOnError": false,
     "resolveJsonModule": true,
     "allowJs": false,
     "checkJs": false,
@@ -36,13 +36,6 @@
       "@/generated/*": ["src/generated/*"]
     }
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
 }

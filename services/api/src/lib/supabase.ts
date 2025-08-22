@@ -48,7 +48,10 @@ export function createRouteHandlerClient(request: NextRequest) {
 }
 
 // 为中间件创建 Supabase 客户端
-export function createMiddlewareClient(request: NextRequest, response: NextResponse) {
+export function createMiddlewareClient(
+  request: NextRequest,
+  response: NextResponse
+) {
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
@@ -75,14 +78,17 @@ export function createMiddlewareClient(request: NextRequest, response: NextRespo
 // 验证用户身份的辅助函数
 export async function getUser(request: NextRequest) {
   const supabase = createRouteHandlerClient(request);
-  
+
   try {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
     if (error || !user) {
       return null;
     }
-    
+
     return user;
   } catch (error) {
     console.error('获取用户信息失败:', error);
@@ -98,11 +104,11 @@ export async function isAdmin(userId: string): Promise<boolean> {
       .select('subscription_plan')
       .eq('id', userId)
       .single();
-    
+
     if (error || !data) {
       return false;
     }
-    
+
     return data.subscription_plan === 'admin';
   } catch (error) {
     console.error('验证管理员权限失败:', error);

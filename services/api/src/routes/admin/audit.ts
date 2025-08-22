@@ -9,13 +9,14 @@ const router = Router();
 const prisma = new PrismaClient();
 
 // 审计日志查询接口
-router.get('/logs', 
+router.get(
+  '/logs',
   authMiddleware,
   auditMiddleware('VIEW', 'AUDIT_LOG'),
   async (req: Request, res: Response) => {
     try {
       const user = (req as any).user;
-      
+
       // 检查权限
       if (!hasPermission(user.role, Permission.AUDIT_READ)) {
         return res.status(403).json({ error: 'Insufficient permissions' });
@@ -31,34 +32,34 @@ router.get('/logs',
         startDate,
         endDate,
         sortBy = 'createdAt',
-        sortOrder = 'desc'
+        sortOrder = 'desc',
       } = req.query;
 
       // 构建查询条件
       const where: any = {};
-      
+
       if (userId) {
         where.userId = userId;
       }
-      
+
       if (action) {
         where.action = {
           contains: action as string,
-          mode: 'insensitive'
+          mode: 'insensitive',
         };
       }
-      
+
       if (resource) {
         where.resource = {
           contains: resource as string,
-          mode: 'insensitive'
+          mode: 'insensitive',
         };
       }
-      
+
       if (status) {
         where.status = status;
       }
-      
+
       if (startDate || endDate) {
         where.createdAt = {};
         if (startDate) {
@@ -80,10 +81,10 @@ router.get('/logs',
           skip,
           take,
           orderBy: {
-            [sortBy as string]: sortOrder as 'asc' | 'desc'
-          }
+            [sortBy as string]: sortOrder as 'asc' | 'desc',
+          },
         }),
-        prisma.auditLog.count({ where })
+        prisma.auditLog.count({ where }),
       ]);
 
       // 更新审计详情
@@ -95,8 +96,8 @@ router.get('/logs',
           page: Number(page),
           pageSize: Number(pageSize),
           total,
-          totalPages: Math.ceil(total / Number(pageSize))
-        }
+          totalPages: Math.ceil(total / Number(pageSize)),
+        },
       });
     } catch (error) {
       console.error('Failed to fetch audit logs:', error);
@@ -106,13 +107,14 @@ router.get('/logs',
 );
 
 // 审计日志统计接口
-router.get('/stats',
+router.get(
+  '/stats',
   authMiddleware,
   auditMiddleware('VIEW', 'AUDIT_STATS'),
   async (req: Request, res: Response) => {
     try {
       const user = (req as any).user;
-      
+
       // 检查权限
       if (!hasPermission(user.role, Permission.AUDIT_READ)) {
         return res.status(403).json({ error: 'Insufficient permissions' });
@@ -126,9 +128,9 @@ router.get('/stats',
       const totalOperations = await prisma.auditLog.count({
         where: {
           createdAt: {
-            gte: startDate
-          }
-        }
+            gte: startDate,
+          },
+        },
       });
 
       // 成功操作数
@@ -136,9 +138,9 @@ router.get('/stats',
         where: {
           status: 'success',
           createdAt: {
-            gte: startDate
-          }
-        }
+            gte: startDate,
+          },
+        },
       });
 
       // 失败操作数
@@ -146,9 +148,9 @@ router.get('/stats',
         where: {
           status: 'failed',
           createdAt: {
-            gte: startDate
-          }
-        }
+            gte: startDate,
+          },
+        },
       });
 
       // 活跃用户数
@@ -156,47 +158,47 @@ router.get('/stats',
         by: ['userId'],
         where: {
           createdAt: {
-            gte: startDate
-          }
-        }
+            gte: startDate,
+          },
+        },
       });
 
       // 按操作类型统计
       const operationsByAction = await prisma.auditLog.groupBy({
         by: ['action'],
         _count: {
-          id: true
+          id: true,
         },
         where: {
           createdAt: {
-            gte: startDate
-          }
+            gte: startDate,
+          },
         },
         orderBy: {
           _count: {
-            id: 'desc'
-          }
+            id: 'desc',
+          },
         },
-        take: 10
+        take: 10,
       });
 
       // 按资源类型统计
       const operationsByResource = await prisma.auditLog.groupBy({
         by: ['resource'],
         _count: {
-          id: true
+          id: true,
         },
         where: {
           createdAt: {
-            gte: startDate
-          }
+            gte: startDate,
+          },
         },
         orderBy: {
           _count: {
-            id: 'desc'
-          }
+            id: 'desc',
+          },
         },
-        take: 10
+        take: 10,
       });
 
       // 每日操作趋势
@@ -217,16 +219,19 @@ router.get('/stats',
         successOperations,
         failedOperations,
         activeUsersCount: activeUsers.length,
-        successRate: totalOperations > 0 ? (successOperations / totalOperations * 100).toFixed(2) : '0',
+        successRate:
+          totalOperations > 0
+            ? ((successOperations / totalOperations) * 100).toFixed(2)
+            : '0',
         operationsByAction: operationsByAction.map(item => ({
           action: item.action,
-          count: item._count.id
+          count: item._count.id,
         })),
         operationsByResource: operationsByResource.map(item => ({
           resource: item.resource,
-          count: item._count.id
+          count: item._count.id,
         })),
-        dailyTrend
+        dailyTrend,
       });
     } catch (error) {
       console.error('Failed to fetch audit stats:', error);
@@ -236,13 +241,14 @@ router.get('/stats',
 );
 
 // 审计日志详情接口
-router.get('/logs/:id',
+router.get(
+  '/logs/:id',
   authMiddleware,
   auditMiddleware('VIEW', 'AUDIT_LOG'),
   async (req: Request, res: Response) => {
     try {
       const user = (req as any).user;
-      
+
       // 检查权限
       if (!hasPermission(user.role, Permission.AUDIT_READ)) {
         return res.status(403).json({ error: 'Insufficient permissions' });
@@ -251,7 +257,7 @@ router.get('/logs/:id',
       const { id } = req.params;
 
       const log = await prisma.auditLog.findUnique({
-        where: { id }
+        where: { id },
       });
 
       if (!log) {
@@ -269,13 +275,14 @@ router.get('/logs/:id',
 );
 
 // 审计日志导出接口
-router.get('/export',
+router.get(
+  '/export',
   authMiddleware,
   auditMiddleware('EXPORT', 'AUDIT_LOG'),
   async (req: Request, res: Response) => {
     try {
       const user = (req as any).user;
-      
+
       // 检查权限
       if (!hasPermission(user.role, Permission.AUDIT_READ)) {
         return res.status(403).json({ error: 'Insufficient permissions' });
@@ -289,17 +296,19 @@ router.get('/export',
         status,
         startDate,
         endDate,
-        limit = 10000
+        limit = 10000,
       } = req.query;
 
       // 构建查询条件
       const where: any = {};
-      
+
       if (userId) where.userId = userId;
-      if (action) where.action = { contains: action as string, mode: 'insensitive' };
-      if (resource) where.resource = { contains: resource as string, mode: 'insensitive' };
+      if (action)
+        where.action = { contains: action as string, mode: 'insensitive' };
+      if (resource)
+        where.resource = { contains: resource as string, mode: 'insensitive' };
       if (status) where.status = status;
-      
+
       if (startDate || endDate) {
         where.createdAt = {};
         if (startDate) where.createdAt.gte = new Date(startDate as string);
@@ -311,8 +320,8 @@ router.get('/export',
         where,
         take: Number(limit),
         orderBy: {
-          createdAt: 'desc'
-        }
+          createdAt: 'desc',
+        },
       });
 
       if (format === 'csv') {
@@ -330,23 +339,32 @@ router.get('/export',
           { label: '用户代理', value: 'userAgent' },
           { label: '状态', value: 'status' },
           { label: '耗时(ms)', value: 'duration' },
-          { label: '创建时间', value: 'createdAt' }
+          { label: '创建时间', value: 'createdAt' },
         ];
 
         const json2csvParser = new Parser({ fields });
         const csv = json2csvParser.parse(logs);
 
         res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-        res.setHeader('Content-Disposition', `attachment; filename=audit-logs-${new Date().toISOString().split('T')[0]}.csv`);
+        res.setHeader(
+          'Content-Disposition',
+          `attachment; filename=audit-logs-${new Date().toISOString().split('T')[0]}.csv`
+        );
         res.send('\uFEFF' + csv); // 添加BOM以支持中文
       } else {
         // 导出JSON格式
         res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Content-Disposition', `attachment; filename=audit-logs-${new Date().toISOString().split('T')[0]}.json`);
+        res.setHeader(
+          'Content-Disposition',
+          `attachment; filename=audit-logs-${new Date().toISOString().split('T')[0]}.json`
+        );
         res.json(logs);
       }
 
-      updateAuditDetails(req, `导出审计日志，格式：${format}，数量：${logs.length}`);
+      updateAuditDetails(
+        req,
+        `导出审计日志，格式：${format}，数量：${logs.length}`
+      );
     } catch (error) {
       console.error('Failed to export audit logs:', error);
       res.status(500).json({ error: 'Internal server error' });

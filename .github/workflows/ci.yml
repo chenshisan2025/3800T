@@ -129,6 +129,17 @@ jobs:
     - name: Build Admin panel
       run: pnpm build:admin
 
+    - name: Generate OpenAPI specification
+      run: pnpm openapi:generate
+
+    - name: Generate SDK from OpenAPI
+      run: pnpm sdk:generate
+
+    - name: Check SDK drift
+      run: pnpm sdk:drift-guard
+      env:
+        CI: true
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -137,6 +148,7 @@ jobs:
           apps/admin/.next
           services/api/dist
           packages/shared-sdk/dist
+          packages/shared-sdk/openapi.yaml
 
   # Docker 构建测试
   docker-build:

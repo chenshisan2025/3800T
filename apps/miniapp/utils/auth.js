@@ -1,8 +1,8 @@
 // utils/auth.js
-const { request } = require('./request')
-const { storage } = require('./storage')
+const { request } = require('./request');
+const { storage } = require('./storage');
 
-const app = getApp()
+const app = getApp();
 
 // 认证相关工具
 const auth = {
@@ -10,43 +10,43 @@ const auth = {
   async wxLogin() {
     try {
       // 获取微信登录凭证
-      const loginRes = await this.getWxLoginCode()
-      
+      const loginRes = await this.getWxLoginCode();
+
       // 获取用户信息
-      const userInfo = await this.getWxUserInfo()
-      
+      const userInfo = await this.getWxUserInfo();
+
       // 调用后端登录接口
       const loginData = await request({
         url: '/api/auth/wx-login',
         method: 'POST',
         data: {
           code: loginRes.code,
-          userInfo: userInfo
+          userInfo: userInfo,
         },
-        loadingText: '登录中...'
-      })
-      
+        loadingText: '登录中...',
+      });
+
       // 保存登录信息
-      await app.setUserInfo(loginData.user, loginData.token)
-      
+      await app.setUserInfo(loginData.user, loginData.token);
+
       return {
         success: true,
         user: loginData.user,
-        token: loginData.token
-      }
+        token: loginData.token,
+      };
     } catch (error) {
-      console.error('微信登录失败', error)
-      
+      console.error('微信登录失败', error);
+
       wx.showToast({
         title: error.message || '登录失败',
         icon: 'none',
-        duration: 2000
-      })
-      
+        duration: 2000,
+      });
+
       return {
         success: false,
-        error: error.message || '登录失败'
-      }
+        error: error.message || '登录失败',
+      };
     }
   },
 
@@ -54,18 +54,18 @@ const auth = {
   getWxLoginCode() {
     return new Promise((resolve, reject) => {
       wx.login({
-        success: (res) => {
+        success: res => {
           if (res.code) {
-            resolve(res)
+            resolve(res);
           } else {
-            reject(new Error('获取登录凭证失败'))
+            reject(new Error('获取登录凭证失败'));
           }
         },
-        fail: (error) => {
-          reject(new Error('获取登录凭证失败'))
-        }
-      })
-    })
+        fail: error => {
+          reject(new Error('获取登录凭证失败'));
+        },
+      });
+    });
   },
 
   // 获取微信用户信息
@@ -73,34 +73,34 @@ const auth = {
     return new Promise((resolve, reject) => {
       // 检查是否已授权
       wx.getSetting({
-        success: (res) => {
+        success: res => {
           if (res.authSetting['scope.userInfo']) {
             // 已授权，直接获取用户信息
             wx.getUserInfo({
-              success: (userRes) => {
+              success: userRes => {
                 resolve({
                   nickName: userRes.userInfo.nickName,
                   avatarUrl: userRes.userInfo.avatarUrl,
                   gender: userRes.userInfo.gender,
                   city: userRes.userInfo.city,
                   province: userRes.userInfo.province,
-                  country: userRes.userInfo.country
-                })
+                  country: userRes.userInfo.country,
+                });
               },
-              fail: (error) => {
-                reject(new Error('获取用户信息失败'))
-              }
-            })
+              fail: error => {
+                reject(new Error('获取用户信息失败'));
+              },
+            });
           } else {
             // 未授权，需要用户授权
-            reject(new Error('需要用户授权'))
+            reject(new Error('需要用户授权'));
           }
         },
-        fail: (error) => {
-          reject(new Error('检查授权状态失败'))
-        }
-      })
-    })
+        fail: error => {
+          reject(new Error('检查授权状态失败'));
+        },
+      });
+    });
   },
 
   // 手机号登录
@@ -111,32 +111,32 @@ const auth = {
         method: 'POST',
         data: {
           phoneNumber,
-          verifyCode
+          verifyCode,
         },
-        loadingText: '登录中...'
-      })
-      
+        loadingText: '登录中...',
+      });
+
       // 保存登录信息
-      await app.setUserInfo(loginData.user, loginData.token)
-      
+      await app.setUserInfo(loginData.user, loginData.token);
+
       return {
         success: true,
         user: loginData.user,
-        token: loginData.token
-      }
+        token: loginData.token,
+      };
     } catch (error) {
-      console.error('手机号登录失败', error)
-      
+      console.error('手机号登录失败', error);
+
       wx.showToast({
         title: error.message || '登录失败',
         icon: 'none',
-        duration: 2000
-      })
-      
+        duration: 2000,
+      });
+
       return {
         success: false,
-        error: error.message || '登录失败'
-      }
+        error: error.message || '登录失败',
+      };
     }
   },
 
@@ -147,33 +147,33 @@ const auth = {
         url: '/api/auth/send-verify-code',
         method: 'POST',
         data: {
-          phoneNumber
+          phoneNumber,
         },
-        loadingText: '发送中...'
-      })
-      
+        loadingText: '发送中...',
+      });
+
       wx.showToast({
         title: '验证码已发送',
         icon: 'success',
-        duration: 2000
-      })
-      
+        duration: 2000,
+      });
+
       return {
-        success: true
-      }
+        success: true,
+      };
     } catch (error) {
-      console.error('发送验证码失败', error)
-      
+      console.error('发送验证码失败', error);
+
       wx.showToast({
         title: error.message || '发送失败',
         icon: 'none',
-        duration: 2000
-      })
-      
+        duration: 2000,
+      });
+
       return {
         success: false,
-        error: error.message || '发送失败'
-      }
+        error: error.message || '发送失败',
+      };
     }
   },
 
@@ -184,26 +184,26 @@ const auth = {
       await request({
         url: '/api/auth/logout',
         method: 'POST',
-        loading: false
-      })
+        loading: false,
+      });
     } catch (error) {
-      console.error('退出登录接口调用失败', error)
+      console.error('退出登录接口调用失败', error);
     } finally {
       // 清除本地登录信息
-      await app.clearUserInfo()
-      
+      await app.clearUserInfo();
+
       wx.showToast({
         title: '已退出登录',
         icon: 'success',
-        duration: 1500
-      })
-      
+        duration: 1500,
+      });
+
       // 跳转到登录页面或首页
       setTimeout(() => {
         wx.switchTab({
-          url: '/pages/index/index'
-        })
-      }, 1500)
+          url: '/pages/index/index',
+        });
+      }, 1500);
     }
   },
 
@@ -214,53 +214,53 @@ const auth = {
         url: '/api/auth/validate-token',
         method: 'GET',
         header: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         loading: false,
-        showError: false
-      })
-      
-      return true
+        showError: false,
+      });
+
+      return true;
     } catch (error) {
-      console.error('token 验证失败', error)
-      return false
+      console.error('token 验证失败', error);
+      return false;
     }
   },
 
   // 刷新 token
   async refreshToken() {
     try {
-      const refreshToken = storage.get('refreshToken')
+      const refreshToken = storage.get('refreshToken');
       if (!refreshToken) {
-        throw new Error('没有刷新令牌')
+        throw new Error('没有刷新令牌');
       }
-      
+
       const tokenData = await request({
         url: '/api/auth/refresh-token',
         method: 'POST',
         data: {
-          refreshToken
+          refreshToken,
         },
         loading: false,
-        showError: false
-      })
-      
+        showError: false,
+      });
+
       // 更新 token
-      app.globalData.token = tokenData.token
-      storage.set('token', tokenData.token)
-      
+      app.globalData.token = tokenData.token;
+      storage.set('token', tokenData.token);
+
       if (tokenData.refreshToken) {
-        storage.set('refreshToken', tokenData.refreshToken)
+        storage.set('refreshToken', tokenData.refreshToken);
       }
-      
-      return tokenData.token
+
+      return tokenData.token;
     } catch (error) {
-      console.error('刷新 token 失败', error)
-      
+      console.error('刷新 token 失败', error);
+
       // 刷新失败，清除登录信息
-      await app.clearUserInfo()
-      
-      return null
+      await app.clearUserInfo();
+
+      return null;
     }
   },
 
@@ -270,17 +270,17 @@ const auth = {
       const userInfo = await request({
         url: '/api/user/profile',
         method: 'GET',
-        loading: false
-      })
-      
+        loading: false,
+      });
+
       // 更新本地用户信息
-      app.globalData.userInfo = userInfo
-      storage.set('userInfo', userInfo)
-      
-      return userInfo
+      app.globalData.userInfo = userInfo;
+      storage.set('userInfo', userInfo);
+
+      return userInfo;
     } catch (error) {
-      console.error('获取用户信息失败', error)
-      return null
+      console.error('获取用户信息失败', error);
+      return null;
     }
   },
 
@@ -291,36 +291,36 @@ const auth = {
         url: '/api/user/profile',
         method: 'PUT',
         data: userInfo,
-        loadingText: '更新中...'
-      })
-      
+        loadingText: '更新中...',
+      });
+
       // 更新本地用户信息
-      app.globalData.userInfo = updatedInfo
-      storage.set('userInfo', updatedInfo)
-      
+      app.globalData.userInfo = updatedInfo;
+      storage.set('userInfo', updatedInfo);
+
       wx.showToast({
         title: '更新成功',
         icon: 'success',
-        duration: 2000
-      })
-      
+        duration: 2000,
+      });
+
       return {
         success: true,
-        userInfo: updatedInfo
-      }
+        userInfo: updatedInfo,
+      };
     } catch (error) {
-      console.error('更新用户信息失败', error)
-      
+      console.error('更新用户信息失败', error);
+
       wx.showToast({
         title: error.message || '更新失败',
         icon: 'none',
-        duration: 2000
-      })
-      
+        duration: 2000,
+      });
+
       return {
         success: false,
-        error: error.message || '更新失败'
-      }
+        error: error.message || '更新失败',
+      };
     }
   },
 
@@ -332,83 +332,83 @@ const auth = {
         method: 'POST',
         data: {
           phoneNumber,
-          verifyCode
+          verifyCode,
         },
-        loadingText: '绑定中...'
-      })
-      
+        loadingText: '绑定中...',
+      });
+
       // 更新本地用户信息
       if (result.userInfo) {
-        app.globalData.userInfo = result.userInfo
-        storage.set('userInfo', result.userInfo)
+        app.globalData.userInfo = result.userInfo;
+        storage.set('userInfo', result.userInfo);
       }
-      
+
       wx.showToast({
         title: '绑定成功',
         icon: 'success',
-        duration: 2000
-      })
-      
+        duration: 2000,
+      });
+
       return {
         success: true,
-        userInfo: result.userInfo
-      }
+        userInfo: result.userInfo,
+      };
     } catch (error) {
-      console.error('绑定手机号失败', error)
-      
+      console.error('绑定手机号失败', error);
+
       wx.showToast({
         title: error.message || '绑定失败',
         icon: 'none',
-        duration: 2000
-      })
-      
+        duration: 2000,
+      });
+
       return {
         success: false,
-        error: error.message || '绑定失败'
-      }
+        error: error.message || '绑定失败',
+      };
     }
   },
 
   // 检查登录状态
   checkLoginStatus() {
-    const token = app.getToken()
-    const userInfo = app.getUserInfo()
-    
-    return !!(token && userInfo)
+    const token = app.getToken();
+    const userInfo = app.getUserInfo();
+
+    return !!(token && userInfo);
   },
 
   // 要求登录
   requireLogin(showModal = true) {
     if (this.checkLoginStatus()) {
-      return Promise.resolve(true)
+      return Promise.resolve(true);
     }
-    
-    return new Promise((resolve) => {
+
+    return new Promise(resolve => {
       if (showModal) {
         wx.showModal({
           title: '提示',
           content: '请先登录后再进行操作',
           confirmText: '去登录',
           cancelText: '取消',
-          success: (res) => {
+          success: res => {
             if (res.confirm) {
               wx.navigateTo({
-                url: '/pages/login/login'
-              })
+                url: '/pages/login/login',
+              });
             }
-            resolve(false)
+            resolve(false);
           },
           fail: () => {
-            resolve(false)
-          }
-        })
+            resolve(false);
+          },
+        });
       } else {
-        resolve(false)
+        resolve(false);
       }
-    })
-  }
-}
+    });
+  },
+};
 
 module.exports = {
-  auth
-}
+  auth,
+};

@@ -40,7 +40,10 @@ export class GulingtongApiServices {
 /**
  * 创建 API 服务实例
  */
-export function createApiServices(baseUrl: string, accessToken?: string): GulingtongApiServices {
+export function createApiServices(
+  baseUrl: string,
+  accessToken?: string
+): GulingtongApiServices {
   const config = new Configuration({
     basePath: baseUrl,
     accessToken: accessToken,

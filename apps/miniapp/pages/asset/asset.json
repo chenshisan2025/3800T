@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "个股",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "skeleton": "/components/skeleton/skeleton",
+    "error-placeholder": "/components/error-placeholder/error-placeholder",
+    "disclaimer": "/components/compliance/disclaimer",
+    "data-source-hint": "/components/compliance/data-source-hint"

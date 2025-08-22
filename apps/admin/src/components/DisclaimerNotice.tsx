@@ -24,7 +24,8 @@ export default function DisclaimerNotice({
       case 'investment':
         return {
           message: '投资风险提示',
-          description: '本平台提供的信息仅供参考，不构成投资建议。投资有风险，决策需谨慎。',
+          description:
+            '本平台提供的信息仅供参考，不构成投资建议。投资有风险，决策需谨慎。',
         };
       case 'data':
         return {
@@ -34,7 +35,8 @@ export default function DisclaimerNotice({
       case 'ai':
         return {
           message: 'AI分析声明',
-          description: 'AI分析结果仅供参考，不保证准确性，请结合多方信息独立判断。',
+          description:
+            'AI分析结果仅供参考，不保证准确性，请结合多方信息独立判断。',
         };
       case 'full':
       default:
@@ -42,11 +44,16 @@ export default function DisclaimerNotice({
           message: '重要声明',
           description: (
             <div>
-              <Text>• 本平台提供的信息仅供参考，不构成投资建议。投资有风险，决策需谨慎。</Text>
+              <Text>
+                •
+                本平台提供的信息仅供参考，不构成投资建议。投资有风险，决策需谨慎。
+              </Text>
               <br />
               <Text>• 数据可能存在延迟，请以官方数据为准。</Text>
               <br />
-              <Text>• AI分析结果仅供参考，不保证准确性，请结合多方信息独立判断。</Text>
+              <Text>
+                • AI分析结果仅供参考，不保证准确性，请结合多方信息独立判断。
+              </Text>
             </div>
           ),
         };
@@ -59,7 +66,7 @@ export default function DisclaimerNotice({
     <Alert
       message={message}
       description={description}
-      type="warning"
+      type='warning'
       showIcon={showIcon}
       icon={<ExclamationCircleOutlined />}
       closable={closable}
@@ -74,14 +81,14 @@ export default function DisclaimerNotice({
 }
 
 // 导出不同类型的快捷组件
-export const InvestmentDisclaimer = (props: Omit<DisclaimerNoticeProps, 'type'>) => (
-  <DisclaimerNotice {...props} type="investment" />
-);
+export const InvestmentDisclaimer = (
+  props: Omit<DisclaimerNoticeProps, 'type'>
+) => <DisclaimerNotice {...props} type='investment' />;
 
 export const DataDisclaimer = (props: Omit<DisclaimerNoticeProps, 'type'>) => (
-  <DisclaimerNotice {...props} type="data" />
+  <DisclaimerNotice {...props} type='data' />
 );
 
 export const AIDisclaimer = (props: Omit<DisclaimerNoticeProps, 'type'>) => (
-  <DisclaimerNotice {...props} type="ai" />
+  <DisclaimerNotice {...props} type='ai' />
 );

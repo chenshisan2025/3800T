@@ -1,0 +1,73 @@
+<view class="subscription-manager">
+  <!-- 页面标题 -->
+  <view class="header">
+    <text class="title">消息订阅管理</text>
+    <text class="subtitle">管理您的消息通知偏好</text>
+  </view>
+
+  <!-- 快捷操作 -->
+  <view class="quick-actions">
+    <button class="action-btn primary" bindtap="subscribeAll">全部订阅</button>
+    <button class="action-btn secondary" bindtap="unsubscribeAll">全部取消</button>
+    <button class="action-btn tertiary" bindtap="subscribeHighPriority">仅高优先级</button>
+  </view>
+
+  <!-- 订阅分类列表 -->
+  <view class="category-list">
+    <block wx:for="{{categories}}" wx:key="category">
+      <view class="category-section">
+        <!-- 分类标题 -->
+        <view class="category-header" bindtap="toggleCategory" data-category="{{item.category}}">
+          <view class="category-info">
+            <text class="category-name">{{item.name}}</text>
+            <text class="category-count">{{item.subscriptions.length}}项</text>
+          </view>
+          <view class="category-toggle {{item.expanded ? 'expanded' : ''}}">
+            <text class="iconfont icon-arrow-down"></text>
+          </view>
+        </view>
+
+        <!-- 分类内容 -->
+        <view class="category-content {{item.expanded ? 'show' : 'hide'}}">
+          <block wx:for="{{item.subscriptions}}" wx:for-item="subscription" wx:key="messageType">
+            <view class="subscription-item">
+              <view class="subscription-info">
+                <view class="subscription-header">
+                  <text class="subscription-icon">{{subscription.config.icon}}</text>
+                  <text class="subscription-name">{{subscription.config.name}}</text>
+                  <view class="priority-badge {{subscription.config.priority}}">
+                    <text>{{subscription.config.priority === 'high' ? '高' : subscription.config.priority === 'medium' ? '中' : '低'}}</text>
+                  </view>
+                </view>
+                <text class="subscription-desc">{{subscription.config.description}}</text>
+              </view>
+              <view class="subscription-control">
+                <switch 
+                  checked="{{subscription.isSubscribed}}" 
+                  bindchange="toggleSubscription" 
+                  data-message-type="{{subscription.messageType}}"
+                  color="#1890ff"
+                />
+              </view>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-actions">
+    <button class="save-btn" bindtap="saveChanges" disabled="{{!hasChanges}}">
+      保存更改
+    </button>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-overlay {{loading ? 'show' : 'hide'}}">
+    <view class="loading-content">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">{{loadingText}}</text>
+    </view>
+  </view>
+</view>

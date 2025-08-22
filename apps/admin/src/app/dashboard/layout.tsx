@@ -1,7 +1,16 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Layout, Menu, Avatar, Dropdown, Button, Space, Typography, Badge } from 'antd';
+import {
+  Layout,
+  Menu,
+  Avatar,
+  Dropdown,
+  Button,
+  Space,
+  Typography,
+  Badge,
+} from 'antd';
 import {
   DashboardOutlined,
   UserOutlined,
@@ -43,47 +52,47 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     {
       key: '/dashboard',
       icon: <DashboardOutlined />,
-      label: <Link href="/dashboard">概览</Link>,
+      label: <Link href='/dashboard'>概览</Link>,
       path: '/dashboard',
     },
     {
       key: '/dashboard/users',
       icon: <TeamOutlined />,
-      label: <Link href="/dashboard/users">用户管理</Link>,
+      label: <Link href='/dashboard/users'>用户管理</Link>,
       path: '/dashboard/users',
     },
     {
       key: '/dashboard/subscriptions',
       icon: <CrownOutlined />,
-      label: <Link href="/dashboard/subscriptions">订阅管理</Link>,
+      label: <Link href='/dashboard/subscriptions'>订阅管理</Link>,
       path: '/dashboard/subscriptions',
     },
     {
       key: '/dashboard/watchlist',
       icon: <HeartOutlined />,
-      label: <Link href="/dashboard/watchlist">自选&提醒</Link>,
+      label: <Link href='/dashboard/watchlist'>自选&提醒</Link>,
       path: '/dashboard/watchlist',
     },
     {
       key: '/dashboard/reports',
       icon: <RobotOutlined />,
-      label: <Link href="/dashboard/reports">AI 报告</Link>,
+      label: <Link href='/dashboard/reports'>AI 报告</Link>,
       path: '/dashboard/reports',
     },
     {
       key: '/dashboard/datasource',
       icon: <DatabaseOutlined />,
-      label: <Link href="/dashboard/datasource">数据源配置</Link>,
+      label: <Link href='/dashboard/datasource'>数据源配置</Link>,
       path: '/dashboard/datasource',
     },
     {
       key: '/dashboard/audit',
       icon: <AuditOutlined />,
-      label: <Link href="/dashboard/audit">审计日志</Link>,
+      label: <Link href='/dashboard/audit'>审计日志</Link>,
       path: '/dashboard/audit',
     },
   ];
-  
+
   // 根据权限获取可访问的菜单项
   const accessibleMenuItems = useMemo(() => {
     return allMenuItems.filter(item => checkPageAccess(item.key as any));
@@ -121,105 +130,110 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   // 获取当前选中的菜单项
   const getSelectedKeys = () => {
-    const matchedItem = menuItems.find(item => 
-      pathname === item.key || (item.key !== '/dashboard' && pathname.startsWith(item.key))
+    const matchedItem = menuItems.find(
+      item =>
+        pathname === item.key ||
+        (item.key !== '/dashboard' && pathname.startsWith(item.key))
     );
     return matchedItem ? [matchedItem.key] : ['/dashboard'];
   };
 
   return (
-    <Layout className="min-h-screen">
+    <Layout className='min-h-screen'>
       {/* 侧边栏 */}
       <Sider
         trigger={null}
         collapsible
         collapsed={collapsed}
         width={256}
-        className="shadow-lg"
-        theme="light"
+        className='shadow-lg'
+        theme='light'
       >
         {/* Logo */}
-        <div className="flex items-center justify-center h-16 border-b border-gray-200">
+        <div className='flex items-center justify-center h-16 border-b border-gray-200'>
           {collapsed ? (
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">古</span>
+            <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
+              <span className='text-white font-bold text-sm'>古</span>
             </div>
           ) : (
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">古</span>
+            <div className='flex items-center space-x-2'>
+              <div className='w-8 h-8 bg-primary rounded-lg flex items-center justify-center'>
+                <span className='text-white font-bold text-sm'>古</span>
               </div>
-              <span className="text-lg font-bold text-gray-800">古灵通</span>
+              <span className='text-lg font-bold text-gray-800'>古灵通</span>
             </div>
           )}
         </div>
 
         {/* 菜单 */}
         <Menu
-          mode="inline"
+          mode='inline'
           selectedKeys={getSelectedKeys()}
           items={menuItems}
-          className="border-r-0 mt-4"
+          className='border-r-0 mt-4'
         />
       </Sider>
 
       <Layout>
         {/* 顶部导航 */}
-        <Header className="bg-white shadow-sm border-b border-gray-200 px-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+        <Header className='bg-white shadow-sm border-b border-gray-200 px-4 flex items-center justify-between'>
+          <div className='flex items-center space-x-4'>
             <Button
-              type="text"
+              type='text'
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
-              className="text-gray-600 hover:text-primary"
+              className='text-gray-600 hover:text-primary'
             />
-            
-            <div className="hidden md:flex items-center space-x-3">
-              <Text type="secondary" className="text-sm">
+
+            <div className='hidden md:flex items-center space-x-3'>
+              <Text type='secondary' className='text-sm'>
                 欢迎回来，{user?.name || user?.email}
               </Text>
               {userRole && <RoleTag role={userRole} />}
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className='flex items-center space-x-4'>
             {/* 搜索 */}
             <Button
-              type="text"
+              type='text'
               icon={<SearchOutlined />}
-              className="text-gray-600 hover:text-primary"
+              className='text-gray-600 hover:text-primary'
             />
 
             {/* 通知 */}
-            <Badge count={3} size="small">
+            <Badge count={3} size='small'>
               <Button
-                type="text"
+                type='text'
                 icon={<BellOutlined />}
-                className="text-gray-600 hover:text-primary"
+                className='text-gray-600 hover:text-primary'
               />
             </Badge>
 
             {/* 用户菜单 */}
             <Dropdown
               menu={{ items: userMenuItems }}
-              placement="bottomRight"
+              placement='bottomRight'
               arrow
             >
-              <div className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors">
+              <div className='flex items-center space-x-2 cursor-pointer hover:bg-gray-50 px-2 py-1 rounded-lg transition-colors'>
                 <Avatar
-                  size="small"
+                  size='small'
                   icon={<UserOutlined />}
                   src={user?.avatar}
-                  className="bg-primary"
+                  className='bg-primary'
                 />
-                <div className="hidden md:block">
-                  <Text className="text-sm font-medium">
+                <div className='hidden md:block'>
+                  <Text className='text-sm font-medium'>
                     {user?.name || '管理员'}
                   </Text>
                   {userRole && (
-                    <Text type="secondary" className="text-xs">
-                      {userRole === UserRole.ADMIN ? '管理员' :
-                       userRole === UserRole.ANALYST ? '分析师' : '客服'}
+                    <Text type='secondary' className='text-xs'>
+                      {userRole === UserRole.ADMIN
+                        ? '管理员'
+                        : userRole === UserRole.ANALYST
+                          ? '分析师'
+                          : '客服'}
                     </Text>
                   )}
                 </div>
@@ -229,10 +243,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </Header>
 
         {/* 主内容区 */}
-        <Content className="bg-gray-50 p-6 overflow-auto">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
+        <Content className='bg-gray-50 p-6 overflow-auto'>
+          <div className='max-w-7xl mx-auto'>{children}</div>
         </Content>
       </Layout>
     </Layout>

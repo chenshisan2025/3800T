@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../shared/widgets/custom_card.dart';
 import '../../shared/widgets/custom_button.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../shared/widgets/compliance/investment_disclaimer.dart';
+import '../../shared/widgets/compliance/realtime_data_source_hint.dart';
 
 class AiPage extends StatefulWidget {
   const AiPage({super.key});
@@ -39,6 +41,28 @@ class _AiPageState extends State<AiPage> {
                 : _analyses.isEmpty
                     ? _buildEmptyView()
                     : _buildAnalysisResults(),
+          ),
+          // 合规组件
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                InvestmentDisclaimer(
+                  type: DisclaimerType.aiAnalysis,
+                  position: DisclaimerPosition.bottom,
+                  theme: DisclaimerTheme.light,
+                  showIcon: true,
+                  isClosable: true,
+                ),
+                const SizedBox(height: 8),
+                RealtimeDataSourceHint(
+                  position: DisclaimerPosition.bottom,
+                  theme: DisclaimerTheme.light,
+                  showIcon: true,
+                  isClosable: true,
+                ),
+              ],
+            ),
           ),
         ],
       ),

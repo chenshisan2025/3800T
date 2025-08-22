@@ -18,7 +18,7 @@ interface RateLimitConfig {
 enum CircuitBreakerState {
   CLOSED = 'CLOSED',
   OPEN = 'OPEN',
-  HALF_OPEN = 'HALF_OPEN'
+  HALF_OPEN = 'HALF_OPEN',
 }
 
 /**
@@ -60,15 +60,21 @@ class RateLimiterManager {
 
   constructor() {
     // 每5分钟清理过期记录
-    this.cleanupInterval = setInterval(() => {
-      this.cleanup();
-    }, 5 * 60 * 1000);
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanup();
+      },
+      5 * 60 * 1000
+    );
   }
 
   /**
    * 检查速率限制
    */
-  checkRateLimit(key: string, config: RateLimitConfig): {
+  checkRateLimit(
+    key: string,
+    config: RateLimitConfig
+  ): {
     allowed: boolean;
     remaining: number;
     resetTime: number;
@@ -83,14 +89,14 @@ class RateLimiterManager {
         count: 1,
         resetTime: now + config.windowMs,
         failures: 0,
-        lastFailureTime: 0
+        lastFailureTime: 0,
       };
       this.requestRecords.set(key, newRecord);
-      
+
       return {
         allowed: true,
         remaining: config.maxRequests - 1,
-        resetTime: newRecord.resetTime
+        resetTime: newRecord.resetTime,
       };
     }
 
@@ -100,7 +106,7 @@ class RateLimiterManager {
         allowed: false,
         remaining: 0,
         resetTime: record.resetTime,
-        retryAfter: Math.ceil((record.resetTime - now) / 1000)
+        retryAfter: Math.ceil((record.resetTime - now) / 1000),
       };
     }
 
@@ -111,14 +117,17 @@ class RateLimiterManager {
     return {
       allowed: true,
       remaining: config.maxRequests - record.count,
-      resetTime: record.resetTime
+      resetTime: record.resetTime,
     };
   }
 
   /**
    * 检查熔断器状态
    */
-  checkCircuitBreaker(key: string, config: CircuitBreakerConfig): {
+  checkCircuitBreaker(
+    key: string,
+    config: CircuitBreakerConfig
+  ): {
     allowed: boolean;
     state: CircuitBreakerState;
     retryAfter?: number;
@@ -128,7 +137,7 @@ class RateLimiterManager {
       state: CircuitBreakerState.CLOSED,
       failureCount: 0,
       lastFailureTime: 0,
-      nextAttemptTime: 0
+      nextAttemptTime: 0,
     };
 
     switch (breaker.state) {
@@ -145,7 +154,7 @@ class RateLimiterManager {
         return {
           allowed: false,
           state: breaker.state,
-          retryAfter: Math.ceil((breaker.nextAttemptTime - now) / 1000)
+          retryAfter: Math.ceil((breaker.nextAttemptTime - now) / 1000),
         };
 
       case CircuitBreakerState.HALF_OPEN:
@@ -166,7 +175,7 @@ class RateLimiterManager {
       breaker.state = CircuitBreakerState.CLOSED;
       breaker.failureCount = 0;
       this.circuitBreakers.set(key, breaker);
-      
+
       logger.info('熔断器恢复', { key, state: breaker.state });
     }
   }
@@ -180,7 +189,7 @@ class RateLimiterManager {
       state: CircuitBreakerState.CLOSED,
       failureCount: 0,
       lastFailureTime: 0,
-      nextAttemptTime: 0
+      nextAttemptTime: 0,
     };
 
     breaker.failureCount++;
@@ -190,11 +199,11 @@ class RateLimiterManager {
       // 触发熔断
       breaker.state = CircuitBreakerState.OPEN;
       breaker.nextAttemptTime = now + config.recoveryTimeout;
-      
+
       logger.warn('熔断器触发', {
         key,
         failureCount: breaker.failureCount,
-        nextAttemptTime: new Date(breaker.nextAttemptTime).toISOString()
+        nextAttemptTime: new Date(breaker.nextAttemptTime).toISOString(),
       });
     }
 
@@ -219,8 +228,10 @@ class RateLimiterManager {
     // 清理熔断器记录（保留最近24小时的记录）
     const dayAgo = now - 24 * 60 * 60 * 1000;
     for (const [key, breaker] of this.circuitBreakers.entries()) {
-      if (breaker.state === CircuitBreakerState.CLOSED && 
-          breaker.lastFailureTime < dayAgo) {
+      if (
+        breaker.state === CircuitBreakerState.CLOSED &&
+        breaker.lastFailureTime < dayAgo
+      ) {
         this.circuitBreakers.delete(key);
         cleanedCount++;
       }
@@ -238,8 +249,9 @@ class RateLimiterManager {
     return {
       rateLimitRecords: this.requestRecords.size,
       circuitBreakers: this.circuitBreakers.size,
-      openCircuitBreakers: Array.from(this.circuitBreakers.values())
-        .filter(b => b.state === CircuitBreakerState.OPEN).length
+      openCircuitBreakers: Array.from(this.circuitBreakers.values()).filter(
+        b => b.state === CircuitBreakerState.OPEN
+      ).length,
     };
   }
 
@@ -261,23 +273,24 @@ const rateLimiterManager = new RateLimiterManager();
  */
 export function createRateLimiter(config: RateLimitConfig) {
   return async (req: NextRequest): Promise<NextResponse | null> => {
-    const key = config.keyGenerator ? config.keyGenerator(req) : 
-      req.ip || req.headers.get('x-forwarded-for') || 'anonymous';
-    
+    const key = config.keyGenerator
+      ? config.keyGenerator(req)
+      : req.ip || req.headers.get('x-forwarded-for') || 'anonymous';
+
     const result = rateLimiterManager.checkRateLimit(key, config);
-    
+
     if (!result.allowed) {
       logger.warn('速率限制触发', {
         key,
         remaining: result.remaining,
-        retryAfter: result.retryAfter
+        retryAfter: result.retryAfter,
       });
-      
+
       return NextResponse.json(
         {
           error: 'Rate limit exceeded',
           message: '请求过于频繁，请稍后再试',
-          retryAfter: result.retryAfter
+          retryAfter: result.retryAfter,
         },
         {
           status: 429,
@@ -285,12 +298,12 @@ export function createRateLimiter(config: RateLimitConfig) {
             'X-RateLimit-Limit': config.maxRequests.toString(),
             'X-RateLimit-Remaining': result.remaining.toString(),
             'X-RateLimit-Reset': new Date(result.resetTime).toISOString(),
-            'Retry-After': result.retryAfter?.toString() || '60'
-          }
+            'Retry-After': result.retryAfter?.toString() || '60',
+          },
         }
       );
     }
-    
+
     return null; // 允许请求继续
   };
 }
@@ -302,39 +315,39 @@ export function createCircuitBreaker(config: CircuitBreakerConfig) {
   return {
     check: async (key: string): Promise<NextResponse | null> => {
       const result = rateLimiterManager.checkCircuitBreaker(key, config);
-      
+
       if (!result.allowed) {
         logger.warn('熔断器阻止请求', {
           key,
           state: result.state,
-          retryAfter: result.retryAfter
+          retryAfter: result.retryAfter,
         });
-        
+
         return NextResponse.json(
           {
             error: 'Service temporarily unavailable',
             message: '服务暂时不可用，请稍后再试',
-            retryAfter: result.retryAfter
+            retryAfter: result.retryAfter,
           },
           {
             status: 503,
             headers: {
-              'Retry-After': result.retryAfter?.toString() || '300'
-            }
+              'Retry-After': result.retryAfter?.toString() || '300',
+            },
           }
         );
       }
-      
+
       return null;
     },
-    
+
     recordSuccess: (key: string) => {
       rateLimiterManager.recordSuccess(key, config);
     },
-    
+
     recordFailure: (key: string) => {
       rateLimiterManager.recordFailure(key, config);
-    }
+    },
   };
 }
 
@@ -350,9 +363,9 @@ export const rateLimitConfigs = {
       const userId = req.headers.get('x-user-id');
       const ip = req.ip || req.headers.get('x-forwarded-for') || 'anonymous';
       return userId ? `user:${userId}` : `ip:${ip}`;
-    }
+    },
   },
-  
+
   // 健康检查限制：每分钟60次请求
   health: {
     windowMs: 60 * 1000,
@@ -360,9 +373,9 @@ export const rateLimitConfigs = {
     keyGenerator: (req: NextRequest) => {
       const ip = req.ip || req.headers.get('x-forwarded-for') || 'anonymous';
       return `health:${ip}`;
-    }
+    },
   },
-  
+
   // 监控接口限制：每分钟30次请求
   monitor: {
     windowMs: 60 * 1000,
@@ -370,9 +383,9 @@ export const rateLimitConfigs = {
     keyGenerator: (req: NextRequest) => {
       const ip = req.ip || req.headers.get('x-forwarded-for') || 'anonymous';
       return `monitor:${ip}`;
-    }
+    },
   },
-  
+
   // AI分析限制：每小时10次请求
   aiAnalysis: {
     windowMs: 60 * 60 * 1000,
@@ -380,15 +393,15 @@ export const rateLimitConfigs = {
     keyGenerator: (req: NextRequest) => {
       const userId = req.headers.get('x-user-id') || 'anonymous';
       return `ai:${userId}`;
-    }
+    },
   },
-  
+
   // 数据提供商限制：每秒10次请求
   dataProvider: {
     windowMs: 1000,
     maxRequests: 10,
-    keyGenerator: () => 'data-provider'
-  }
+    keyGenerator: () => 'data-provider',
+  },
 };
 
 /**
@@ -399,15 +412,15 @@ export const circuitBreakerConfigs = {
   dataProvider: {
     failureThreshold: 5, // 5次失败后熔断
     recoveryTimeout: 30 * 1000, // 30秒后尝试恢复
-    monitoringPeriod: 60 * 1000 // 1分钟监控周期
+    monitoringPeriod: 60 * 1000, // 1分钟监控周期
   },
-  
+
   // LLM服务熔断器
   llmService: {
     failureThreshold: 3, // 3次失败后熔断
     recoveryTimeout: 60 * 1000, // 1分钟后尝试恢复
-    monitoringPeriod: 5 * 60 * 1000 // 5分钟监控周期
-  }
+    monitoringPeriod: 5 * 60 * 1000, // 5分钟监控周期
+  },
 };
 
 export { rateLimiterManager };

@@ -13,17 +13,20 @@
 ## 🏗️ 技术架构
 
 ### 前端技术栈
+
 - **Web管理后台**: Next.js 14 + TypeScript + Ant Design + Tailwind CSS
 - **移动端App**: Flutter + Riverpod + Dio + Hive + go_router
 - **微信小程序**: 原生小程序 + 自定义组件库
 
 ### 后端技术栈
+
 - **API服务**: Next.js Route Handlers + TypeScript
 - **数据库**: Supabase (PostgreSQL) + Prisma ORM
 - **认证**: Supabase Auth
 - **实时通信**: Supabase Realtime
 
 ### 开发工具
+
 - **包管理**: pnpm workspace (monorepo)
 - **代码规范**: ESLint + Prettier
 - **类型检查**: TypeScript
@@ -84,15 +87,17 @@ gulingtong/
 ## 🎨 设计系统
 
 ### 主题色彩
+
 - **主色调**: #2166A5 (品牌蓝)
 - **辅助色**: #4A90E2 (浅蓝), #1A5490 (深蓝)
-- **功能色**: 
+- **功能色**:
   - 成功: #00C851 (绿色)
   - 警告: #FFB300 (橙色)
   - 错误: #FF4444 (红色)
   - 信息: #2166A5 (蓝色)
 
 ### A股市场色彩规范
+
 - **上涨**: #FF4444 (红色)
 - **下跌**: #00C851 (绿色)
 - **平盘**: #666666 (灰色)
@@ -100,35 +105,42 @@ gulingtong/
 ## 🚀 快速开始
 
 ### 环境要求
+
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
 - Flutter >= 3.0.0 (移动端开发)
 - 微信开发者工具 (小程序开发)
 
 ### 安装依赖
+
 ```bash
 # 安装所有依赖
 pnpm install
 ```
 
 ### 环境配置
+
 1. 复制环境变量模板
+
 ```bash
 cp .env.example .env.local
 ```
 
 2. 配置Supabase
+
 - 在 `.env.local` 中填入Supabase项目URL和密钥
 - 运行数据库迁移: `pnpm db:migrate`
 
 ### 启动开发服务
 
 #### 启动所有服务
+
 ```bash
 pnpm dev
 ```
 
 #### 单独启动服务
+
 ```bash
 # API服务 (http://localhost:3001)
 pnpm dev:api
@@ -146,6 +158,7 @@ pnpm dev:miniapp
 ## 📱 应用功能
 
 ### Web管理后台
+
 - 用户管理和权限控制
 - 股票数据管理和配置
 - 内容管理和审核
@@ -153,6 +166,7 @@ pnpm dev:miniapp
 - 运营数据统计
 
 ### 移动端App
+
 - 实时股票行情查看
 - 自选股管理和提醒
 - K线图表和技术分析
@@ -160,6 +174,7 @@ pnpm dev:miniapp
 - 用户社区互动
 
 ### 微信小程序
+
 - 轻量级股票查询
 - 自选股快速查看
 - 简化版图表展示
@@ -169,6 +184,7 @@ pnpm dev:miniapp
 ## 🔧 开发指南
 
 ### 代码规范
+
 - 使用TypeScript进行类型检查
 - 遵循ESLint和Prettier配置
 - 组件命名使用PascalCase
@@ -176,12 +192,14 @@ pnpm dev:miniapp
 - 提交信息遵循Conventional Commits
 
 ### API开发
+
 - 使用OpenAPI 3.0规范定义接口
 - 自动生成类型定义和客户端代码
 - 统一错误处理和响应格式
 - 实现请求验证和权限控制
 
 ### 数据库
+
 - 使用Prisma ORM管理数据模型
 - 通过迁移文件管理数据库变更
 - 遵循数据库命名规范

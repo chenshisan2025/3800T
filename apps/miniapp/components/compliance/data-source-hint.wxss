@@ -1,0 +1,279 @@
+/* components/compliance/data-source-hint.wxss */
+.data-source-hint {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 24rpx;
+  line-height: 1.4;
+  z-index: 1000;
+}
+
+/* 位置样式 */
+.hint-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1rpx solid #e8e8e8;
+}
+
+.hint-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 1rpx solid #e8e8e8;
+}
+
+/* 主题样式 */
+.data-source-hint.light {
+  background-color: #f0f9ff;
+  color: #666;
+}
+
+.data-source-hint.dark {
+  background-color: #1e293b;
+  color: #cbd5e1;
+}
+
+.data-source-hint.transparent {
+  background-color: rgba(240, 249, 255, 0.95);
+  color: #666;
+  backdrop-filter: blur(10rpx);
+}
+
+/* 内容容器 */
+.hint-content {
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx 24rpx;
+  min-height: 80rpx;
+}
+
+/* 图标样式 */
+.hint-icon {
+  flex-shrink: 0;
+  margin-right: 16rpx;
+  margin-top: 4rpx;
+}
+
+.icon-wrapper {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-wrapper.realtime {
+  background-color: #10b981;
+}
+
+.icon-wrapper.delayed {
+  background-color: #f59e0b;
+}
+
+.icon-wrapper.historical {
+  background-color: #6366f1;
+}
+
+.icon-wrapper.estimated {
+  background-color: #8b5cf6;
+}
+
+.icon-text {
+  color: white;
+  font-size: 18rpx;
+  font-weight: bold;
+}
+
+.data-source-hint.dark .icon-wrapper.realtime {
+  background-color: #34d399;
+}
+
+.data-source-hint.dark .icon-wrapper.delayed {
+  background-color: #fbbf24;
+}
+
+.data-source-hint.dark .icon-wrapper.historical {
+  background-color: #818cf8;
+}
+
+.data-source-hint.dark .icon-wrapper.estimated {
+  background-color: #a78bfa;
+}
+
+/* 主要内容 */
+.hint-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.hint-title {
+  font-weight: 500;
+  margin-bottom: 8rpx;
+  color: #1e40af;
+}
+
+.data-source-hint.dark .hint-title {
+  color: #60a5fa;
+}
+
+.hint-text {
+  color: #64748b;
+  word-wrap: break-word;
+  word-break: break-all;
+  margin-bottom: 12rpx;
+}
+
+.data-source-hint.dark .hint-text {
+  color: #94a3b8;
+}
+
+/* 数据提供商 */
+.hint-providers {
+  margin-bottom: 12rpx;
+}
+
+.providers-label {
+  color: #64748b;
+  font-size: 22rpx;
+}
+
+.data-source-hint.dark .providers-label {
+  color: #94a3b8;
+}
+
+.providers-list {
+  display: inline;
+}
+
+.provider-item {
+  color: #1e40af;
+  font-size: 22rpx;
+  margin-right: 16rpx;
+  cursor: pointer;
+}
+
+.provider-item:active {
+  opacity: 0.7;
+}
+
+.data-source-hint.dark .provider-item {
+  color: #60a5fa;
+}
+
+.hint-link {
+  color: #1890ff;
+  text-decoration: underline;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 22rpx;
+}
+
+.hint-link:active {
+  opacity: 0.7;
+}
+
+.data-source-hint.dark .hint-link {
+  color: #40a9ff;
+}
+
+/* 关闭按钮 */
+.hint-close {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  padding: 8rpx;
+  margin: -8rpx -8rpx -8rpx 8rpx;
+}
+
+.close-icon {
+  font-size: 32rpx;
+  color: #999;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.close-icon:active {
+  opacity: 0.7;
+}
+
+.data-source-hint.dark .close-icon {
+  color: #bbb;
+}
+
+/* 加载状态 */
+.hint-loading {
+  padding: 20rpx 24rpx;
+  text-align: center;
+  color: #999;
+}
+
+.loading-text {
+  font-size: 24rpx;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .hint-content {
+    padding: 16rpx 20rpx;
+  }
+  
+  .data-source-hint {
+    font-size: 22rpx;
+  }
+  
+  .providers-label,
+  .provider-item,
+  .hint-link {
+    font-size: 20rpx;
+  }
+}
+
+/* 动画效果 */
+.data-source-hint {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.hint-top {
+  animation: slideInTop 0.3s ease-out;
+}
+
+@keyframes slideInTop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 数据类型特定样式 */
+.data-source-hint.realtime {
+  border-left: 4rpx solid #10b981;
+}
+
+.data-source-hint.delayed {
+  border-left: 4rpx solid #f59e0b;
+}
+
+.data-source-hint.historical {
+  border-left: 4rpx solid #6366f1;
+}
+
+.data-source-hint.estimated {
+  border-left: 4rpx solid #8b5cf6;
+}

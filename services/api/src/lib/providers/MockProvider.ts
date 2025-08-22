@@ -37,7 +37,7 @@ export class MockProvider extends BaseProvider {
    */
   async getIndices(query?: IndicesQuery): Promise<IndexDataWithMetadata[]> {
     logger.info('MockProvider: 获取指数数据', { query });
-    
+
     // 模拟网络延迟
     await this.delay(100 + Math.random() * 200);
 
@@ -61,7 +61,7 @@ export class MockProvider extends BaseProvider {
         current: 12580.66,
         change: -28.44,
         change_percent: -0.23,
-        open: 12609.10,
+        open: 12609.1,
         high: 12620.33,
         low: 12565.88,
         volume: 189320000,
@@ -74,7 +74,7 @@ export class MockProvider extends BaseProvider {
         current: 2456.78,
         change: 12.88,
         change_percent: 0.53,
-        open: 2443.90,
+        open: 2443.9,
         high: 2465.22,
         low: 2440.15,
         volume: 156780000,
@@ -96,7 +96,7 @@ export class MockProvider extends BaseProvider {
    */
   async getQuotes(query: QuotesQuery): Promise<QuoteDataWithMetadata[]> {
     logger.info('MockProvider: 获取股票报价', { query });
-    
+
     // 模拟网络延迟
     await this.delay(80 + Math.random() * 150);
 
@@ -107,7 +107,7 @@ export class MockProvider extends BaseProvider {
       const changePercent = (Math.random() - 0.5) * 0.2; // -10%到+10%随机涨跌幅
       const change = basePrice * changePercent;
       const current = basePrice + change;
-      
+
       const mockQuote: QuoteData = {
         code,
         name: `股票${code}`,
@@ -138,50 +138,41 @@ export class MockProvider extends BaseProvider {
    * 获取模拟K线数据
    */
   async getKline(query: KlineQuery): Promise<KlineDataWithMetadata> {
-    logger.info('MockProvider: 获取K线数据', { query });
-    
-    // 模拟网络延迟
-    await this.delay(200 + Math.random() * 300);
+    await this.delay(50);
 
-    const { code, period, limit } = query;
-    const dataCount = Math.min(limit, 100);
-    const basePrice = 50 + Math.random() * 50; // 50-100元基础价格
-    
     const klineData: KlineData[] = [];
-    let currentPrice = basePrice;
-    
-    // 生成历史K线数据
-    for (let i = dataCount - 1; i >= 0; i--) {
-      const timestamp = Date.now() - i * this.getPeriodMilliseconds(period);
-      
-      // 模拟价格波动
-      const volatility = 0.02; // 2%波动率
-      const change = (Math.random() - 0.5) * volatility * currentPrice;
-      const open = currentPrice;
-      const close = currentPrice + change;
-      const high = Math.max(open, close) * (1 + Math.random() * 0.01);
-      const low = Math.min(open, close) * (1 - Math.random() * 0.01);
-      
+    const now = Date.now();
+    const periodMs = this.getPeriodMilliseconds(query.period);
+    const limit = query.limit || 100;
+
+    for (let i = limit - 1; i >= 0; i--) {
+      const timestamp = now - i * periodMs;
+      const basePrice = 50 + Math.sin(i * 0.1) * 5;
+      const volatility = 0.03;
+
+      const open = basePrice + (Math.random() - 0.5) * volatility * basePrice;
+      const close = open + (Math.random() - 0.5) * volatility * basePrice;
+      const high =
+        Math.max(open, close) + Math.random() * volatility * basePrice;
+      const low =
+        Math.min(open, close) - Math.random() * volatility * basePrice;
+
       klineData.push({
-        code,
-        period,
+        code: query.code,
+        period: query.period,
         timestamp,
         open: Number(open.toFixed(2)),
         high: Number(high.toFixed(2)),
         low: Number(low.toFixed(2)),
         close: Number(close.toFixed(2)),
-        volume: Math.floor(Math.random() * 1000000) + 100000,
-        turnover: Math.floor(Math.random() * 100000000) + 10000000,
+        volume: Math.floor(Math.random() * 500000),
+        turnover: Math.floor(Math.random() * 5000000),
       });
-      
-      currentPrice = close;
     }
-
-    const metadata = this.createMetadata(250); // 模拟250ms延迟
 
     return {
       data: klineData,
-      metadata,
+      metadata: this.createMetadata(50),
     };
   }
 
@@ -189,58 +180,45 @@ export class MockProvider extends BaseProvider {
    * 获取模拟新闻数据
    */
   async getNews(query?: NewsQuery): Promise<NewsDataWithMetadata> {
-    logger.info('MockProvider: 获取新闻数据', { query });
-    
-    // 模拟网络延迟
-    await this.delay(150 + Math.random() * 250);
+    await this.delay(80);
 
-    const mockNews: NewsData[] = [
-      {
-        id: 'news_001',
-        title: 'A股三大指数集体收涨，创业板指涨超1%',
-        summary: '今日A股市场表现活跃，三大指数均以红盘报收，市场情绪回暖。',
-        content: '今日A股市场表现活跃，上证指数收涨0.48%，深证成指微跌0.23%，创业板指大涨0.53%。两市成交额超过8000亿元，北向资金净流入超过50亿元。',
-        source: '财经新闻网',
-        author: '张记者',
-        publish_time: Date.now() - 3600000, // 1小时前
-        url: 'https://example.com/news/001',
-        tags: ['A股', '指数', '涨跌'],
-        related_stocks: ['000001', '399001', '399006'],
-        sentiment: 'positive',
-      },
-      {
-        id: 'news_002',
-        title: '科技股午后拉升，人工智能概念股领涨',
-        summary: '午后科技股集体发力，AI概念股表现亮眼，多只个股涨停。',
-        content: '午后科技股集体发力，人工智能、芯片、软件等板块涨幅居前。其中AI概念股表现最为亮眼，多只个股封涨停板。',
-        source: '科技财经',
-        author: '李分析师',
-        publish_time: Date.now() - 7200000, // 2小时前
-        url: 'https://example.com/news/002',
-        tags: ['科技股', '人工智能', '涨停'],
-        related_stocks: ['000001', '300001'],
-        sentiment: 'positive',
-      },
-      {
-        id: 'news_003',
-        title: '央行维持政策利率不变，市场预期稳定',
-        summary: '央行今日公布利率决议，维持主要政策利率不变，符合市场预期。',
-        content: '中国人民银行今日公布最新利率决议，维持1年期LPR和5年期LPR不变，市场流动性保持合理充裕。',
-        source: '央行观察',
-        author: '王编辑',
-        publish_time: Date.now() - 10800000, // 3小时前
-        url: 'https://example.com/news/003',
-        tags: ['央行', '利率', '政策'],
-        related_stocks: [],
-        sentiment: 'neutral',
-      },
-    ];
+    const limit = query?.limit || 20;
+    const newsData: NewsData[] = [];
 
-    const metadata = this.createMetadata(180); // 模拟180ms延迟
+    for (let i = 0; i < limit; i++) {
+      const publishTime = Date.now() - i * 1800000; // 每30分钟一条新闻
+
+      newsData.push({
+        id: `mock_news_${Date.now()}_${i}`,
+        title: `模拟新闻标题 ${i + 1}：市场${i % 3 === 0 ? '震荡' : i % 3 === 1 ? '上涨' : '调整'}`,
+        summary: `这是第${i + 1}条模拟新闻的摘要，包含重要市场信息。`,
+        content: `详细的模拟新闻内容，提供深入的市场分析和投资建议。新闻序号：${i + 1}`,
+        source: 'Mock财经',
+        author: `模拟作者${String.fromCharCode(65 + (i % 26))}`,
+        publishedAt: publishTime,
+        url: `https://mock-finance.com/news/${i + 1}`,
+        tags: [
+          '模拟',
+          '财经',
+          i % 3 === 0 ? '震荡' : i % 3 === 1 ? '上涨' : '调整',
+        ],
+        related_stocks: query?.stock_codes || ['000001', '000002', '000300'],
+        sentiment:
+          i % 3 === 0 ? 'neutral' : i % 3 === 1 ? 'positive' : 'negative',
+      });
+    }
 
     return {
-      data: mockNews.slice(0, query?.limit || 20),
-      metadata,
+      data: newsData,
+      pagination: {
+        page: 1,
+        limit,
+        total: limit,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false,
+      },
+      metadata: this.createMetadata(30),
     };
   }
 
@@ -249,10 +227,10 @@ export class MockProvider extends BaseProvider {
    */
   async healthCheck(): Promise<boolean> {
     logger.info('MockProvider: 健康检查');
-    
+
     // 模拟检查延迟
     await this.delay(50);
-    
+
     return true; // Mock provider 总是健康的
   }
 
@@ -270,7 +248,7 @@ export class MockProvider extends BaseProvider {
       '1w': 7 * 24 * 60 * 60 * 1000,
       '1M': 30 * 24 * 60 * 60 * 1000,
     };
-    
+
     return periodMap[period] || periodMap['1d'];
   }
 }

@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "skeleton": "/components/skeleton/skeleton",
+    "error-placeholder": "/components/error-placeholder/error-placeholder"
+  }
+}

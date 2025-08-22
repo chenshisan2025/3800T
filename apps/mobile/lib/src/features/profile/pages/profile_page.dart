@@ -6,8 +6,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/services/theme_service.dart' as theme_service;
 import '../../../app.dart';
 
-import '../../auth/providers/auth_provider.dart';
-import '../../auth/models/auth_state.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -15,8 +14,12 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
-    final user = authState.user;
-    final isLoggedIn = authState.isAuthenticated;
+    final user = authState.when(
+      data: (user) => user,
+      loading: () => null,
+      error: (_, __) => null,
+    );
+    final isLoggedIn = user != null;
 
     return Scaffold(
       appBar: AppBar(

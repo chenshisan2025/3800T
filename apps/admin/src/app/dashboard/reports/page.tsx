@@ -1,11 +1,30 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Select, Space, message, Tag, Drawer, Typography } from 'antd';
-import { PlusOutlined, EyeOutlined, DeleteOutlined, FileTextOutlined } from '@ant-design/icons';
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Space,
+  message,
+  Tag,
+  Drawer,
+  Typography,
+} from 'antd';
+import {
+  PlusOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  FileTextOutlined,
+} from '@ant-design/icons';
 import { useAuth } from '@/providers/AuthProvider';
 import { Permission } from '@/types/rbac';
 import { PermissionGuard } from '@/components/PermissionGuard';
+import { Disclaimer } from '@/components/compliance/Disclaimer';
+import { DataSourceHint } from '@/components/compliance/DataSourceHint';
 
 interface AiReport {
   id: string;
@@ -46,13 +65,15 @@ export default function ReportsPage() {
         stockName: '苹果公司',
         reportType: 'technical',
         status: 'completed',
-        summary: '基于技术指标分析，AAPL股价呈现上升趋势，建议关注支撑位和阻力位。',
-        content: '# AAPL技术分析报告\n\n## 概述\n苹果公司(AAPL)股价在过去30天内表现强劲，技术指标显示积极信号。\n\n## 技术指标分析\n- **移动平均线**: 20日均线上穿50日均线，形成金叉\n- **RSI指标**: 当前RSI为65，处于强势区间\n- **MACD**: MACD线上穿信号线，显示买入信号\n\n## 支撑位和阻力位\n- 支撑位: $180, $175\n- 阻力位: $200, $210\n\n## 建议\n建议在回调至支撑位时买入，目标价位$200。',
+        summary:
+          '基于技术指标分析，AAPL股价呈现上升趋势，建议关注支撑位和阻力位。',
+        content:
+          '# AAPL技术分析报告\n\n## 概述\n苹果公司(AAPL)股价在过去30天内表现强劲，技术指标显示积极信号。\n\n## 技术指标分析\n- **移动平均线**: 20日均线上穿50日均线，形成金叉\n- **RSI指标**: 当前RSI为65，处于强势区间\n- **MACD**: MACD线上穿信号线，显示买入信号\n\n## 支撑位和阻力位\n- 支撑位: $180, $175\n- 阻力位: $200, $210\n\n## 建议\n建议在回调至支撑位时买入，目标价位$200。',
         confidence: 85,
         createdAt: '2024-01-15T10:30:00Z',
         updatedAt: '2024-01-15T10:35:00Z',
         userId: '1',
-        userName: '系统'
+        userName: '系统',
       },
       {
         id: '2',
@@ -62,12 +83,13 @@ export default function ReportsPage() {
         reportType: 'fundamental',
         status: 'completed',
         summary: '特斯拉Q4财报超预期，电动车销量增长强劲，但估值偏高需谨慎。',
-        content: '# TSLA基本面分析报告\n\n## 财务概况\n特斯拉Q4财报显示营收和利润均超市场预期。\n\n## 关键指标\n- 营收增长: 同比增长37%\n- 净利润率: 8.2%\n- 交付量: 同比增长35%\n\n## 风险因素\n- 估值偏高，P/E比率达到65倍\n- 竞争加剧，传统车企加速电动化\n- 供应链风险\n\n## 投资建议\n长期看好，但短期估值偏高，建议等待回调机会。',
+        content:
+          '# TSLA基本面分析报告\n\n## 财务概况\n特斯拉Q4财报显示营收和利润均超市场预期。\n\n## 关键指标\n- 营收增长: 同比增长37%\n- 净利润率: 8.2%\n- 交付量: 同比增长35%\n\n## 风险因素\n- 估值偏高，P/E比率达到65倍\n- 竞争加剧，传统车企加速电动化\n- 供应链风险\n\n## 投资建议\n长期看好，但短期估值偏高，建议等待回调机会。',
         confidence: 78,
         createdAt: '2024-01-14T15:20:00Z',
         updatedAt: '2024-01-14T15:25:00Z',
         userId: '2',
-        userName: 'AI分析师'
+        userName: 'AI分析师',
       },
       {
         id: '3',
@@ -80,8 +102,8 @@ export default function ReportsPage() {
         content: '',
         confidence: 0,
         createdAt: '2024-01-16T09:00:00Z',
-        updatedAt: '2024-01-16T09:00:00Z'
-      }
+        updatedAt: '2024-01-16T09:00:00Z',
+      },
     ]);
   }, []);
 
@@ -90,7 +112,7 @@ export default function ReportsPage() {
       technical: '技术分析',
       fundamental: '基本面分析',
       sentiment: '情绪分析',
-      forecast: '预测分析'
+      forecast: '预测分析',
     };
     return map[type as keyof typeof map] || type;
   };
@@ -100,7 +122,7 @@ export default function ReportsPage() {
       technical: 'blue',
       fundamental: 'green',
       sentiment: 'orange',
-      forecast: 'purple'
+      forecast: 'purple',
     };
     return map[type as keyof typeof map] || 'default';
   };
@@ -109,7 +131,7 @@ export default function ReportsPage() {
     const map = {
       generating: '生成中',
       completed: '已完成',
-      failed: '失败'
+      failed: '失败',
     };
     return map[status as keyof typeof map] || status;
   };
@@ -118,7 +140,7 @@ export default function ReportsPage() {
     const map = {
       generating: 'processing',
       completed: 'success',
-      failed: 'error'
+      failed: 'error',
     };
     return map[status as keyof typeof map] || 'default';
   };
@@ -141,8 +163,10 @@ export default function ReportsPage() {
       key: 'stock',
       render: (_, record: AiReport) => (
         <div>
-          <Tag color="blue">{record.stockSymbol}</Tag>
-          <div style={{ fontSize: '12px', color: '#666' }}>{record.stockName}</div>
+          <Tag color='blue'>{record.stockSymbol}</Tag>
+          <div style={{ fontSize: '12px', color: '#666' }}>
+            {record.stockName}
+          </div>
         </div>
       ),
     },
@@ -151,9 +175,7 @@ export default function ReportsPage() {
       dataIndex: 'reportType',
       key: 'reportType',
       render: (type: string) => (
-        <Tag color={getReportTypeColor(type)}>
-          {getReportTypeText(type)}
-        </Tag>
+        <Tag color={getReportTypeColor(type)}>{getReportTypeText(type)}</Tag>
       ),
     },
     {
@@ -161,9 +183,7 @@ export default function ReportsPage() {
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
-        <Tag color={getStatusColor(status)}>
-          {getStatusText(status)}
-        </Tag>
+        <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
       ),
     },
     {
@@ -172,7 +192,8 @@ export default function ReportsPage() {
       key: 'confidence',
       render: (confidence: number) => {
         if (confidence === 0) return '-';
-        const color = confidence >= 80 ? 'green' : confidence >= 60 ? 'orange' : 'red';
+        const color =
+          confidence >= 80 ? 'green' : confidence >= 60 ? 'orange' : 'red';
         return <Tag color={color}>{confidence}%</Tag>;
       },
     },
@@ -194,14 +215,14 @@ export default function ReportsPage() {
       render: (_, record: AiReport) => (
         <Space>
           <Button
-            type="link"
+            type='link'
             icon={<EyeOutlined />}
             onClick={() => handleView(record)}
           >
             查看
           </Button>
           <Button
-            type="link"
+            type='link'
             icon={<FileTextOutlined />}
             onClick={() => handleViewContent(record)}
             disabled={record.status !== 'completed'}
@@ -210,7 +231,7 @@ export default function ReportsPage() {
           </Button>
           <PermissionGuard permission={Permission.REPORT_WRITE}>
             <Button
-              type="link"
+              type='link'
               danger
               icon={<DeleteOutlined />}
               onClick={() => handleDelete(record.id)}
@@ -263,7 +284,7 @@ export default function ReportsPage() {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         userId: '1',
-        userName: '管理员'
+        userName: '管理员',
       };
       setReports([newReport, ...reports]);
       message.success('报告生成任务已提交');
@@ -279,10 +300,16 @@ export default function ReportsPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+      <div
+        style={{
+          marginBottom: 16,
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <h2>AI报告管理</h2>
         <PermissionGuard permission={Permission.REPORT_WRITE}>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+          <Button type='primary' icon={<PlusOutlined />} onClick={handleAdd}>
             生成报告
           </Button>
         </PermissionGuard>
@@ -291,12 +318,12 @@ export default function ReportsPage() {
       <Table
         columns={columns}
         dataSource={reports}
-        rowKey="id"
+        rowKey='id'
         loading={loading}
         pagination={{
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total) => `共 ${total} 条记录`,
+          showTotal: total => `共 ${total} 条记录`,
         }}
       />
 
@@ -307,72 +334,73 @@ export default function ReportsPage() {
           setModalVisible(false);
           setSelectedReport(null);
         }}
-        footer={isViewMode ? [
-          <Button key="close" onClick={() => {
-            setModalVisible(false);
-            setSelectedReport(null);
-          }}>
-            关闭
-          </Button>
-        ] : null}
+        footer={
+          isViewMode
+            ? [
+                <Button
+                  key='close'
+                  onClick={() => {
+                    setModalVisible(false);
+                    setSelectedReport(null);
+                  }}
+                >
+                  关闭
+                </Button>,
+              ]
+            : null
+        }
       >
         <Form
           form={form}
-          layout="vertical"
+          layout='vertical'
           onFinish={handleSubmit}
           disabled={isViewMode}
         >
           <Form.Item
-            name="title"
-            label="报告标题"
+            name='title'
+            label='报告标题'
             rules={[{ required: true, message: '请输入报告标题' }]}
           >
-            <Input placeholder="请输入报告标题" />
+            <Input placeholder='请输入报告标题' />
           </Form.Item>
 
           <Form.Item
-            name="stockSymbol"
-            label="股票代码"
+            name='stockSymbol'
+            label='股票代码'
             rules={[{ required: true, message: '请输入股票代码' }]}
           >
-            <Input placeholder="请输入股票代码" />
+            <Input placeholder='请输入股票代码' />
           </Form.Item>
 
           <Form.Item
-            name="stockName"
-            label="股票名称"
+            name='stockName'
+            label='股票名称'
             rules={[{ required: true, message: '请输入股票名称' }]}
           >
-            <Input placeholder="请输入股票名称" />
+            <Input placeholder='请输入股票名称' />
           </Form.Item>
 
           <Form.Item
-            name="reportType"
-            label="报告类型"
+            name='reportType'
+            label='报告类型'
             rules={[{ required: true, message: '请选择报告类型' }]}
           >
-            <Select placeholder="请选择报告类型">
-              <Option value="technical">技术分析</Option>
-              <Option value="fundamental">基本面分析</Option>
-              <Option value="sentiment">情绪分析</Option>
-              <Option value="forecast">预测分析</Option>
+            <Select placeholder='请选择报告类型'>
+              <Option value='technical'>技术分析</Option>
+              <Option value='fundamental'>基本面分析</Option>
+              <Option value='sentiment'>情绪分析</Option>
+              <Option value='forecast'>预测分析</Option>
             </Select>
           </Form.Item>
 
           {isViewMode && (
             <>
-              <Form.Item
-                name="summary"
-                label="摘要"
-              >
+              <Form.Item name='summary' label='摘要'>
                 <TextArea rows={3} disabled />
               </Form.Item>
 
-              <Form.Item
-                name="confidence"
-                label="置信度"
-              >
-                <Input disabled addonAfter="%" />
+              <Form.Item name='confidence' label='置信度'>
+                <Input disabled addonAfter='%' />
               </Form.Item>
             </>
           )}
@@ -380,12 +408,10 @@ export default function ReportsPage() {
           {!isViewMode && (
             <Form.Item>
               <Space>
-                <Button type="primary" htmlType="submit" loading={loading}>
+                <Button type='primary' htmlType='submit' loading={loading}>
                   生成报告
                 </Button>
-                <Button onClick={() => setModalVisible(false)}>
-                  取消
-                </Button>
+                <Button onClick={() => setModalVisible(false)}>取消</Button>
               </Space>
             </Form.Item>
           )}
@@ -394,8 +420,8 @@ export default function ReportsPage() {
 
       <Drawer
         title={selectedReport?.title}
-        placement="right"
-        size="large"
+        placement='right'
+        size='large'
         onClose={() => {
           setDrawerVisible(false);
           setSelectedReport(null);
@@ -406,19 +432,28 @@ export default function ReportsPage() {
           <div>
             <div style={{ marginBottom: 16 }}>
               <Space>
-                <Tag color="blue">{selectedReport.stockSymbol}</Tag>
+                <Tag color='blue'>{selectedReport.stockSymbol}</Tag>
                 <Tag color={getReportTypeColor(selectedReport.reportType)}>
                   {getReportTypeText(selectedReport.reportType)}
                 </Tag>
-                <Tag color={selectedReport.confidence >= 80 ? 'green' : selectedReport.confidence >= 60 ? 'orange' : 'red'}>
+                <Tag
+                  color={
+                    selectedReport.confidence >= 80
+                      ? 'green'
+                      : selectedReport.confidence >= 60
+                        ? 'orange'
+                        : 'red'
+                  }
+                >
                   置信度: {selectedReport.confidence}%
                 </Tag>
               </Space>
             </div>
-            
+
             <div style={{ marginBottom: 16 }}>
-              <Text type="secondary">
-                创建时间: {new Date(selectedReport.createdAt).toLocaleString('zh-CN')}
+              <Text type='secondary'>
+                创建时间:{' '}
+                {new Date(selectedReport.createdAt).toLocaleString('zh-CN')}
               </Text>
             </div>
 
@@ -429,19 +464,40 @@ export default function ReportsPage() {
 
             <div>
               <Title level={4}>详细内容</Title>
-              <div style={{ 
-                whiteSpace: 'pre-wrap', 
-                backgroundColor: '#f5f5f5', 
-                padding: '16px', 
-                borderRadius: '6px',
-                fontFamily: 'monospace'
-              }}>
+              <div
+                style={{
+                  whiteSpace: 'pre-wrap',
+                  backgroundColor: '#f5f5f5',
+                  padding: '16px',
+                  borderRadius: '6px',
+                  fontFamily: 'monospace',
+                }}
+              >
                 {selectedReport.content || '暂无内容'}
               </div>
             </div>
           </div>
         )}
       </Drawer>
+
+      {/* 合规组件 */}
+      <div style={{ marginTop: '24px', padding: '16px 0' }}>
+        <Disclaimer
+          type='ai-analysis'
+          position='bottom'
+          theme='light'
+          showIcon={true}
+          isClosable={true}
+        />
+        <div style={{ marginTop: '8px' }}>
+          <DataSourceHint
+            position='bottom'
+            theme='light'
+            showIcon={true}
+            isClosable={true}
+          />
+        </div>
+      </div>
     </div>
   );
 }

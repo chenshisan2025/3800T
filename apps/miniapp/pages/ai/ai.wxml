@@ -1,5 +1,28 @@
 <!--pages/ai/ai.wxml-->
 <view class="container">
+  <!-- 骨架屏 -->
+  <skeleton 
+    show="{{loading && !refreshing}}"
+    type="ai"
+    count="4"
+    show-avatar="{{true}}"
+    show-subtitle="{{true}}"
+  />
+  
+  <!-- 错误占位 -->
+  <error-placeholder
+    show="{{error && !loading}}"
+    type="{{errorType}}"
+    title="{{errorTitle}}"
+    description="{{errorDescription}}"
+    show-retry="{{true}}"
+    show-refresh="{{true}}"
+    bind:retry="handleRetry"
+    bind:refresh="handleRefresh"
+  />
+  
+  <!-- 主要内容 -->
+  <view class="ai-content" wx:if="{{!loading && !error}}">
   <!-- 分析类型选择 -->
   <view class="analysis-types">
     <view class="section-title">选择分析类型</view>
@@ -78,8 +101,24 @@
     </view>
   </view>
 
-  <!-- 底部免责声明 -->
-  <view class="disclaimer">
-    <text>AI分析结果仅供参考，不构成投资建议，投资有风险</text>
+    <!-- 合规组件 -->
+    <view class="compliance-section">
+      <disclaimer
+        type="ai"
+        position="bottom"
+        theme="light"
+        show-icon="{{true}}"
+        closable="{{true}}"
+        custom-class="ai-disclaimer"
+      />
+      <data-source-hint
+        type="realtime"
+        position="bottom"
+        theme="light"
+        show-icon="{{true}}"
+        closable="{{true}}"
+        custom-class="ai-data-hint"
+      />
+    </view>
   </view>
 </view>

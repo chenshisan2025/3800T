@@ -1,5 +1,28 @@
 <!--pages/asset/asset.wxml-->
 <view class="container">
+  <!-- 骨架屏 -->
+  <skeleton 
+    show="{{loading && !refreshing}}"
+    type="market"
+    count="6"
+    show-avatar="{{false}}"
+    show-subtitle="{{true}}"
+  />
+  
+  <!-- 错误占位 -->
+  <error-placeholder
+    show="{{error && !loading}}"
+    type="{{errorType}}"
+    title="{{errorTitle}}"
+    description="{{errorDescription}}"
+    show-retry="{{true}}"
+    show-refresh="{{true}}"
+    bind:retry="handleRetry"
+    bind:refresh="handleRefresh"
+  />
+  
+  <!-- 主要内容 -->
+  <view class="asset-content" wx:if="{{!loading && !error}}">
   <!-- 搜索栏 -->
   <view class="search-bar">
     <view class="search-input-wrapper">
@@ -36,8 +59,24 @@
     </view>
   </view>
 
-  <!-- 底部免责声明 -->
-  <view class="disclaimer">
-    <text>本应用所提供的信息仅供参考，不构成投资建议</text>
+    <!-- 合规组件 -->
+    <view class="compliance-section">
+      <disclaimer 
+        type="investment"
+        position="bottom"
+        theme="light"
+        show-icon="{{true}}"
+        closable="{{true}}"
+        custom-class="disclaimer-margin"
+      />
+      <data-source-hint 
+        type="realtime"
+        position="bottom"
+        theme="light"
+        show-icon="{{true}}"
+        closable="{{false}}"
+        custom-class="data-hint-margin"
+      />
+    </view>
   </view>
 </view>

@@ -1,0 +1,62 @@
+# CODEOWNERS文件 - 定义代码审查负责人
+# 详细语法参考: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# 全局默认负责人
+* @gulingtong-team
+
+# 根目录配置文件
+/.github/ @gulingtong-team @tech-lead
+/package.json @gulingtong-team @tech-lead
+/pnpm-workspace.yaml @gulingtong-team @tech-lead
+/.eslintrc.json @gulingtong-team @tech-lead
+/.prettierrc @gulingtong-team @tech-lead
+/commitlint.config.js @gulingtong-team @tech-lead
+
+# 构建和部署配置
+/scripts/ @gulingtong-team @devops-team
+/Dockerfile @gulingtong-team @devops-team
+/docker-compose.yml @gulingtong-team @devops-team
+/.husky/ @gulingtong-team @tech-lead
+
+# 后端API服务
+/services/api/ @backend-team @tech-lead
+/services/api/prisma/ @backend-team @database-team
+/services/api/src/app/api/ @backend-team
+/services/api/src/lib/ @backend-team
+
+# 前端管理后台
+/apps/admin/ @frontend-team @admin-team
+/apps/admin/src/components/ @frontend-team
+/apps/admin/src/pages/ @frontend-team @admin-team
+/apps/admin/src/hooks/ @frontend-team
+
+# 移动端应用
+/apps/mobile/ @mobile-team @flutter-team
+/apps/mobile/lib/ @mobile-team @flutter-team
+/apps/mobile/android/ @mobile-team @android-team
+/apps/mobile/ios/ @mobile-team @ios-team
+
+# 微信小程序
+/apps/miniapp/ @miniapp-team @frontend-team
+/apps/miniapp/pages/ @miniapp-team
+/apps/miniapp/components/ @miniapp-team
+
+# 共享SDK
+/packages/shared-sdk/ @sdk-team @backend-team
+/packages/shared-sdk/src/ @sdk-team
+/packages/shared-sdk/openapi/ @sdk-team @backend-team
+
+# 数据库相关
+*.sql @database-team @backend-team
+/services/api/prisma/migrations/ @database-team @backend-team
+/services/api/prisma/schema.prisma @database-team @backend-team
+
+# 安全相关文件
+*.env.example @security-team @tech-lead
+/services/api/src/middleware/auth.ts @security-team @backend-team
+/services/api/src/lib/auth/ @security-team @backend-team
+
+# 文档
+*.md @docs-team @tech-lead
+/docs/ @docs-team
+README.md @gulingtong-team @tech-lead

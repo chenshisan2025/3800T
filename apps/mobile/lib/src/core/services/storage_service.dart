@@ -142,6 +142,19 @@ class StorageService {
     final prefs = await _preferences;
     return prefs.getKeys();
   }
+
+  // 获取认证token
+  Future<String?> getToken() async {
+    return getString(StorageKeys.authToken);
+  }
+
+  // 清除认证token
+  Future<bool> clearToken() async {
+    final prefs = await _preferences;
+    await prefs.remove(StorageKeys.authToken);
+    await prefs.remove(StorageKeys.refreshToken);
+    return true;
+  }
 }
 
 // 存储键常量
@@ -154,4 +167,6 @@ class StorageKeys {
   static const String language = 'language';
   static const String onboardingCompleted = 'onboarding_completed';
   static const String lastSyncTime = 'last_sync_time';
+  static const String authToken = 'auth_token';
+  static const String refreshToken = 'refresh_token';
 }

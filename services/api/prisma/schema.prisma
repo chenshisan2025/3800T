@@ -28,6 +28,7 @@ model User {
   aiReports     AiReport[]
   alerts        Alert[]
   notifications Notification[]
+  idempotencyRecords NotificationIdempotency[]
 
   @@map("users")
 }
@@ -49,6 +50,8 @@ model Stock {
   aiReports     AiReport[]
   stockData     StockData[]
   alerts        Alert[]
+  notifications Notification[]
+  idempotencyRecords NotificationIdempotency[]
 
   @@map("stocks")
 }
@@ -85,41 +88,49 @@ model Watchlist {
   @@map("watchlist")
 }
 
-// 提醒规则表
+// 提醒规则表 (扩展支持告警引擎)
 model Alert {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId      String   @map("user_id") @db.Uuid
-  watchlistId String   @map("watchlist_id") @db.Uuid
+  watchlistId String?  @map("watchlist_id") @db.Uuid // 可选，支持非自选股的告警
   stockSymbol String   @map("stock_symbol")
-  condition   String   // "gte" (>=) or "lte" (<=)
-  targetPrice Decimal  @map("target_price") @db.Decimal(10, 3)
+  ruleType    String   @map("rule_type") // "price_above", "price_below", "price_change", "gte", "lte"
+  condition   String?  // 保留兼容性，"gte" (>=) or "lte" (<=)
+  targetPrice Decimal? @map("target_price") @db.Decimal(10, 3)
+  changePercent Decimal? @map("change_percent") @db.Decimal(5, 2) // 涨跌幅百分比
+  message     String?
   isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   // 关联关系
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  watchlist Watchlist   @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  watchlist Watchlist?  @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
   stock     Stock       @relation(fields: [stockSymbol], references: [symbol])
   notifications Notification[]
+  idempotencyRecords NotificationIdempotency[]
 
   @@map("alerts")
 }
 
-// 通知表
+// 通知表 (扩展支持告警引擎)
 model Notification {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String   @map("user_id") @db.Uuid
   alertId   String?  @map("alert_id") @db.Uuid
-  type      String   // "price_alert", "system", etc.
+  stockSymbol String? @map("stock_symbol") // 冗余字段，便于查询
+  type      String   // "price_alert", "system", "scan_result", etc.
   title     String
   message   String
+  metadata  Json?    // 额外的元数据，如价格信息等
   isRead    Boolean  @default(false) @map("is_read")
+  priority  String   @default("normal") // "high", "normal", "low"
   createdAt DateTime @default(now()) @map("created_at")
 
   // 关联关系
   user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   alert Alert? @relation(fields: [alertId], references: [id], onDelete: SetNull)
+  stock Stock? @relation(fields: [stockSymbol], references: [symbol], onDelete: SetNull)
 
   @@map("notifications")
 }
@@ -206,4 +217,44 @@ model AuditLog {
   createdAt  DateTime @default(now()) @map("created_at")
 
   @@map("audit_logs")
+}
+
+// 通知幂等表 (防止重复通知)
+model NotificationIdempotency {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  alertId     String   @map("alert_id") @db.Uuid
+  stockSymbol String   @map("stock_symbol")
+  ruleType    String   @map("rule_type")
+  notifyDate  DateTime @map("notify_date") @db.Date // 通知日期，用于按天幂等
+  idempotencyKey String @map("idempotency_key") // user+symbol+rule+day 组合键
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  alert Alert @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  stock Stock @relation(fields: [stockSymbol], references: [symbol])
+
+  @@unique([idempotencyKey]) // 确保幂等键唯一
+  @@index([userId, notifyDate]) // 优化查询性能
+  @@map("notification_idempotency")
+}
+
+// 扫描日志表 (记录告警扫描历史)
+model ScanLog {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  scanType      String   @map("scan_type") // "scheduled", "manual"
+  status        String   // "running", "completed", "failed"
+  startTime     DateTime @map("start_time")
+  endTime       DateTime? @map("end_time")
+  duration      Int?     // 扫描耗时(毫秒)
+  rulesScanned  Int      @default(0) @map("rules_scanned") // 扫描的规则数量
+  rulesMatched  Int      @default(0) @map("rules_matched") // 命中的规则数量
+  notifications Int      @default(0) // 生成的通知数量
+  errors        Json?    // 错误信息
+  metadata      Json?    // 扫描元数据
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@index([scanType, createdAt]) // 优化查询性能
+  @@map("scan_logs")
 }

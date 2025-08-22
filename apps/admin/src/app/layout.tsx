@@ -49,17 +49,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN">
+    <html lang='zh-CN'>
       <body className={inter.className}>
         <AntdRegistry>
           <ConfigProvider
             locale={zhCN}
             theme={antdTheme}
-            componentSize="middle"
+            componentSize='middle'
           >
-            <AuthProvider>
-              {children}
-            </AuthProvider>
+            <AuthProvider>{children}</AuthProvider>
           </ConfigProvider>
         </AntdRegistry>
       </body>

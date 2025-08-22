@@ -65,19 +65,22 @@ export class FundamentalAnalyzer {
         fields: ['price', 'change', 'change_percent', 'volume', 'market_cap'],
       });
 
-      const stockData = quotesResponse.find(quote => quote.data.code === stockCode);
+      const stockData = quotesResponse.find(quote => quote.code === stockCode);
       if (!stockData) {
         throw new Error(`未找到股票 ${stockCode} 的行情数据`);
       }
 
-      const quote = stockData.data;
+      const quote = stockData;
 
       // 模拟基本面指标计算（基于行情数据）
       const keyMetrics = this.calculateKeyMetrics(quote);
-      
+
       // 评估基本面强度
-      const fundamentalStrength = this.assessFundamentalStrength(keyMetrics, stockData);
-      
+      const fundamentalStrength = this.assessFundamentalStrength(
+        keyMetrics,
+        stockData
+      );
+
       // 生成分析内容
       let analysis: string;
       let strengths: string[];
@@ -135,7 +138,6 @@ export class FundamentalAnalyzer {
       });
 
       return result;
-
     } catch (error) {
       logger.error('基本面分析失败', {
         stock_code: stockCode,
@@ -152,7 +154,7 @@ export class FundamentalAnalyzer {
     // 基于行情数据模拟计算基本面指标
     const price = stockData.price || 0;
     const marketCap = stockData.market_cap || price * 1000000; // 模拟市值
-    
+
     // 模拟财务指标（实际应用中应从财务数据获取）
     const peRatio = Math.round((15 + Math.random() * 20) * 100) / 100; // 15-35倍PE
     const pbRatio = Math.round((1 + Math.random() * 4) * 100) / 100; // 1-5倍PB
@@ -172,34 +174,37 @@ export class FundamentalAnalyzer {
   /**
    * 评估基本面强度
    */
-  private assessFundamentalStrength(keyMetrics: any, stockData: any): 'strong' | 'moderate' | 'weak' {
+  private assessFundamentalStrength(
+    keyMetrics: any,
+    stockData: any
+  ): 'strong' | 'moderate' | 'weak' {
     let score = 0;
-    
+
     // PE估值评分
     if (keyMetrics.pe_ratio < 20) score += 2;
     else if (keyMetrics.pe_ratio < 30) score += 1;
-    
+
     // PB估值评分
     if (keyMetrics.pb_ratio < 2) score += 2;
     else if (keyMetrics.pb_ratio < 3) score += 1;
-    
+
     // ROE盈利能力评分
     if (keyMetrics.roe > 15) score += 2;
     else if (keyMetrics.roe > 10) score += 1;
-    
+
     // 负债率评分
     if (keyMetrics.debt_ratio < 40) score += 2;
     else if (keyMetrics.debt_ratio < 60) score += 1;
-    
+
     // 收入增长评分
     if (keyMetrics.revenue_growth > 15) score += 2;
     else if (keyMetrics.revenue_growth > 5) score += 1;
-    
+
     // 股价表现评分
     const changePercent = stockData.change_percent || 0;
     if (changePercent > 2) score += 1;
     else if (changePercent < -2) score -= 1;
-    
+
     if (score >= 7) return 'strong';
     if (score >= 4) return 'moderate';
     return 'weak';
@@ -216,47 +221,57 @@ export class FundamentalAnalyzer {
   ) {
     const templates = this.templates[strength];
     const analysis = templates[Math.floor(Math.random() * templates.length)];
-    
+
     const strengths: string[] = [];
     const weaknesses: string[] = [];
-    
+
     // 根据指标生成优势和劣势
     if (keyMetrics.pe_ratio < 25) {
-      strengths.push(`市盈率${keyMetrics.pe_ratio}倍，估值相对合理，显示出良好的投资价值倾向`);
+      strengths.push(
+        `市盈率${keyMetrics.pe_ratio}倍，估值相对合理，显示出良好的投资价值倾向`
+      );
     } else {
       weaknesses.push(`市盈率${keyMetrics.pe_ratio}倍偏高，存在估值压力的情景`);
     }
-    
+
     if (keyMetrics.roe > 12) {
       strengths.push(`净资产收益率${keyMetrics.roe}%，盈利能力表现积极`);
     } else {
       weaknesses.push(`净资产收益率${keyMetrics.roe}%，盈利能力有待提升`);
     }
-    
+
     if (keyMetrics.debt_ratio < 50) {
       strengths.push(`负债率${keyMetrics.debt_ratio}%，财务结构相对稳健`);
     } else {
       weaknesses.push(`负债率${keyMetrics.debt_ratio}%，需关注财务风险情景`);
     }
-    
+
     if (keyMetrics.revenue_growth > 10) {
-      strengths.push(`营收增长${keyMetrics.revenue_growth}%，业务发展呈现良好倾向`);
+      strengths.push(
+        `营收增长${keyMetrics.revenue_growth}%，业务发展呈现良好倾向`
+      );
     } else if (keyMetrics.revenue_growth < 0) {
-      weaknesses.push(`营收增长${keyMetrics.revenue_growth}%，业务面临下滑压力`);
+      weaknesses.push(
+        `营收增长${keyMetrics.revenue_growth}%，业务面临下滑压力`
+      );
     }
-    
+
     // 生成展望
     let outlook: string;
     if (strength === 'strong') {
-      outlook = '基于当前基本面分析，公司展现出稳健的经营基础，未来发展前景呈现积极倾向，建议持续关注其业绩表现情景。';
+      outlook =
+        '基于当前基本面分析，公司展现出稳健的经营基础，未来发展前景呈现积极倾向，建议持续关注其业绩表现情景。';
     } else if (strength === 'moderate') {
-      outlook = '公司基本面表现中等，具备一定的投资价值，但需密切关注行业变化和公司经营改善情景。';
+      outlook =
+        '公司基本面表现中等，具备一定的投资价值，但需密切关注行业变化和公司经营改善情景。';
     } else {
-      outlook = '当前基本面存在一定挑战，建议谨慎评估投资风险，关注公司后续改善措施的实施情景。';
+      outlook =
+        '当前基本面存在一定挑战，建议谨慎评估投资风险，关注公司后续改善措施的实施情景。';
     }
-    
-    const confidence = strength === 'strong' ? 0.8 : strength === 'moderate' ? 0.65 : 0.5;
-    
+
+    const confidence =
+      strength === 'strong' ? 0.8 : strength === 'moderate' ? 0.65 : 0.5;
+
     return {
       analysis,
       strengths,
@@ -307,10 +322,15 @@ export class FundamentalAnalyzer {
         stock_code: stockCode,
         error: error instanceof Error ? error.message : String(error),
       });
-      
+
       // 回退到模板分析
       const strength = this.assessFundamentalStrength(keyMetrics, stockData);
-      return this.generateTemplateAnalysis(stockCode, stockData, keyMetrics, strength);
+      return this.generateTemplateAnalysis(
+        stockCode,
+        stockData,
+        keyMetrics,
+        strength
+      );
     }
   }
 
@@ -322,7 +342,7 @@ export class FundamentalAnalyzer {
       // 检查数据提供者是否可用
       const dataManager = getDataProviderManager();
       const healthStatus = await dataManager.healthCheck();
-      
+
       return healthStatus.primary || healthStatus.fallback;
     } catch (error) {
       logger.error('FundamentalAnalyzer健康检查失败', {

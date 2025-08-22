@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { codes, market, fields } = validation.data;
-    
+
     logger.info('获取股票报价请求', {
       codes,
       market,
@@ -51,7 +51,6 @@ export async function GET(request: NextRequest) {
         count: quotesData.length,
       },
     });
-
   } catch (error) {
     logger.error('获取股票报价失败', {
       error: error instanceof Error ? error.message : String(error),

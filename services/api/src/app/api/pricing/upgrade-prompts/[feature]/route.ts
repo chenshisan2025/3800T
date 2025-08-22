@@ -11,8 +11,8 @@ const UPGRADE_PROMPTS = {
       '专业级技术分析报告',
       '基本面数据深度解读',
       '个股投资建议评级',
-      '行业对比分析'
-    ]
+      '行业对比分析',
+    ],
   },
   watchlistLimit: {
     title: '扩展自选股容量',
@@ -23,8 +23,8 @@ const UPGRADE_PROMPTS = {
       '自选股数量提升至100只',
       '支持无限分组管理',
       '批量添加和删除操作',
-      '自选股数据同步备份'
-    ]
+      '自选股数据同步备份',
+    ],
   },
   alertLimit: {
     title: '增加价格提醒',
@@ -35,8 +35,8 @@ const UPGRADE_PROMPTS = {
       '价格提醒数量提升至50个',
       '支持涨跌幅、成交量等多种提醒条件',
       '微信、短信、邮件多渠道通知',
-      '智能提醒时间设置'
-    ]
+      '智能提醒时间设置',
+    ],
   },
   realTimeData: {
     title: '实时行情数据',
@@ -47,8 +47,8 @@ const UPGRADE_PROMPTS = {
       '实时价格数据推送',
       '五档盘口买卖数据',
       '实时分时图表',
-      '成交明细数据'
-    ]
+      '成交明细数据',
+    ],
   },
   exportData: {
     title: '数据导出功能',
@@ -59,8 +59,8 @@ const UPGRADE_PROMPTS = {
       '支持CSV、Excel、PDF多种格式',
       '自定义报表模板',
       '历史数据批量下载',
-      '投资组合分析报告导出'
-    ]
+      '投资组合分析报告导出',
+    ],
   },
   advancedCharts: {
     title: '高级图表工具',
@@ -71,9 +71,9 @@ const UPGRADE_PROMPTS = {
       '50+专业技术指标',
       '自定义图表样式和布局',
       '多时间周期切换',
-      '图表标注和画线工具'
-    ]
-  }
+      '图表标注和画线工具',
+    ],
+  },
 };
 
 /**
@@ -86,32 +86,32 @@ export async function GET(
 ) {
   try {
     const { feature } = params;
-    
+
     const prompt = UPGRADE_PROMPTS[feature as keyof typeof UPGRADE_PROMPTS];
-    
+
     if (!prompt) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Feature not found'
+          error: 'Feature not found',
         },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json({
       success: true,
       data: {
         feature,
-        ...prompt
-      }
+        ...prompt,
+      },
     });
   } catch (error) {
     console.error('Error fetching upgrade prompt:', error);
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to fetch upgrade prompt'
+        error: 'Failed to fetch upgrade prompt',
       },
       { status: 500 }
     );

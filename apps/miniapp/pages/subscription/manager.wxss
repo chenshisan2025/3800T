@@ -1,0 +1,314 @@
+/* 订阅管理页面样式 */
+.subscription-manager {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 120rpx;
+}
+
+/* 页面标题 */
+.header {
+  background: #fff;
+  padding: 40rpx 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 快捷操作 */
+.quick-actions {
+  display: flex;
+  gap: 20rpx;
+  padding: 0 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn.primary {
+  background: #1890ff;
+  color: #fff;
+}
+
+.action-btn.secondary {
+  background: #fff;
+  color: #666;
+  border: 2rpx solid #e8e8e8;
+}
+
+.action-btn.tertiary {
+  background: #f0f9ff;
+  color: #1890ff;
+  border: 2rpx solid #b3d8ff;
+}
+
+.action-btn:active {
+  opacity: 0.8;
+}
+
+/* 分类列表 */
+.category-list {
+  padding: 0 30rpx;
+}
+
+.category-section {
+  background: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+}
+
+/* 分类标题 */
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 2rpx solid #f5f5f5;
+  background: #fafafa;
+}
+
+.category-info {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.category-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.category-count {
+  font-size: 24rpx;
+  color: #999;
+  background: #f0f0f0;
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.category-toggle {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.category-toggle.expanded {
+  transform: rotate(180deg);
+}
+
+.icon-arrow-down::before {
+  content: '▼';
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 分类内容 */
+.category-content {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.category-content.hide {
+  max-height: 0;
+  opacity: 0;
+}
+
+.category-content.show {
+  max-height: 2000rpx;
+  opacity: 1;
+}
+
+/* 订阅项 */
+.subscription-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+.subscription-item:last-child {
+  border-bottom: none;
+}
+
+.subscription-info {
+  flex: 1;
+  margin-right: 30rpx;
+}
+
+.subscription-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.subscription-icon {
+  font-size: 32rpx;
+}
+
+.subscription-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.priority-badge {
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  color: #fff;
+}
+
+.priority-badge.high {
+  background: #ff4d4f;
+}
+
+.priority-badge.medium {
+  background: #faad14;
+}
+
+.priority-badge.low {
+  background: #52c41a;
+}
+
+.subscription-desc {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+.subscription-control {
+  flex-shrink: 0;
+}
+
+/* 底部操作栏 */
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  padding: 30rpx;
+  border-top: 2rpx solid #f0f0f0;
+  z-index: 100;
+}
+
+.save-btn {
+  width: 100%;
+  height: 88rpx;
+  background: #1890ff;
+  color: #fff;
+  border: none;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+}
+
+.save-btn:disabled {
+  background: #d9d9d9;
+  color: #999;
+}
+
+.save-btn:not(:disabled):active {
+  background: #096dd9;
+}
+
+/* 加载状态 */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
+}
+
+.loading-overlay.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-overlay.show {
+  opacity: 1;
+}
+
+.loading-content {
+  background: #fff;
+  padding: 60rpx 40rpx;
+  border-radius: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30rpx;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid #f0f0f0;
+  border-top: 4rpx solid #1890ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 响应式适配 */
+@media (max-width: 750rpx) {
+  .quick-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    margin-bottom: 10rpx;
+  }
+  
+  .subscription-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20rpx;
+  }
+  
+  .subscription-control {
+    align-self: flex-end;
+  }
+}

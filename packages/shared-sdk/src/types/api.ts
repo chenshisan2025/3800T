@@ -509,7 +509,11 @@ export type PortfolioItemListResponse = SuccessResponse<{
 /**
  * 报告类型
  */
-export type ReportType = 'technical' | 'fundamental' | 'sentiment' | 'recommendation';
+export type ReportType =
+  | 'technical'
+  | 'fundamental'
+  | 'sentiment'
+  | 'recommendation';
 
 /**
  * 投资建议
@@ -615,7 +619,7 @@ export type ExtractData<T> = T extends SuccessResponse<infer U> ? U : never;
 export const API_ENDPOINTS = {
   // 健康检查
   HEALTH: '/api/health',
-  
+
   // 认证
   AUTH: {
     REGISTER: '/api/auth/register',
@@ -624,28 +628,29 @@ export const API_ENDPOINTS = {
     MAGIC_LINK: '/api/auth/magic-link',
     ME: '/api/auth/me',
   },
-  
+
   // 股票
   STOCKS: {
     LIST: '/api/stocks',
     DETAIL: (code: string) => `/api/stocks/${code}`,
     DATA: (code: string) => `/api/stocks/${code}/data`,
   },
-  
+
   // 自选股
   WATCHLIST: {
     LIST: '/api/users/watchlist',
     ITEM: (id: number) => `/api/users/watchlist/${id}`,
   },
-  
+
   // 投资组合
   PORTFOLIO: {
     LIST: '/api/users/portfolio',
     DETAIL: (id: number) => `/api/users/portfolio/${id}`,
     ITEMS: (id: number) => `/api/users/portfolio/${id}/items`,
-    ITEM: (id: number, itemId: number) => `/api/users/portfolio/${id}/items/${itemId}`,
+    ITEM: (id: number, itemId: number) =>
+      `/api/users/portfolio/${id}/items/${itemId}`,
   },
-  
+
   // AI 报告
   AI_REPORTS: {
     LIST: '/api/ai/reports',
@@ -680,22 +685,25 @@ export interface ApiRequestConfig {
 export interface ApiClient {
   /** 发送请求 */
   request<T = any>(config: ApiRequestConfig): Promise<ApiResponse<T>>;
-  
+
   /** GET 请求 */
-  get<T = any>(url: string, params?: Record<string, any>): Promise<ApiResponse<T>>;
-  
+  get<T = any>(
+    url: string,
+    params?: Record<string, any>
+  ): Promise<ApiResponse<T>>;
+
   /** POST 请求 */
   post<T = any>(url: string, data?: any): Promise<ApiResponse<T>>;
-  
+
   /** PUT 请求 */
   put<T = any>(url: string, data?: any): Promise<ApiResponse<T>>;
-  
+
   /** DELETE 请求 */
   delete<T = any>(url: string): Promise<ApiResponse<T>>;
-  
+
   /** 设置认证令牌 */
   setAuthToken(token: string): void;
-  
+
   /** 清除认证令牌 */
   clearAuthToken(): void;
 }

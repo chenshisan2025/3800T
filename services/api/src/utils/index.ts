@@ -12,7 +12,7 @@ export const jwtUtils = {
     }
     return jwt.sign(payload, secret, { expiresIn } as any);
   },
-  
+
   verify: (token: string) => {
     const secret = process.env.JWT_SECRET;
     if (!secret) {
@@ -26,13 +26,41 @@ export const jwtUtils = {
   },
 };
 
+// JWT 验证函数（用于测试兼容性）
+export async function verifyJWT(token: string): Promise<{
+  valid: boolean;
+  payload?: any;
+  error?: string;
+}> {
+  try {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      return {
+        valid: false,
+        error: 'JWT_SECRET 环境变量未设置',
+      };
+    }
+
+    const payload = jwt.verify(token, secret);
+    return {
+      valid: true,
+      payload,
+    };
+  } catch (error) {
+    return {
+      valid: false,
+      error: error instanceof Error ? error.message : 'Invalid token',
+    };
+  }
+}
+
 // 密码加密工具
 export const passwordUtils = {
   hash: async (password: string): Promise<string> => {
     const saltRounds = 12;
     return bcrypt.hash(password, saltRounds);
   },
-  
+
   compare: async (password: string, hash: string): Promise<boolean> => {
     return bcrypt.compare(password, hash);
   },
@@ -46,13 +74,14 @@ export const apiResponse = {
       data,
       message: message || '操作成功',
       disclaimer: {
-        investment_notice: '本平台提供的信息仅供参考，不构成投资建议。投资有风险，决策需谨慎。',
+        investment_notice:
+          '本平台提供的信息仅供参考，不构成投资建议。投资有风险，决策需谨慎。',
         data_notice: '数据可能存在延迟，请以官方数据为准。',
-        ai_notice: 'AI分析结果仅供参考，不保证准确性，请结合多方信息独立判断。'
-      }
+        ai_notice: 'AI分析结果仅供参考，不保证准确性，请结合多方信息独立判断。',
+      },
     });
   },
-  
+
   error: (message: string, status: number = 400, code?: string) => {
     return NextResponse.json(
       {
@@ -65,7 +94,7 @@ export const apiResponse = {
       { status }
     );
   },
-  
+
   unauthorized: (message: string = '未授权访问') => {
     return NextResponse.json(
       {
@@ -78,7 +107,7 @@ export const apiResponse = {
       { status: 401 }
     );
   },
-  
+
   forbidden: (message: string = '权限不足') => {
     return NextResponse.json(
       {
@@ -91,7 +120,7 @@ export const apiResponse = {
       { status: 403 }
     );
   },
-  
+
   notFound: (message: string = '资源不存在') => {
     return NextResponse.json(
       {
@@ -104,7 +133,7 @@ export const apiResponse = {
       { status: 404 }
     );
   },
-  
+
   serverError: (message: string = '服务器内部错误') => {
     return NextResponse.json(
       {
@@ -123,7 +152,9 @@ export const apiResponse = {
 export function validateRequest<T>(
   request: NextRequest,
   schema: z.ZodSchema<T>
-): Promise<{ success: true; data: T } | { success: false; error: NextResponse }>;
+): Promise<
+  { success: true; data: T } | { success: false; error: NextResponse }
+>;
 export function validateRequest<T>(
   schema: z.ZodSchema<T>,
   data: unknown
@@ -133,12 +164,17 @@ export function validateRequest<T>(
 export function validateRequest<T>(
   requestOrSchema: NextRequest | z.ZodSchema<T>,
   schemaOrData?: z.ZodSchema<T> | unknown
-): Promise<{ success: true; data: T } | { success: false; error: NextResponse }> | { success: true; data: T } | { success: false; error: NextResponse } {
+):
+  | Promise<
+      { success: true; data: T } | { success: false; error: NextResponse }
+    >
+  | { success: true; data: T }
+  | { success: false; error: NextResponse } {
   // 如果第一个参数是NextRequest，则是异步版本
   if (requestOrSchema instanceof NextRequest) {
     const request = requestOrSchema;
     const schema = schemaOrData as z.ZodSchema<T>;
-    
+
     return (async () => {
       try {
         const body = await request.json();
@@ -147,11 +183,15 @@ export function validateRequest<T>(
       } catch (error) {
         if (error instanceof z.ZodError) {
           const errorMessage = error.errors
-            .map((err) => `${err.path.join('.')}: ${err.message}`)
+            .map(err => `${err.path.join('.')}: ${err.message}`)
             .join(', ');
           return {
             success: false,
-            error: apiResponse.error(`参数验证失败: ${errorMessage}`, 400, 'VALIDATION_ERROR'),
+            error: apiResponse.error(
+              `参数验证失败: ${errorMessage}`,
+              400,
+              'VALIDATION_ERROR'
+            ),
           };
         }
         return {
@@ -161,22 +201,26 @@ export function validateRequest<T>(
       }
     })();
   }
-  
+
   // 否则是同步版本
   const schema = requestOrSchema as z.ZodSchema<T>;
   const data = schemaOrData;
-  
+
   try {
     const validData = schema.parse(data);
     return { success: true, data: validData };
   } catch (error) {
     if (error instanceof z.ZodError) {
       const errorMessage = error.errors
-        .map((err) => `${err.path.join('.')}: ${err.message}`)
+        .map(err => `${err.path.join('.')}: ${err.message}`)
         .join(', ');
       return {
         success: false,
-        error: apiResponse.error(`参数验证失败: ${errorMessage}`, 400, 'VALIDATION_ERROR'),
+        error: apiResponse.error(
+          `参数验证失败: ${errorMessage}`,
+          400,
+          'VALIDATION_ERROR'
+        ),
       };
     }
     return {
@@ -193,7 +237,7 @@ export const paginationUtils = {
     const take = Math.min(limit, 100); // 最大限制 100 条
     return { skip, take };
   },
-  
+
   createPaginationResponse: <T>(
     data: T[],
     total: number,
@@ -220,13 +264,13 @@ export const dateUtils = {
   formatDate: (date: Date): string => {
     return date.toISOString().split('T')[0];
   },
-  
+
   addDays: (date: Date, days: number): Date => {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
     return result;
   },
-  
+
   isValidDateRange: (startDate: string, endDate: string): boolean => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -241,12 +285,12 @@ export const stockUtils = {
     const aSharePattern = /^[0-9]{6}$/;
     return aSharePattern.test(code);
   },
-  
+
   formatStockCode: (code: string): string => {
     // 确保股票代码为6位数字，不足前面补0
     return code.padStart(6, '0');
   },
-  
+
   getMarketFromCode: (code: string): 'SH' | 'SZ' | 'BJ' => {
     const numCode = parseInt(code);
     if (numCode >= 600000 && numCode <= 699999) return 'SH'; // 上海主板
@@ -259,10 +303,10 @@ export const stockUtils = {
 // 错误处理工具
 export const handleApiError = (error: unknown, context: string = 'API') => {
   console.error(`[${context}] 错误:`, error);
-  
+
   if (error instanceof Error) {
     return apiResponse.serverError(error.message);
   }
-  
+
   return apiResponse.serverError('未知错误');
 };

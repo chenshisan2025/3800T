@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { logger } from '@/lib/logger';
+import { createRequestLogger } from '@/lib/logger';
 import { validateRequest } from '@/lib/utils/validation';
 import { dataProviderManager } from '@/lib/providers/DataProviderManager';
 import { KlineQuerySchema } from '@/types';
@@ -15,6 +15,7 @@ type KlineQuery = z.infer<typeof KlineQuerySchema>;
  * 获取K线数据
  */
 export async function GET(request: NextRequest) {
+  const logger = createRequestLogger(request);
   try {
     // 验证请求参数
     const validation = await validateRequest(request, QuerySchema);
@@ -22,8 +23,9 @@ export async function GET(request: NextRequest) {
       return validation.response;
     }
 
-    const { code, period, start_date, end_date, limit, adjust } = validation.data;
-    
+    const { code, period, start_date, end_date, limit, adjust } =
+      validation.data;
+
     logger.info('获取K线数据请求', {
       code,
       period,

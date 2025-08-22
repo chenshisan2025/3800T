@@ -6,106 +6,223 @@ import '../../../core/services/network_service.dart';
 import '../../../core/utils/logger.dart';
 import '../models/user_model.dart';
 import '../models/auth_state.dart';
+import '../../../core/services/network_service.dart';
 import '../services/auth_service.dart';
 
-/// 认证状态提供者
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  final authService = ref.watch(authServiceProvider);
-  final storageService = ref.watch(storageServiceProvider);
-  return AuthNotifier(authService, storageService);
-});
-
 /// 当前用户提供者
-final currentUserProvider = Provider<UserModel?>((ref) {
-  final authState = ref.watch(authProvider);
-  return authState.user;
+final currentUserProvider = AsyncNotifierProvider<CurrentUserNotifier, UserModel?>(() {
+  return CurrentUserNotifier();
 });
 
-/// 认证状态管理器
-class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthService _authService;
-  final StorageService _storageService;
-  
-  AuthNotifier(this._authService, this._storageService) 
-      : super(const AuthState.initial()) {
-    _initializeAuth();
+/// 便捷的认证状态检查提供者
+final isAuthenticatedProvider = Provider<bool>((ref) {
+  final user = ref.watch(currentUserProvider);
+  return user.hasValue && user.value != null;
+});
+
+/// 便捷的加载状态检查提供者
+final isAuthLoadingProvider = Provider<bool>((ref) {
+  final user = ref.watch(currentUserProvider);
+  return user.isLoading;
+});
+
+/// 便捷的错误状态检查提供者
+final authErrorProvider = Provider<String?>((ref) {
+  final user = ref.watch(currentUserProvider);
+  return user.hasError ? user.error.toString() : null;
+});
+
+/// 最后登录时间提供者
+final lastLoginTimeProvider = Provider<DateTime?>((ref) {
+  final authState = ref.watch(currentUserProvider);
+  return authState.when(
+    data: (user) => user?.lastLoginAt,
+    loading: () => null,
+    error: (_, __) => null,
+  );
+});
+
+/// 会话有效性检查提供者
+final isSessionValidProvider = Provider<bool>((ref) {
+  final authState = ref.watch(currentUserProvider);
+  return authState.when(
+    data: (user) {
+      if (user == null) return false;
+      final lastLogin = user.lastLoginAt;
+      if (lastLogin == null) return false;
+      final now = DateTime.now();
+      final difference = now.difference(lastLogin);
+      return difference.inDays < 30; // 30天内有效
+    },
+    loading: () => false,
+    error: (_, __) => false,
+  );
+});
+
+/// 认证操作提供者
+final authActionsProvider = Provider<AuthActions>((ref) {
+  return AuthActions(ref);
+});
+
+/// 当前用户状态管理器
+class CurrentUserNotifier extends AsyncNotifier<UserModel?> {
+  late AuthService _authService;
+  late StorageService _storageService;
+
+  @override
+  Future<UserModel?> build() async {
+    _authService = ref.read(authServiceProvider);
+    _storageService = ref.read(storageServiceProvider);
+    return await _initializeAuth();
   }
   
-  /// 初始化认证状态
-  Future<void> _initializeAuth() async {
+  Future<UserModel?> _initializeAuth() async {
     try {
-      state = state.copyWith(isLoading: true);
-      
-      // 检查本地存储的 token
-      final token = await _storageService.getToken();
-      if (token == null) {
-        state = const AuthState.unauthenticated();
-        return;
+      // 检查本地存储的token
+      final token = await _storageService.getString('auth_token');
+      if (token == null || token.isEmpty) {
+        return null;
       }
-      
-      // 验证 token 有效性并获取用户信息
+
+      // 获取用户信息来验证token
       final user = await _authService.getCurrentUser();
       if (user != null) {
-        state = AuthState.authenticated(user);
-        Logger.auth('用户认证成功', userId: user.id);
+        return user;
       } else {
-        // Token 无效，清除本地数据
-        await _clearAuthData();
-        state = const AuthState.unauthenticated();
+        // token无效，清除本地存储
+          await _storageService.clearToken();
+        return null;
       }
     } catch (e) {
-      Logger.e('认证初始化失败', error: e);
-      await _clearAuthData();
-      state = AuthState.error(e.toString());
+      Logger.e('初始化认证失败', error: e);
+      return null;
     }
   }
   
   /// 用户登录
-  Future<bool> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> login(String email, String password) async {
+    state = const AsyncValue.loading();
+    
     try {
-      state = state.copyWith(isLoading: true, error: null);
-      Logger.auth('开始登录', userId: email);
-      
       final result = await _authService.login(email, password);
       
       if (result.success && result.user != null) {
-        // 保存认证信息
-        await _storageService.saveToken(result.token!);
-        if (result.refreshToken != null) {
-          await _storageService.saveRefreshToken(result.refreshToken!);
+        // 保存token
+        if (result.token != null) {
+          await _storageService.setString('auth_token', result.token!);
         }
-        await _storageService.saveUserData(result.user!.toJson());
+        if (result.refreshToken != null) {
+          await _storageService.setString('refresh_token', result.refreshToken!);
+        }
         
-        state = AuthState.authenticated(result.user!);
-        Logger.auth('登录成功', userId: result.user!.id);
-        return true;
+        state = AsyncValue.data(result.user);
       } else {
-        state = AuthState.error(result.message ?? '登录失败');
-        Logger.auth('登录失败: ${result.message}');
-        return false;
+        state = AsyncValue.error(result.message ?? '登录失败', StackTrace.current);
       }
     } catch (e) {
-      final errorMessage = _getErrorMessage(e);
-      state = AuthState.error(errorMessage);
-      Logger.e('登录异常', error: e);
-      return false;
+      Logger.e('登录失败', error: e);
+      state = AsyncValue.error('登录失败: $e', StackTrace.current);
     }
   }
   
+  /// 完成登录
+  Future<void> completeSignIn(AuthResult result) async {
+    try {
+      if (result.success && result.user != null) {
+        // 保存token
+        if (result.token != null) {
+          await _storageService.setString('auth_token', result.token!);
+        }
+        if (result.refreshToken != null) {
+          await _storageService.setString('refresh_token', result.refreshToken!);
+        }
+        
+        state = AsyncValue.data(result.user);
+      } else {
+        state = AsyncValue.error(result.message ?? '登录失败', StackTrace.current);
+      }
+    } catch (e) {
+      Logger.e('完成登录失败', error: e);
+      state = AsyncValue.error('登录失败: $e', StackTrace.current);
+    }
+  }
+  
+  /// 用户登出
+  Future<void> logout() async {
+    try {
+      // 调用服务端登出接口
+      await _authService.logout();
+    } catch (e) {
+      Logger.e('服务端登出失败', error: e);
+    } finally {
+      // 清除本地存储
+        await _storageService.clearToken();
+      state = const AsyncValue.data(null);
+    }
+  }
+  
+  /// 刷新用户信息
+  Future<void> refreshUser() async {
+    try {
+      final user = await _authService.getCurrentUser();
+      if (user != null) {
+        state = AsyncValue.data(user);
+      } else {
+        state = AsyncValue.error('获取用户信息失败', StackTrace.current);
+      }
+    } catch (e) {
+      Logger.e('刷新用户信息失败', error: e);
+      state = AsyncValue.error('刷新用户信息失败: $e', StackTrace.current);
+    }
+  }
+  
+  /// 更新用户资料
+  Future<void> updateProfile({
+    String? name,
+    String? phone,
+    String? avatar,
+  }) async {
+    try {
+      final result = await _authService.updateProfile(
+        name: name,
+        phone: phone,
+        avatar: avatar,
+      );
+      
+      if (result.success && result.user != null) {
+        state = AsyncValue.data(result.user!);
+      } else {
+        state = AsyncValue.error(result.message ?? '更新失败', StackTrace.current);
+      }
+    } catch (e) {
+      Logger.e('更新用户资料失败', error: e);
+      state = AsyncValue.error('更新失败: $e', StackTrace.current);
+    }
+  }
+}
+
+/// 认证操作类
+class AuthActions {
+  final Ref _ref;
+  
+  AuthActions(this._ref);
+  
+  AuthService get _authService => _ref.read(authServiceProvider);
+  StorageService get _storageService => _ref.read(storageServiceProvider);
+  
+  /// 用户登录
+  Future<void> login(String email, String password) async {
+    await _ref.read(currentUserProvider.notifier).login(email, password);
+  }
+  
   /// 用户注册
-  Future<bool> register({
+  Future<AuthResult> register({
     required String email,
     required String password,
     required String name,
     String? phone,
   }) async {
     try {
-      state = state.copyWith(isLoading: true, error: null);
-      Logger.auth('开始注册', userId: email);
-      
       final result = await _authService.register(
         email: email,
         password: password,
@@ -114,110 +231,54 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
       
       if (result.success && result.user != null) {
-        // 保存认证信息
-        await _storageService.saveToken(result.token!);
-        if (result.refreshToken != null) {
-          await _storageService.saveRefreshToken(result.refreshToken!);
-        }
-        await _storageService.saveUserData(result.user!.toJson());
-        
-        state = AuthState.authenticated(result.user!);
-        Logger.auth('注册成功', userId: result.user!.id);
-        return true;
-      } else {
-        state = AuthState.error(result.message ?? '注册失败');
-        Logger.auth('注册失败: ${result.message}');
-        return false;
+        await _ref.read(currentUserProvider.notifier).completeSignIn(result);
       }
+      
+      return result;
     } catch (e) {
-      final errorMessage = _getErrorMessage(e);
-      state = AuthState.error(errorMessage);
       Logger.e('注册异常', error: e);
-      return false;
+      return AuthResult(
+        success: false,
+        message: e.toString(),
+      );
     }
   }
   
   /// 用户登出
   Future<void> logout() async {
-    try {
-      Logger.auth('开始登出', userId: state.user?.id);
-      
-      // 调用服务端登出接口
-      await _authService.logout();
-      
-      // 清除本地数据
-      await _clearAuthData();
-      
-      state = const AuthState.unauthenticated();
-      Logger.auth('登出成功');
-    } catch (e) {
-      Logger.e('登出失败', error: e);
-      // 即使服务端登出失败，也要清除本地数据
-      await _clearAuthData();
-      state = const AuthState.unauthenticated();
-    }
+    await _ref.read(currentUserProvider.notifier).logout();
   }
   
   /// 发送Magic Link
-  Future<void> sendMagicLink(String email) async {
-    state = state.copyWith(isLoading: true, error: null);
-    
+  Future<AuthResult> sendMagicLink(String email) async {
     try {
-      final result = await _authService.sendMagicLink(email);
-      
-      if (result.success) {
-        state = state.copyWith(
-          isLoading: false,
-          error: null,
-        );
-      } else {
-        state = state.copyWith(
-          isLoading: false,
-          error: result.message ?? 'Magic Link发送失败',
-        );
-      }
+      return await _authService.sendMagicLink(email);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
+      Logger.e('发送Magic Link失败', error: e);
+      return AuthResult(
+        success: false,
+        message: e.toString(),
       );
     }
   }
   
   /// 验证Magic Link并登录
   Future<void> verifyMagicLinkAndLogin(String token) async {
-    state = state.copyWith(isLoading: true, error: null);
-    
     try {
       final result = await _authService.verifyMagicLink(token);
-      
       if (result.success && result.user != null) {
-        // 保存认证信息
-        await _storageService.saveToken(result.token!);
-        if (result.refreshToken != null) {
-          await _storageService.saveRefreshToken(result.refreshToken!);
-        }
-        await _storageService.saveUserData(result.user!.toJson());
-        
-        state = AuthState.authenticated(result.user!);
-      } else {
-        state = state.copyWith(
-          isLoading: false,
-          error: result.message ?? 'Magic Link验证失败',
-        );
+        await _ref.read(currentUserProvider.notifier).completeSignIn(result);
       }
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      Logger.e('验证Magic Link失败', error: e);
+      throw e;
     }
   }
   
   /// 刷新 Token
   Future<bool> refreshToken() async {
     try {
-      final refreshToken = await _storageService.getRefreshToken();
+      final refreshToken = await _storageService.getString('refresh_token');
       if (refreshToken == null) {
         await logout();
         return false;
@@ -226,9 +287,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final result = await _authService.refreshToken(refreshToken);
       
       if (result.success && result.token != null) {
-        await _storageService.saveToken(result.token!);
+        await _storageService.setString('auth_token', result.token!);
         if (result.refreshToken != null) {
-          await _storageService.saveRefreshToken(result.refreshToken!);
+          await _storageService.setString('refresh_token', result.refreshToken!);
         }
         
         Logger.auth('Token 刷新成功');
@@ -245,130 +306,61 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
   
   /// 更新用户信息
-  Future<bool> updateProfile({
+  Future<void> updateProfile({
     String? name,
     String? phone,
     String? avatar,
   }) async {
-    try {
-      state = state.copyWith(isLoading: true, error: null);
-      
-      final result = await _authService.updateProfile(
-        name: name,
-        phone: phone,
-        avatar: avatar,
-      );
-      
-      if (result.success && result.user != null) {
-        await _storageService.saveUserData(result.user!.toJson());
-        state = AuthState.authenticated(result.user!);
-        Logger.auth('用户信息更新成功', userId: result.user!.id);
-        return true;
-      } else {
-        state = state.copyWith(
-          isLoading: false,
-          error: result.message ?? '更新失败',
-        );
-        return false;
-      }
-    } catch (e) {
-      final errorMessage = _getErrorMessage(e);
-      state = state.copyWith(isLoading: false, error: errorMessage);
-      Logger.e('用户信息更新失败', error: e);
-      return false;
-    }
+    await _ref.read(currentUserProvider.notifier).updateProfile(
+      name: name,
+      phone: phone,
+      avatar: avatar,
+    );
   }
   
   /// 修改密码
-  Future<bool> changePassword({
+  Future<AuthResult> changePassword({
     required String oldPassword,
     required String newPassword,
   }) async {
     try {
-      state = state.copyWith(isLoading: true, error: null);
-      
-      final result = await _authService.changePassword(
+      return await _authService.changePassword(
         currentPassword: oldPassword,
         newPassword: newPassword,
       );
-      
-      if (result.success) {
-        state = state.copyWith(isLoading: false);
-        Logger.auth('密码修改成功', userId: state.user?.id);
-        return true;
-      } else {
-        state = state.copyWith(
-          isLoading: false,
-          error: result.message ?? '密码修改失败',
-        );
-        return false;
-      }
     } catch (e) {
-      final errorMessage = _getErrorMessage(e);
-      state = state.copyWith(isLoading: false, error: errorMessage);
       Logger.e('密码修改失败', error: e);
-      return false;
+      return AuthResult(
+        success: false,
+        message: e.toString(),
+      );
     }
   }
   
   /// 忘记密码
-  Future<bool> forgotPassword(String email) async {
+  Future<AuthResult> forgotPassword(String email) async {
     try {
-      state = state.copyWith(isLoading: true, error: null);
-      
-      final result = await _authService.forgotPassword(email);
-      
-      if (result.success) {
-        state = state.copyWith(isLoading: false);
-        Logger.auth('密码重置邮件发送成功', userId: email);
-        return true;
-      } else {
-        state = state.copyWith(
-          isLoading: false,
-          error: result.message ?? '发送失败',
-        );
-        return false;
-      }
+      return await _authService.forgotPassword(email);
     } catch (e) {
-      final errorMessage = _getErrorMessage(e);
-      state = state.copyWith(isLoading: false, error: errorMessage);
       Logger.e('密码重置失败', error: e);
-      return false;
+      return AuthResult(
+        success: false,
+        message: e.toString(),
+      );
     }
   }
   
   /// 验证邮箱
-  Future<bool> verifyEmail(String code) async {
+  Future<void> verifyEmail(String code) async {
     try {
-      state = state.copyWith(isLoading: true, error: null);
-      
       final result = await _authService.verifyEmail(code);
-      
       if (result.success && result.user != null) {
-        await _storageService.saveUserData(result.user!.toJson());
-        state = AuthState.authenticated(result.user!);
-        Logger.auth('邮箱验证成功', userId: result.user!.id);
-        return true;
-      } else {
-        state = state.copyWith(
-          isLoading: false,
-          error: result.message ?? '验证失败',
-        );
-        return false;
+        await _ref.read(currentUserProvider.notifier).refreshUser();
       }
     } catch (e) {
-      final errorMessage = _getErrorMessage(e);
-      state = state.copyWith(isLoading: false, error: errorMessage);
       Logger.e('邮箱验证失败', error: e);
-      return false;
+      throw e;
     }
-  }
-  
-  /// 清除认证数据
-  Future<void> _clearAuthData() async {
-    await _storageService.clearToken();
-    await _storageService.clearRefreshToken();
-    await _storageService.clearUserData();
   }
   
   /// 获取错误信息
@@ -393,23 +385,4 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
     return error.toString();
   }
-  
-  /// 清除错误状态
-  void clearError() {
-    if (state.error != null) {
-      state = state.copyWith(error: null);
-    }
-  }
-  
-  /// 检查是否已认证
-  bool get isAuthenticated => state.isAuthenticated;
-  
-  /// 检查是否正在加载
-  bool get isLoading => state.isLoading;
-  
-  /// 获取当前用户
-  UserModel? get currentUser => state.user;
-  
-  /// 获取错误信息
-  String? get error => state.error;
 }

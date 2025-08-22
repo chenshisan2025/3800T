@@ -1,7 +1,10 @@
 'use client';
 
 import React, { createContext, useContext, useMemo } from 'react';
-import { createGulingtongClient, GulingtongClient } from '@gulingtong/shared-sdk';
+import {
+  createGulingtongClient,
+  GulingtongClient,
+} from '@gulingtong/shared-sdk';
 
 interface ApiContextType {
   // 保留接口定义以防其他地方需要
@@ -13,16 +16,14 @@ interface ApiProviderProps {
   children: React.ReactNode;
 }
 
-export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const value: ApiContextType = {
     // 空实现，保留Provider结构
   };
 
-  return (
-    <ApiContext.Provider value={value}>
-      {children}
-    </ApiContext.Provider>
-  );
+  return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;
 };
 
 export function useApi(): ApiContextType {

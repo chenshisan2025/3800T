@@ -25,7 +25,7 @@ export class DataProviderManager {
   constructor() {
     // 初始化默认的Mock提供者作为回退
     this.fallbackProvider = new MockProvider();
-    
+
     // 根据环境变量选择主要提供者
     this.primaryProvider = this.createPrimaryProvider();
     this.currentProvider = this.primaryProvider;
@@ -42,7 +42,7 @@ export class DataProviderManager {
   async getIndices(query?: IndicesQuery): Promise<IndexDataWithMetadata[]> {
     return this.executeWithFallback(
       'getIndices',
-      async (provider) => provider.getIndices(query),
+      async provider => provider.getIndices(query),
       query
     );
   }
@@ -53,7 +53,7 @@ export class DataProviderManager {
   async getQuotes(query: QuotesQuery): Promise<QuoteDataWithMetadata[]> {
     return this.executeWithFallback(
       'getQuotes',
-      async (provider) => provider.getQuotes(query),
+      async provider => provider.getQuotes(query),
       query
     );
   }
@@ -64,7 +64,7 @@ export class DataProviderManager {
   async getKline(query: KlineQuery): Promise<KlineDataWithMetadata> {
     return this.executeWithFallback(
       'getKline',
-      async (provider) => provider.getKline(query),
+      async provider => provider.getKline(query),
       query
     );
   }
@@ -75,7 +75,7 @@ export class DataProviderManager {
   async getNews(query?: NewsQuery): Promise<NewsDataWithMetadata> {
     return this.executeWithFallback(
       'getNews',
-      async (provider) => provider.getNews(query),
+      async provider => provider.getNews(query),
       query
     );
   }
@@ -99,15 +99,24 @@ export class DataProviderManager {
     fallback: { name: string; healthy: boolean; error?: string };
   }> {
     const results = {
-      primary: { name: this.primaryProvider.name, healthy: false, error: undefined as string | undefined },
-      fallback: { name: this.fallbackProvider.name, healthy: false, error: undefined as string | undefined },
+      primary: {
+        name: this.primaryProvider.name,
+        healthy: false,
+        error: undefined as string | undefined,
+      },
+      fallback: {
+        name: this.fallbackProvider.name,
+        healthy: false,
+        error: undefined as string | undefined,
+      },
     };
 
     // 检查主要提供者
     try {
       results.primary.healthy = await this.primaryProvider.healthCheck();
     } catch (error) {
-      results.primary.error = error instanceof Error ? error.message : String(error);
+      results.primary.error =
+        error instanceof Error ? error.message : String(error);
       logger.warn('主要数据提供者健康检查失败', {
         provider: this.primaryProvider.name,
         error: results.primary.error,
@@ -118,7 +127,8 @@ export class DataProviderManager {
     try {
       results.fallback.healthy = await this.fallbackProvider.healthCheck();
     } catch (error) {
-      results.fallback.error = error instanceof Error ? error.message : String(error);
+      results.fallback.error =
+        error instanceof Error ? error.message : String(error);
       logger.warn('回退数据提供者健康检查失败', {
         provider: this.fallbackProvider.name,
         error: results.fallback.error,
@@ -137,23 +147,26 @@ export class DataProviderManager {
     query?: any
   ): Promise<T> {
     const startTime = Date.now();
-    
+
     try {
       // 首先尝试使用主要提供者
       const result = await executor(this.primaryProvider);
       this.currentProvider = this.primaryProvider;
-      
+
       logger.info(`${operation} 成功`, {
         provider: this.primaryProvider.name,
         duration: Date.now() - startTime,
         query,
       });
-      
+
       return result;
     } catch (primaryError) {
       logger.warn(`主要提供者 ${operation} 失败，尝试回退`, {
         provider: this.primaryProvider.name,
-        error: primaryError instanceof Error ? primaryError.message : String(primaryError),
+        error:
+          primaryError instanceof Error
+            ? primaryError.message
+            : String(primaryError),
         query,
       });
 
@@ -161,21 +174,27 @@ export class DataProviderManager {
         // 回退到Mock提供者
         const result = await executor(this.fallbackProvider);
         this.currentProvider = this.fallbackProvider;
-        
+
         logger.info(`${operation} 回退成功`, {
           provider: this.fallbackProvider.name,
           duration: Date.now() - startTime,
           query,
         });
-        
+
         return result;
       } catch (fallbackError) {
         logger.error(`所有提供者 ${operation} 都失败`, {
-          primaryError: primaryError instanceof Error ? primaryError.message : String(primaryError),
-          fallbackError: fallbackError instanceof Error ? fallbackError.message : String(fallbackError),
+          primaryError:
+            primaryError instanceof Error
+              ? primaryError.message
+              : String(primaryError),
+          fallbackError:
+            fallbackError instanceof Error
+              ? fallbackError.message
+              : String(fallbackError),
           query,
         });
-        
+
         // 如果所有提供者都失败，抛出原始错误
         throw primaryError;
       }
@@ -183,28 +202,63 @@ export class DataProviderManager {
   }
 
   /**
-   * 根据环境变量创建主要数据提供者
+   * 根据配置创建主要数据提供者
+   * 优先级：Admin配置 → 环境变量 → Mock
    */
   private createPrimaryProvider(): IDataProvider {
-    const providerType = (typeof process !== 'undefined' && process.env && process.env.DATA_PROVIDER_TYPE) || 'mock';
-    
-    logger.info('创建主要数据提供者', { providerType });
-    
+    // TODO: 从Admin配置中读取提供者设置
+    // const adminConfig = await getAdminProviderConfig();
+
+    // 检查环境变量配置
+    const hasDataApiKey = !!(
+      typeof process !== 'undefined' &&
+      process.env &&
+      process.env.DATA_API_KEY
+    );
+    const hasDataBaseUrl = !!(
+      typeof process !== 'undefined' &&
+      process.env &&
+      process.env.DATA_BASE_URL
+    );
+    const providerType =
+      (typeof process !== 'undefined' &&
+        process.env &&
+        process.env.DATA_PROVIDER_TYPE) ||
+      'auto';
+
+    logger.info('创建主要数据提供者', {
+      providerType,
+      hasDataApiKey,
+      hasDataBaseUrl,
+    });
+
+    // 自动选择逻辑：如果有API KEY和BASE URL，使用ProviderX，否则使用Mock
+    if (providerType === 'auto') {
+      if (hasDataApiKey && hasDataBaseUrl) {
+        logger.info('自动选择ProviderX（检测到API配置）');
+        return new ProviderX();
+      } else {
+        logger.info('自动选择MockProvider（未检测到API配置）');
+        return new MockProvider();
+      }
+    }
+
+    // 手动指定提供者类型
     switch (providerType.toLowerCase()) {
       case 'providerx':
         return new ProviderX();
-      
+
       case 'mock':
       default:
         return new MockProvider();
-      
+
       // 未来可以添加其他提供者
       // case 'tushare':
       //   return new TushareProvider({
       //     apiKey: process.env.TUSHARE_API_KEY!,
       //     baseUrl: process.env.TUSHARE_BASE_URL,
       //   });
-      // 
+      //
       // case 'akshare':
       //   return new AkshareProvider({
       //     baseUrl: process.env.AKSHARE_BASE_URL,
@@ -217,13 +271,13 @@ export class DataProviderManager {
    */
   async reinitialize(): Promise<void> {
     logger.info('重新初始化数据提供者管理器');
-    
+
     this.primaryProvider = this.createPrimaryProvider();
     this.currentProvider = this.primaryProvider;
-    
+
     // 执行健康检查
     const healthStatus = await this.healthCheck();
-    
+
     logger.info('数据提供者管理器重新初始化完成', {
       primary: this.primaryProvider.name,
       fallback: this.fallbackProvider.name,

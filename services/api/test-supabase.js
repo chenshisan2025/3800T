@@ -32,18 +32,18 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 async function testConnection() {
   try {
     console.log('Testing Supabase connection...');
-    
+
     // 测试简单查询
     const { data, error } = await supabase
       .from('users')
       .select('count')
       .limit(1);
-    
+
     if (error) {
       console.error('Supabase query error:', error);
       return false;
     }
-    
+
     console.log('Supabase connection successful!');
     console.log('Query result:', data);
     return true;

@@ -10,7 +10,7 @@ export function validateRequest<T>(
     // 获取查询参数
     const url = new URL(request.url);
     const queryParams: Record<string, any> = {};
-    
+
     // 转换URLSearchParams为普通对象
     url.searchParams.forEach((value, key) => {
       // 特殊处理codes参数，将逗号分隔的字符串转换为数组
@@ -18,7 +18,11 @@ export function validateRequest<T>(
         queryParams[key] = value.split(',').map(code => code.trim());
       }
       // 特殊处理股票代码相关参数，保持为字符串
-      else if (key === 'code' || key === 'codes' || (key.includes('code') && value.match(/^[0-9]{6}$/))) {
+      else if (
+        key === 'code' ||
+        key === 'codes' ||
+        (key.includes('code') && value.match(/^[0-9]{6}$/))
+      ) {
         queryParams[key] = value;
       }
       // 尝试转换数字类型
@@ -28,10 +32,10 @@ export function validateRequest<T>(
         queryParams[key] = value;
       }
     });
-    
+
     // 使用zod验证
     const result = schema.safeParse(queryParams);
-    
+
     if (result.success) {
       return { success: true, data: result.data };
     } else {
@@ -53,7 +57,7 @@ export async function validateRequestBody<T>(
   try {
     const body = await request.json();
     const result = schema.safeParse(body);
-    
+
     if (result.success) {
       return { success: true, data: result.data };
     } else {

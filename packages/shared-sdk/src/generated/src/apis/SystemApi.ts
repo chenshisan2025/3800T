@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * 古灵通股票投资平台 API
- * 古灵通股票投资平台的 RESTful API 服务  ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ``` 
+ * 古灵通股票投资平台的 RESTful API 服务      ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ```
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@gulingtong.com
@@ -15,28 +15,15 @@
 
 import * as runtime from '../runtime';
 import type {
-  CronActionRequest,
-  CronStatusResponse,
   ErrorResponse,
-  HealthResponse,
   SuccessResponse,
 } from '../models/index';
 import {
-    CronActionRequestFromJSON,
-    CronActionRequestToJSON,
-    CronStatusResponseFromJSON,
-    CronStatusResponseToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
-    HealthResponseFromJSON,
-    HealthResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
 } from '../models/index';
-
-export interface ApiCronPostRequest {
-    cronActionRequest: CronActionRequest;
-}
 
 /**
  * 
@@ -44,121 +31,33 @@ export interface ApiCronPostRequest {
 export class SystemApi extends runtime.BaseAPI {
 
     /**
-     * 获取当前定时任务的运行状态
-     * 获取定时任务状态
+     * 健康检查的详细操作
+     * 健康检查
      */
-    async apiCronGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CronStatusResponse>> {
+    async apiMonitorHealthGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/cron`;
+        let urlPath = `/api/monitor/health`;
 
         const response = await this.request({
             path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => CronStatusResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 获取当前定时任务的运行状态
-     * 获取定时任务状态
-     */
-    async apiCronGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CronStatusResponse> {
-        const response = await this.apiCronGetRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * 启动、停止或立即执行定时任务
-     * 管理定时任务
-     */
-    async apiCronPostRaw(requestParameters: ApiCronPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['cronActionRequest'] == null) {
-            throw new runtime.RequiredError(
-                'cronActionRequest',
-                'Required parameter "cronActionRequest" was null or undefined when calling apiCronPost().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/cron`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CronActionRequestToJSON(requestParameters['cronActionRequest']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 启动、停止或立即执行定时任务
-     * 管理定时任务
-     */
-    async apiCronPost(requestParameters: ApiCronPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiCronPostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * 检查 API 服务状态和数据库连接
+     * 健康检查的详细操作
      * 健康检查
      */
-    async apiHealthGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<HealthResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-
-        let urlPath = `/api/health`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => HealthResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 检查 API 服务状态和数据库连接
-     * 健康检查
-     */
-    async apiHealthGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<HealthResponse> {
-        const response = await this.apiHealthGetRaw(initOverrides);
+    async apiMonitorHealthGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.apiMonitorHealthGetRaw(initOverrides);
         return await response.value();
     }
 

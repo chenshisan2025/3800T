@@ -5,6 +5,7 @@
 ## 🚀 功能特性
 
 ### 核心功能
+
 - **用户管理** - 用户注册、登录、权限管理
 - **股票管理** - 股票数据管理、实时行情监控
 - **AI 报告** - AI 生成的分析报告管理
@@ -12,6 +13,7 @@
 - **系统设置** - 系统配置、参数管理
 
 ### 技术特性
+
 - **现代化 UI** - 基于 Ant Design 5.x 设计系统
 - **响应式设计** - 支持桌面端和移动端
 - **TypeScript** - 完整的类型安全
@@ -35,10 +37,12 @@
 ## 🛠️ 开发环境
 
 ### 环境要求
+
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
 
 ### 安装依赖
+
 ```bash
 # 在项目根目录
 pnpm install
@@ -48,6 +52,7 @@ pnpm install
 ```
 
 ### 环境配置
+
 ```bash
 # 复制环境变量模板
 cp .env.example .env.local
@@ -57,6 +62,7 @@ vim .env.local
 ```
 
 ### 启动开发服务器
+
 ```bash
 # 开发模式
 pnpm dev
@@ -105,6 +111,7 @@ src/
 ## 🎨 设计系统
 
 ### 主题色彩
+
 - **主色调**: #2166A5 (古灵通蓝)
 - **成功色**: #52c41a (股票下跌 - 绿色)
 - **错误色**: #ff4d4f (股票上涨 - 红色)
@@ -112,11 +119,13 @@ src/
 - **信息色**: #1677ff
 
 ### 股票涨跌色彩规范
+
 - **上涨**: 红色 (#ff4d4f)
 - **下跌**: 绿色 (#52c41a)
 - **平盘**: 灰色 (#8c8c8c)
 
 ### 响应式断点
+
 - **XS**: < 576px
 - **SM**: ≥ 576px
 - **MD**: ≥ 768px
@@ -127,12 +136,14 @@ src/
 ## 🔐 认证系统
 
 ### 认证流程
+
 1. 用户登录获取 JWT Token
 2. Token 存储在 localStorage
 3. API 请求自动携带 Token
 4. Token 过期自动跳转登录页
 
 ### 权限控制
+
 - 路由级权限控制
 - 组件级权限控制
 - API 级权限验证
@@ -140,12 +151,14 @@ src/
 ## 📊 数据管理
 
 ### API 集成
+
 - 基于 @gulingtong/shared-sdk
 - 统一的错误处理
 - 请求/响应拦截器
 - 自动重试机制
 
 ### 状态管理
+
 - React Context 全局状态
 - 本地状态 useState/useReducer
 - 缓存策略 (localStorage/sessionStorage)
@@ -153,6 +166,7 @@ src/
 ## 🧪 测试
 
 ### 运行测试
+
 ```bash
 # 单元测试
 pnpm test
@@ -165,6 +179,7 @@ pnpm test:e2e
 ```
 
 ### 测试策略
+
 - 组件单元测试
 - API 集成测试
 - 用户交互测试
@@ -173,12 +188,14 @@ pnpm test:e2e
 ## 📈 性能优化
 
 ### 已实现优化
+
 - **代码分割** - 动态导入和懒加载
 - **图片优化** - Next.js Image 组件
 - **缓存策略** - API 响应缓存
 - **Bundle 分析** - webpack-bundle-analyzer
 
 ### 性能监控
+
 - Web Vitals 监控
 - 错误边界处理
 - 性能指标收集
@@ -186,6 +203,7 @@ pnpm test:e2e
 ## 🚀 部署
 
 ### 构建应用
+
 ```bash
 # 生产构建
 pnpm build
@@ -200,6 +218,7 @@ pnpm analyze
 ### 部署选项
 
 #### Vercel 部署
+
 ```bash
 # 安装 Vercel CLI
 npm i -g vercel
@@ -209,6 +228,7 @@ vercel
 ```
 
 #### Docker 部署
+
 ```bash
 # 构建镜像
 docker build -t gulingtong-admin .
@@ -218,6 +238,7 @@ docker run -p 3000:3000 gulingtong-admin
 ```
 
 #### 静态部署
+
 ```bash
 # 静态导出
 pnpm build && pnpm export
@@ -229,6 +250,7 @@ pnpm build && pnpm export
 ## 🔧 开发工具
 
 ### 代码质量
+
 ```bash
 # ESLint 检查
 pnpm lint
@@ -244,6 +266,7 @@ pnpm format
 ```
 
 ### 开发辅助
+
 - **热重载** - 开发时自动刷新
 - **错误提示** - 详细的错误信息
 - **类型提示** - 完整的 TypeScript 支持
@@ -252,6 +275,7 @@ pnpm format
 ## 📚 开发指南
 
 ### 组件开发
+
 ```tsx
 // 组件模板
 import React from 'react';
@@ -263,22 +287,19 @@ interface MyComponentProps {
 }
 
 export function MyComponent({ title, children }: MyComponentProps) {
-  return (
-    <Card title={title}>
-      {children}
-    </Card>
-  );
+  return <Card title={title}>{children}</Card>;
 }
 ```
 
 ### API 调用
+
 ```tsx
 // 使用 API Services
 import { useApiServices } from '@/providers/ApiProvider';
 
 function MyComponent() {
   const services = useApiServices();
-  
+
   const fetchData = async () => {
     try {
       const response = await services.stock.getStockList();
@@ -291,11 +312,12 @@ function MyComponent() {
 ```
 
 ### 样式规范
+
 ```tsx
 // 使用 Tailwind CSS 类名
-<div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm">
-  <h2 className="text-lg font-semibold text-gray-800">标题</h2>
-  <Button type="primary">操作</Button>
+<div className='flex items-center justify-between p-4 bg-white rounded-lg shadow-sm'>
+  <h2 className='text-lg font-semibold text-gray-800'>标题</h2>
+  <Button type='primary'>操作</Button>
 </div>
 ```
 
@@ -304,6 +326,7 @@ function MyComponent() {
 ### 常见问题
 
 **Q: 启动时出现端口占用错误**
+
 ```bash
 # 查找占用端口的进程
 lsof -ti:3000
@@ -316,16 +339,19 @@ pnpm dev -- --port 3001
 ```
 
 **Q: API 请求失败**
+
 - 检查 API 服务是否启动
 - 验证环境变量配置
 - 查看网络请求日志
 
 **Q: 样式不生效**
+
 - 检查 Tailwind CSS 配置
 - 确认类名拼写正确
 - 查看 CSS 优先级
 
 ### 调试技巧
+
 - 使用 React DevTools
 - 查看浏览器控制台
 - 使用 Network 面板检查请求

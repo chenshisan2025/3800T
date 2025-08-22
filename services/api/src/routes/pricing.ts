@@ -20,15 +20,15 @@ const PRICING_INFO = {
             {
               name: 'AI报告生成',
               value: `${FEATURE_LIMITS.free.aiReportsPerDay}次/天，${FEATURE_LIMITS.free.aiReportsPerMonth}次/月`,
-              included: true
+              included: true,
             },
             {
               name: 'AI深度分析',
               value: '基础分析',
               included: false,
-              description: '升级Pro版解锁深度技术分析和基本面分析'
-            }
-          ]
+              description: '升级Pro版解锁深度技术分析和基本面分析',
+            },
+          ],
         },
         {
           category: '自选股管理',
@@ -36,14 +36,14 @@ const PRICING_INFO = {
             {
               name: '自选股数量',
               value: `最多${FEATURE_LIMITS.free.maxWatchlistItems}只`,
-              included: true
+              included: true,
             },
             {
               name: '价格提醒',
               value: `最多${FEATURE_LIMITS.free.maxAlerts}个`,
-              included: true
-            }
-          ]
+              included: true,
+            },
+          ],
         },
         {
           category: '数据服务',
@@ -52,21 +52,21 @@ const PRICING_INFO = {
               name: '实时行情',
               value: '延时15分钟',
               included: false,
-              description: 'Pro版提供实时行情数据'
+              description: 'Pro版提供实时行情数据',
             },
             {
               name: '高级图表',
               value: '基础K线图',
               included: false,
-              description: 'Pro版提供技术指标和高级图表'
+              description: 'Pro版提供技术指标和高级图表',
             },
             {
               name: '数据导出',
               value: '不支持',
               included: false,
-              description: 'Pro版支持CSV/Excel导出'
-            }
-          ]
+              description: 'Pro版支持CSV/Excel导出',
+            },
+          ],
         },
         {
           category: '客户支持',
@@ -74,11 +74,11 @@ const PRICING_INFO = {
             {
               name: '客服支持',
               value: '社区支持',
-              included: true
-            }
-          ]
-        }
-      ]
+              included: true,
+            },
+          ],
+        },
+      ],
     },
     {
       id: SubscriptionPlan.PRO,
@@ -94,15 +94,15 @@ const PRICING_INFO = {
             {
               name: 'AI报告生成',
               value: `${FEATURE_LIMITS.pro.aiReportsPerDay}次/天，${FEATURE_LIMITS.pro.aiReportsPerMonth}次/月`,
-              included: true
+              included: true,
             },
             {
               name: 'AI深度分析',
               value: '深度技术分析 + 基本面分析',
               included: true,
-              highlight: true
-            }
-          ]
+              highlight: true,
+            },
+          ],
         },
         {
           category: '自选股管理',
@@ -110,14 +110,14 @@ const PRICING_INFO = {
             {
               name: '自选股数量',
               value: `最多${FEATURE_LIMITS.pro.maxWatchlistItems}只`,
-              included: true
+              included: true,
             },
             {
               name: '价格提醒',
               value: `最多${FEATURE_LIMITS.pro.maxAlerts}个`,
-              included: true
-            }
-          ]
+              included: true,
+            },
+          ],
         },
         {
           category: '数据服务',
@@ -126,21 +126,21 @@ const PRICING_INFO = {
               name: '实时行情',
               value: '实时数据推送',
               included: true,
-              highlight: true
+              highlight: true,
             },
             {
               name: '高级图表',
               value: '50+技术指标，自定义图表',
               included: true,
-              highlight: true
+              highlight: true,
             },
             {
               name: '数据导出',
               value: 'CSV/Excel/PDF导出',
               included: true,
-              highlight: true
-            }
-          ]
+              highlight: true,
+            },
+          ],
         },
         {
           category: '客户支持',
@@ -148,71 +148,76 @@ const PRICING_INFO = {
             {
               name: '客服支持',
               value: '7x24小时专属客服',
-              included: true
-            }
-          ]
-        }
-      ]
-    }
+              included: true,
+            },
+          ],
+        },
+      ],
+    },
   ],
-  
+
   // 常见问题
   faq: [
     {
       question: '如何升级到Pro版？',
-      answer: '您可以在个人中心的订阅管理页面选择升级套餐，支持微信支付、支付宝等多种支付方式。'
+      answer:
+        '您可以在个人中心的订阅管理页面选择升级套餐，支持微信支付、支付宝等多种支付方式。',
     },
     {
       question: 'Pro版可以随时取消吗？',
-      answer: '是的，您可以随时取消订阅。取消后，您的Pro版权限将在当前计费周期结束后失效，之后自动转为免费版。'
+      answer:
+        '是的，您可以随时取消订阅。取消后，您的Pro版权限将在当前计费周期结束后失效，之后自动转为免费版。',
     },
     {
       question: 'AI分析的准确性如何？',
-      answer: '我们的AI模型基于大量历史数据和实时市场信息训练，但投资有风险，AI分析仅供参考，不构成投资建议。'
+      answer:
+        '我们的AI模型基于大量历史数据和实时市场信息训练，但投资有风险，AI分析仅供参考，不构成投资建议。',
     },
     {
       question: '数据来源是什么？',
-      answer: '我们的数据来源于权威的金融数据提供商，确保数据的准确性和及时性。Pro版用户可享受实时数据服务。'
+      answer:
+        '我们的数据来源于权威的金融数据提供商，确保数据的准确性和及时性。Pro版用户可享受实时数据服务。',
     },
     {
       question: '支持哪些股票市场？',
-      answer: '目前支持A股、港股、美股等主要市场，后续会持续扩展更多市场和品种。'
-    }
+      answer:
+        '目前支持A股、港股、美股等主要市场，后续会持续扩展更多市场和品种。',
+    },
   ],
-  
+
   // 升级提示文案
   upgradePrompts: {
     aiDeepAnalysis: {
       title: '解锁AI深度分析',
       description: '升级Pro版，获得更专业的技术分析和基本面分析报告',
-      features: ['深度技术指标分析', '基本面数据解读', '投资建议评级']
+      features: ['深度技术指标分析', '基本面数据解读', '投资建议评级'],
     },
     watchlistLimit: {
       title: '扩展自选股容量',
       description: '免费版最多添加10只自选股，升级Pro版可添加100只',
-      features: ['100只自选股', '无限分组管理', '批量操作']
+      features: ['100只自选股', '无限分组管理', '批量操作'],
     },
     alertLimit: {
       title: '增加价格提醒',
       description: '免费版最多设置5个提醒，升级Pro版可设置50个',
-      features: ['50个价格提醒', '多种提醒条件', '微信/短信通知']
+      features: ['50个价格提醒', '多种提醒条件', '微信/短信通知'],
     },
     realTimeData: {
       title: '实时行情数据',
       description: '免费版延时15分钟，Pro版提供实时行情推送',
-      features: ['实时价格推送', '盘口数据', '分时图表']
+      features: ['实时价格推送', '盘口数据', '分时图表'],
     },
     exportData: {
       title: '数据导出功能',
       description: '将分析结果和历史数据导出为Excel或PDF格式',
-      features: ['多格式导出', '自定义报表', '历史数据下载']
+      features: ['多格式导出', '自定义报表', '历史数据下载'],
     },
     advancedCharts: {
       title: '高级图表工具',
       description: '解锁50+技术指标和专业图表工具',
-      features: ['50+技术指标', '自定义图表', '多时间周期']
-    }
-  }
+      features: ['50+技术指标', '自定义图表', '多时间周期'],
+    },
+  },
 };
 
 /**
@@ -223,13 +228,13 @@ router.get('/', (req: Request, res: Response) => {
   try {
     res.json({
       success: true,
-      data: PRICING_INFO
+      data: PRICING_INFO,
     });
   } catch (error) {
     console.error('Error fetching pricing info:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch pricing information'
+      error: 'Failed to fetch pricing information',
     });
   }
 });
@@ -248,14 +253,14 @@ router.get('/compare', (req: Request, res: Response) => {
             {
               name: 'AI报告生成',
               free: `${FEATURE_LIMITS.free.aiReportsPerDay}次/天`,
-              pro: `${FEATURE_LIMITS.pro.aiReportsPerDay}次/天`
+              pro: `${FEATURE_LIMITS.pro.aiReportsPerDay}次/天`,
             },
             {
               name: 'AI深度分析',
               free: false,
-              pro: true
-            }
-          ]
+              pro: true,
+            },
+          ],
         },
         {
           name: '自选股管理',
@@ -263,14 +268,14 @@ router.get('/compare', (req: Request, res: Response) => {
             {
               name: '自选股数量',
               free: FEATURE_LIMITS.free.maxWatchlistItems,
-              pro: FEATURE_LIMITS.pro.maxWatchlistItems
+              pro: FEATURE_LIMITS.pro.maxWatchlistItems,
             },
             {
               name: '价格提醒',
               free: FEATURE_LIMITS.free.maxAlerts,
-              pro: FEATURE_LIMITS.pro.maxAlerts
-            }
-          ]
+              pro: FEATURE_LIMITS.pro.maxAlerts,
+            },
+          ],
         },
         {
           name: '数据服务',
@@ -278,32 +283,32 @@ router.get('/compare', (req: Request, res: Response) => {
             {
               name: '实时行情',
               free: false,
-              pro: true
+              pro: true,
             },
             {
               name: '高级图表',
               free: false,
-              pro: true
+              pro: true,
             },
             {
               name: '数据导出',
               free: false,
-              pro: true
-            }
-          ]
-        }
-      ]
+              pro: true,
+            },
+          ],
+        },
+      ],
     };
-    
+
     res.json({
       success: true,
-      data: comparison
+      data: comparison,
     });
   } catch (error) {
     console.error('Error fetching pricing comparison:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch pricing comparison'
+      error: 'Failed to fetch pricing comparison',
     });
   }
 });
@@ -315,24 +320,27 @@ router.get('/compare', (req: Request, res: Response) => {
 router.get('/upgrade-prompts/:feature', (req: Request, res: Response) => {
   try {
     const { feature } = req.params;
-    const prompt = PRICING_INFO.upgradePrompts[feature as keyof typeof PRICING_INFO.upgradePrompts];
-    
+    const prompt =
+      PRICING_INFO.upgradePrompts[
+        feature as keyof typeof PRICING_INFO.upgradePrompts
+      ];
+
     if (!prompt) {
       return res.status(404).json({
         success: false,
-        error: 'Upgrade prompt not found for this feature'
+        error: 'Upgrade prompt not found for this feature',
       });
     }
-    
+
     res.json({
       success: true,
-      data: prompt
+      data: prompt,
     });
   } catch (error) {
     console.error('Error fetching upgrade prompt:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch upgrade prompt'
+      error: 'Failed to fetch upgrade prompt',
     });
   }
 });

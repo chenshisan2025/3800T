@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * 古灵通股票投资平台 API
- * 古灵通股票投资平台的 RESTful API 服务  ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ``` 
+ * 古灵通股票投资平台的 RESTful API 服务      ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ```
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@gulingtong.com
@@ -15,42 +15,25 @@
 
 import * as runtime from '../runtime';
 import type {
-  CreateStockRequest,
   ErrorResponse,
-  StockDataListResponse,
-  StockDetailResponse,
-  StockListResponse,
-  StockMarket,
-  StockResponse,
   SuccessResponse,
-  UpdateStockRequest,
 } from '../models/index';
 import {
-    CreateStockRequestFromJSON,
-    CreateStockRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
-    StockDataListResponseFromJSON,
-    StockDataListResponseToJSON,
-    StockDetailResponseFromJSON,
-    StockDetailResponseToJSON,
-    StockListResponseFromJSON,
-    StockListResponseToJSON,
-    StockMarketFromJSON,
-    StockMarketToJSON,
-    StockResponseFromJSON,
-    StockResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-    UpdateStockRequestFromJSON,
-    UpdateStockRequestToJSON,
 } from '../models/index';
 
 export interface ApiStocksCodeDataGetRequest {
     code: string;
-    startDate?: Date;
-    endDate?: Date;
+    page?: number;
     limit?: number;
+}
+
+export interface ApiStocksCodeDataPostRequest {
+    code: string;
+    body: object;
 }
 
 export interface ApiStocksCodeDeleteRequest {
@@ -59,23 +42,22 @@ export interface ApiStocksCodeDeleteRequest {
 
 export interface ApiStocksCodeGetRequest {
     code: string;
+    page?: number;
+    limit?: number;
 }
 
 export interface ApiStocksCodePutRequest {
     code: string;
-    updateStockRequest: UpdateStockRequest;
+    body: object;
 }
 
 export interface ApiStocksGetRequest {
     page?: number;
     limit?: number;
-    search?: string;
-    market?: StockMarket;
-    industry?: string;
 }
 
 export interface ApiStocksPostRequest {
-    createStockRequest: CreateStockRequest;
+    body: object;
 }
 
 /**
@@ -84,10 +66,10 @@ export interface ApiStocksPostRequest {
 export class StocksApi extends runtime.BaseAPI {
 
     /**
-     * 获取股票的历史价格和交易数据
-     * 获取股票历史数据
+     * 获取股票信息的详细操作
+     * 获取股票信息
      */
-    async apiStocksCodeDataGetRaw(requestParameters: ApiStocksCodeDataGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockDataListResponse>> {
+    async apiStocksCodeDataGetRaw(requestParameters: ApiStocksCodeDataGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['code'] == null) {
             throw new runtime.RequiredError(
                 'code',
@@ -97,12 +79,8 @@ export class StocksApi extends runtime.BaseAPI {
 
         const queryParameters: any = {};
 
-        if (requestParameters['startDate'] != null) {
-            queryParameters['start_date'] = (requestParameters['startDate'] as any).toISOString().substring(0,10);
-        }
-
-        if (requestParameters['endDate'] != null) {
-            queryParameters['end_date'] = (requestParameters['endDate'] as any).toISOString().substring(0,10);
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
         }
 
         if (requestParameters['limit'] != null) {
@@ -120,7 +98,7 @@ export class StocksApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/stocks/{code}/data`;
+        let urlPath = `/api/stocks/[code]/data`;
         urlPath = urlPath.replace(`{${"code"}}`, encodeURIComponent(String(requestParameters['code'])));
 
         const response = await this.request({
@@ -130,21 +108,78 @@ export class StocksApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockDataListResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 获取股票的历史价格和交易数据
-     * 获取股票历史数据
+     * 获取股票信息的详细操作
+     * 获取股票信息
      */
-    async apiStocksCodeDataGet(requestParameters: ApiStocksCodeDataGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockDataListResponse> {
+    async apiStocksCodeDataGet(requestParameters: ApiStocksCodeDataGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiStocksCodeDataGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 删除指定股票（管理员权限）
-     * 删除股票
+     * 创建股票信息的详细操作
+     * 创建股票信息
+     */
+    async apiStocksCodeDataPostRaw(requestParameters: ApiStocksCodeDataPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters['code'] == null) {
+            throw new runtime.RequiredError(
+                'code',
+                'Required parameter "code" was null or undefined when calling apiStocksCodeDataPost().'
+            );
+        }
+
+        if (requestParameters['body'] == null) {
+            throw new runtime.RequiredError(
+                'body',
+                'Required parameter "body" was null or undefined when calling apiStocksCodeDataPost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("BearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+
+        let urlPath = `/api/stocks/[code]/data`;
+        urlPath = urlPath.replace(`{${"code"}}`, encodeURIComponent(String(requestParameters['code'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters['body'] as any,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * 创建股票信息的详细操作
+     * 创建股票信息
+     */
+    async apiStocksCodeDataPost(requestParameters: ApiStocksCodeDataPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.apiStocksCodeDataPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * 删除股票信息的详细操作
+     * 删除股票信息
      */
     async apiStocksCodeDeleteRaw(requestParameters: ApiStocksCodeDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['code'] == null) {
@@ -167,7 +202,7 @@ export class StocksApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/stocks/{code}`;
+        let urlPath = `/api/stocks/[code]`;
         urlPath = urlPath.replace(`{${"code"}}`, encodeURIComponent(String(requestParameters['code'])));
 
         const response = await this.request({
@@ -181,8 +216,8 @@ export class StocksApi extends runtime.BaseAPI {
     }
 
     /**
-     * 删除指定股票（管理员权限）
-     * 删除股票
+     * 删除股票信息的详细操作
+     * 删除股票信息
      */
     async apiStocksCodeDelete(requestParameters: ApiStocksCodeDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiStocksCodeDeleteRaw(requestParameters, initOverrides);
@@ -190,10 +225,10 @@ export class StocksApi extends runtime.BaseAPI {
     }
 
     /**
-     * 获取指定股票的详细信息
-     * 获取股票详情
+     * 获取股票信息的详细操作
+     * 获取股票信息
      */
-    async apiStocksCodeGetRaw(requestParameters: ApiStocksCodeGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockDetailResponse>> {
+    async apiStocksCodeGetRaw(requestParameters: ApiStocksCodeGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['code'] == null) {
             throw new runtime.RequiredError(
                 'code',
@@ -202,6 +237,14 @@ export class StocksApi extends runtime.BaseAPI {
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['limit'] != null) {
+            queryParameters['limit'] = requestParameters['limit'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -214,7 +257,7 @@ export class StocksApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/stocks/{code}`;
+        let urlPath = `/api/stocks/[code]`;
         urlPath = urlPath.replace(`{${"code"}}`, encodeURIComponent(String(requestParameters['code'])));
 
         const response = await this.request({
@@ -224,23 +267,23 @@ export class StocksApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockDetailResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 获取指定股票的详细信息
-     * 获取股票详情
+     * 获取股票信息的详细操作
+     * 获取股票信息
      */
-    async apiStocksCodeGet(requestParameters: ApiStocksCodeGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockDetailResponse> {
+    async apiStocksCodeGet(requestParameters: ApiStocksCodeGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiStocksCodeGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 更新股票基本信息（管理员权限）
+     * 更新股票信息的详细操作
      * 更新股票信息
      */
-    async apiStocksCodePutRaw(requestParameters: ApiStocksCodePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockResponse>> {
+    async apiStocksCodePutRaw(requestParameters: ApiStocksCodePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['code'] == null) {
             throw new runtime.RequiredError(
                 'code',
@@ -248,10 +291,10 @@ export class StocksApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['updateStockRequest'] == null) {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'updateStockRequest',
-                'Required parameter "updateStockRequest" was null or undefined when calling apiStocksCodePut().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiStocksCodePut().'
             );
         }
 
@@ -270,7 +313,7 @@ export class StocksApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/stocks/{code}`;
+        let urlPath = `/api/stocks/[code]`;
         urlPath = urlPath.replace(`{${"code"}}`, encodeURIComponent(String(requestParameters['code'])));
 
         const response = await this.request({
@@ -278,26 +321,26 @@ export class StocksApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UpdateStockRequestToJSON(requestParameters['updateStockRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 更新股票基本信息（管理员权限）
+     * 更新股票信息的详细操作
      * 更新股票信息
      */
-    async apiStocksCodePut(requestParameters: ApiStocksCodePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockResponse> {
+    async apiStocksCodePut(requestParameters: ApiStocksCodePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiStocksCodePutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 分页获取股票列表，支持搜索和筛选
-     * 获取股票列表
+     * 获取股票信息的详细操作
+     * 获取股票信息
      */
-    async apiStocksGetRaw(requestParameters: ApiStocksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockListResponse>> {
+    async apiStocksGetRaw(requestParameters: ApiStocksGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         const queryParameters: any = {};
 
         if (requestParameters['page'] != null) {
@@ -306,18 +349,6 @@ export class StocksApi extends runtime.BaseAPI {
 
         if (requestParameters['limit'] != null) {
             queryParameters['limit'] = requestParameters['limit'];
-        }
-
-        if (requestParameters['search'] != null) {
-            queryParameters['search'] = requestParameters['search'];
-        }
-
-        if (requestParameters['market'] != null) {
-            queryParameters['market'] = requestParameters['market'];
-        }
-
-        if (requestParameters['industry'] != null) {
-            queryParameters['industry'] = requestParameters['industry'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -340,27 +371,27 @@ export class StocksApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockListResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 分页获取股票列表，支持搜索和筛选
-     * 获取股票列表
+     * 获取股票信息的详细操作
+     * 获取股票信息
      */
-    async apiStocksGet(requestParameters: ApiStocksGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockListResponse> {
+    async apiStocksGet(requestParameters: ApiStocksGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiStocksGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 添加新股票（管理员权限）
-     * 创建股票
+     * 创建股票信息的详细操作
+     * 创建股票信息
      */
-    async apiStocksPostRaw(requestParameters: ApiStocksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StockResponse>> {
-        if (requestParameters['createStockRequest'] == null) {
+    async apiStocksPostRaw(requestParameters: ApiStocksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'createStockRequest',
-                'Required parameter "createStockRequest" was null or undefined when calling apiStocksPost().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiStocksPost().'
             );
         }
 
@@ -386,17 +417,17 @@ export class StocksApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: CreateStockRequestToJSON(requestParameters['createStockRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => StockResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 添加新股票（管理员权限）
-     * 创建股票
+     * 创建股票信息的详细操作
+     * 创建股票信息
      */
-    async apiStocksPost(requestParameters: ApiStocksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StockResponse> {
+    async apiStocksPost(requestParameters: ApiStocksPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiStocksPostRaw(requestParameters, initOverrides);
         return await response.value();
     }

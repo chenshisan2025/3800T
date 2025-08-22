@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { logger } from '@/lib/logger';
+import { createRequestLogger } from '@/lib/logger';
 import { validateRequest } from '@/lib/utils/validation';
 import { dataProviderManager } from '@/lib/providers/DataProviderManager';
 import { NewsQuerySchema } from '@/types';
@@ -18,6 +18,7 @@ type NewsQuery = z.infer<typeof NewsQuerySchema>;
  * 获取新闻数据
  */
 export async function GET(request: NextRequest) {
+  const logger = createRequestLogger(request);
   try {
     // 验证请求参数
     const validation = await validateRequest(request, QuerySchema);
@@ -25,8 +26,9 @@ export async function GET(request: NextRequest) {
       return validation.response;
     }
 
-    const { category, keyword, stock_code, start_date, end_date, page, limit } = validation.data;
-    
+    const { category, keyword, stock_code, start_date, end_date, page, limit } =
+      validation.data;
+
     logger.info('获取新闻数据请求', {
       category,
       keyword,

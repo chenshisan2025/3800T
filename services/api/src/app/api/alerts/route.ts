@@ -2,14 +2,14 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createRouteHandlerClient } from '@/lib/supabase';
 import { apiResponse, handleApiError, validateRequest } from '@/utils';
-import { logInfo, logError } from '@/lib/logger';
+import { createRequestLogger } from '@/lib/logger';
 import { z } from 'zod';
-import { 
-  SubscriptionPlan, 
-  FeatureType, 
-  getUserSubscriptionPlan, 
-  checkLimit, 
-  getCurrentUsage 
+import {
+  SubscriptionPlan,
+  FeatureType,
+  getUserSubscriptionPlan,
+  checkLimit,
+  getCurrentUsage,
 } from '@/middleware/featureGate';
 
 // 验证 schema
@@ -17,7 +17,9 @@ const CreateAlertSchema = z.object({
   watchlistId: z.string().uuid('无效的自选股ID格式'),
   stockSymbol: z.string().min(1, '股票代码不能为空'),
   condition: z.enum(['gte', 'lte'], {
-    errorMap: () => ({ message: '条件必须是 gte（大于等于）或 lte（小于等于）' }),
+    errorMap: () => ({
+      message: '条件必须是 gte（大于等于）或 lte（小于等于）',
+    }),
   }),
   targetPrice: z.number().positive('目标价格必须大于0'),
   message: z.string().optional(),
@@ -33,46 +35,51 @@ const UpdateAlertSchema = z.object({
 // 获取当前用户信息
 async function getCurrentUser(request: NextRequest) {
   const supabase = createRouteHandlerClient(request);
-  const { data: { user }, error } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
   if (error || !user) {
     return null;
   }
-  
+
   return user;
 }
 
 // GET /api/alerts - 获取用户提醒规则列表
 export async function GET(request: NextRequest) {
+  const logger = createRequestLogger(request);
+
   try {
     // 验证用户身份
     const user = await getCurrentUser(request);
     if (!user) {
       return apiResponse.error('请先登录', 401, 'UNAUTHORIZED');
     }
-    
+
     const { searchParams } = new URL(request.url);
     const watchlistId = searchParams.get('watchlistId');
     const stockSymbol = searchParams.get('stockSymbol');
     const isActive = searchParams.get('isActive');
-    
+
     // 构建查询条件
     let whereClause: any = {
       userId: user.id,
     };
-    
+
     if (watchlistId) {
       whereClause.watchlistId = watchlistId;
     }
-    
+
     if (stockSymbol) {
       whereClause.stockSymbol = stockSymbol;
     }
-    
+
     if (isActive !== null) {
       whereClause.isActive = isActive === 'true';
     }
-    
+
     // 获取提醒规则列表
     const alerts = await prisma.alert.findMany({
       where: whereClause,
@@ -94,9 +101,9 @@ export async function GET(request: NextRequest) {
       },
       orderBy: { createdAt: 'desc' },
     });
-    
+
     // 格式化响应数据
-    const formattedAlerts = alerts.map((alert) => ({
+    const formattedAlerts = alerts.map(alert => ({
       id: alert.id,
       watchlistId: alert.watchlistId,
       stockSymbol: alert.stockSymbol,
@@ -108,41 +115,43 @@ export async function GET(request: NextRequest) {
       createdAt: alert.createdAt,
       updatedAt: alert.updatedAt,
     }));
-    
-    logInfo('用户提醒规则列表查询成功', {
+
+    logger.info('用户提醒规则列表查询成功', {
       userId: user.id,
       count: alerts.length,
       filters: { watchlistId, stockSymbol, isActive },
     });
-    
+
     return apiResponse.success({
       alerts: formattedAlerts,
       total: alerts.length,
     });
-    
   } catch (error) {
-    logError(error as Error, 'GetAlerts');
+    logger.error('获取提醒规则列表失败', error);
     return handleApiError(error, 'GetAlerts');
   }
 }
 
 // POST /api/alerts - 创建提醒规则
 export async function POST(request: NextRequest) {
+  const logger = createRequestLogger(request);
+
   try {
     // 验证用户身份
     const user = await getCurrentUser(request);
     if (!user) {
       return apiResponse.error('请先登录', 401, 'UNAUTHORIZED');
     }
-    
+
     // 验证请求参数
     const validation = await validateRequest(request, CreateAlertSchema);
     if (!validation.success) {
       return validation.error;
     }
-    
-    const { watchlistId, stockSymbol, condition, targetPrice, message } = validation.data;
-    
+
+    const { watchlistId, stockSymbol, condition, targetPrice, message } =
+      validation.data;
+
     // 验证自选股是否存在且属于当前用户
     const watchlist = await prisma.watchlist.findFirst({
       where: {
@@ -160,11 +169,15 @@ export async function POST(request: NextRequest) {
         },
       },
     });
-    
+
     if (!watchlist) {
-      return apiResponse.error('自选股不存在或无权限访问', 404, 'WATCHLIST_NOT_FOUND');
+      return apiResponse.error(
+        '自选股不存在或无权限访问',
+        404,
+        'WATCHLIST_NOT_FOUND'
+      );
     }
-    
+
     // 检查是否已存在相同条件的提醒规则
     const existingAlert = await prisma.alert.findFirst({
       where: {
@@ -176,17 +189,24 @@ export async function POST(request: NextRequest) {
         isActive: true,
       },
     });
-    
+
     if (existingAlert) {
-      return apiResponse.error('相同条件的提醒规则已存在', 409, 'ALERT_ALREADY_EXISTS');
+      return apiResponse.error(
+        '相同条件的提醒规则已存在',
+        409,
+        'ALERT_ALREADY_EXISTS'
+      );
     }
-    
+
     // 获取用户订阅计划
     const plan = await getUserSubscriptionPlan(user.id);
-    
+
     // 检查提醒数量限制
-    const currentAlertCount = await getCurrentUsage(user.id, FeatureType.ALERT_ITEMS);
-    
+    const currentAlertCount = await getCurrentUsage(
+      user.id,
+      FeatureType.ALERT_ITEMS
+    );
+
     if (!checkLimit(plan, FeatureType.ALERT_ITEMS, currentAlertCount)) {
       const limit = plan === SubscriptionPlan.FREE ? 5 : 50;
       return apiResponse.error(
@@ -196,11 +216,11 @@ export async function POST(request: NextRequest) {
         {
           currentCount: currentAlertCount,
           limit,
-          upgradeRequired: plan === SubscriptionPlan.FREE
+          upgradeRequired: plan === SubscriptionPlan.FREE,
         }
       );
     }
-    
+
     // 创建提醒规则
     const alert = await prisma.alert.create({
       data: {
@@ -209,7 +229,9 @@ export async function POST(request: NextRequest) {
         stockSymbol: stockSymbol,
         condition: condition,
         targetPrice: targetPrice,
-        message: message || `当 ${watchlist.stock.name}(${stockSymbol}) 价格${condition === 'gte' ? '大于等于' : '小于等于'} ${targetPrice} 时提醒`,
+        message:
+          message ||
+          `当 ${watchlist.stock.name}(${stockSymbol}) 价格${condition === 'gte' ? '大于等于' : '小于等于'} ${targetPrice} 时提醒`,
         isActive: true,
       },
       include: {
@@ -223,15 +245,15 @@ export async function POST(request: NextRequest) {
         },
       },
     });
-    
-    logInfo('提醒规则创建成功', {
+
+    logger.info('提醒规则创建成功', {
       userId: user.id,
       alertId: alert.id,
       stockSymbol: stockSymbol,
       condition: condition,
       targetPrice: targetPrice,
     });
-    
+
     return apiResponse.success(
       {
         id: alert.id,
@@ -247,37 +269,38 @@ export async function POST(request: NextRequest) {
       },
       '提醒规则创建成功'
     );
-    
   } catch (error) {
-    logError(error as Error, 'CreateAlert');
+    logger.error('创建提醒规则失败', error);
     return handleApiError(error, 'CreateAlert');
   }
 }
 
 // PUT /api/alerts - 更新提醒规则
 export async function PUT(request: NextRequest) {
+  const logger = createRequestLogger(request);
+
   try {
     // 验证用户身份
     const user = await getCurrentUser(request);
     if (!user) {
       return apiResponse.error('请先登录', 401, 'UNAUTHORIZED');
     }
-    
+
     const { searchParams } = new URL(request.url);
     const alertId = searchParams.get('id');
-    
+
     if (!alertId) {
       return apiResponse.error('请提供提醒规则ID', 400, 'MISSING_ALERT_ID');
     }
-    
+
     // 验证请求参数
     const validation = await validateRequest(request, UpdateAlertSchema);
     if (!validation.success) {
       return validation.error;
     }
-    
+
     const updateData = validation.data;
-    
+
     // 验证提醒规则是否存在且属于当前用户
     const existingAlert = await prisma.alert.findFirst({
       where: {
@@ -285,11 +308,15 @@ export async function PUT(request: NextRequest) {
         userId: user.id,
       },
     });
-    
+
     if (!existingAlert) {
-      return apiResponse.error('提醒规则不存在或无权限访问', 404, 'ALERT_NOT_FOUND');
+      return apiResponse.error(
+        '提醒规则不存在或无权限访问',
+        404,
+        'ALERT_NOT_FOUND'
+      );
     }
-    
+
     // 更新提醒规则
     const updatedAlert = await prisma.alert.update({
       where: { id: alertId },
@@ -308,13 +335,13 @@ export async function PUT(request: NextRequest) {
         },
       },
     });
-    
-    logInfo('提醒规则更新成功', {
+
+    logger.info('提醒规则更新成功', {
       userId: user.id,
       alertId: alertId,
       updateData: updateData,
     });
-    
+
     return apiResponse.success(
       {
         id: updatedAlert.id,
@@ -330,29 +357,30 @@ export async function PUT(request: NextRequest) {
       },
       '提醒规则更新成功'
     );
-    
   } catch (error) {
-    logError(error as Error, 'UpdateAlert');
+    logger.error('更新提醒规则失败', error);
     return handleApiError(error, 'UpdateAlert');
   }
 }
 
 // DELETE /api/alerts - 删除提醒规则
 export async function DELETE(request: NextRequest) {
+  const logger = createRequestLogger(request);
+
   try {
     // 验证用户身份
     const user = await getCurrentUser(request);
     if (!user) {
       return apiResponse.error('请先登录', 401, 'UNAUTHORIZED');
     }
-    
+
     const { searchParams } = new URL(request.url);
     const alertId = searchParams.get('id');
-    
+
     if (!alertId) {
       return apiResponse.error('请提供提醒规则ID', 400, 'MISSING_ALERT_ID');
     }
-    
+
     // 验证提醒规则是否存在且属于当前用户
     const existingAlert = await prisma.alert.findFirst({
       where: {
@@ -368,22 +396,26 @@ export async function DELETE(request: NextRequest) {
         },
       },
     });
-    
+
     if (!existingAlert) {
-      return apiResponse.error('提醒规则不存在或无权限访问', 404, 'ALERT_NOT_FOUND');
+      return apiResponse.error(
+        '提醒规则不存在或无权限访问',
+        404,
+        'ALERT_NOT_FOUND'
+      );
     }
-    
+
     // 删除提醒规则
     await prisma.alert.delete({
       where: { id: alertId },
     });
-    
-    logInfo('提醒规则删除成功', {
+
+    logger.info('提醒规则删除成功', {
       userId: user.id,
       alertId: alertId,
       stockSymbol: existingAlert.stockSymbol,
     });
-    
+
     return apiResponse.success(
       {
         id: existingAlert.id,
@@ -392,9 +424,8 @@ export async function DELETE(request: NextRequest) {
       },
       '提醒规则删除成功'
     );
-    
   } catch (error) {
-    logError(error as Error, 'DeleteAlert');
+    logger.error('删除提醒规则失败', error);
     return handleApiError(error, 'DeleteAlert');
   }
 }

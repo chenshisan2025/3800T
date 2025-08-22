@@ -4,6 +4,13 @@ import logger from '@/lib/logger';
 import { validateRequest } from '@/lib/utils/validation';
 import { dataProviderManager } from '@/lib/providers/DataProviderManager';
 import { NewsQuerySchema } from '@/types';
+import {
+  ok,
+  fail,
+  withErrorHandling,
+  ErrorCodes,
+  getRequestId,
+} from '@/lib/http';
 
 // 使用统一的查询参数验证schema，添加分页参数
 const QuerySchema = NewsQuerySchema.extend({
@@ -17,16 +24,24 @@ type NewsQuery = z.infer<typeof NewsQuerySchema>;
  * GET /api/news
  * 获取新闻数据
  */
-export async function GET(request: NextRequest) {
-  try {
+export const GET = withErrorHandling(
+  async (request: NextRequest, requestId: string) => {
     // 验证请求参数
-    const validation = await validateRequest(request, QuerySchema);
+    const validation = validateRequest(request, QuerySchema);
     if (!validation.success) {
-      return validation.response;
+      return fail(
+        {
+          code: ErrorCodes.VALIDATION_ERROR,
+          message: validation.error,
+        },
+        requestId,
+        400
+      );
     }
 
-    const { category, keyword, stock_code, start_date, end_date, page, limit } = validation.data;
-    
+    const { category, keyword, stock_code, start_date, end_date, page, limit } =
+      validation.data;
+
     logger.info('获取新闻数据请求', {
       endpoint: '/api/news',
       category,
@@ -59,39 +74,27 @@ export async function GET(request: NextRequest) {
     // 获取当前提供者信息
     const providerInfo = dataProviderManager.getCurrentProviderInfo();
 
-    return NextResponse.json({
-      success: true,
-      data: paginatedData,
-      pagination: {
-        page,
-        limit,
-        total: totalCount,
-        totalPages,
-        hasNext: page < totalPages,
-        hasPrev: page > 1,
-      },
-      metadata: {
-        provider: providerInfo.name,
-        isPrimary: providerInfo.isPrimary,
-        timestamp: Date.now(),
-        count: paginatedData.length,
-        ...newsResult.metadata,
-      },
-    });
-  } catch (error) {
-    logger.error('获取新闻数据失败', {
-      endpoint: '/api/news',
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-
-    return NextResponse.json(
+    return ok(
       {
-        success: false,
-        error: '获取新闻数据失败',
-        message: error instanceof Error ? error.message : '未知错误',
+        data: paginatedData,
+        pagination: {
+          page,
+          limit,
+          total: totalCount,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+        metadata: {
+          provider: providerInfo.name,
+          isPrimary: providerInfo.isPrimary,
+          timestamp: Date.now(),
+          count: paginatedData.length,
+          ...newsResult.metadata,
+        },
       },
-      { status: 500 }
+      undefined,
+      requestId
     );
   }
-}
+);

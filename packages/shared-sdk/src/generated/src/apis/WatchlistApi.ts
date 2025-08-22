@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * 古灵通股票投资平台 API
- * 古灵通股票投资平台的 RESTful API 服务  ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ``` 
+ * 古灵通股票投资平台的 RESTful API 服务      ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ```
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@gulingtong.com
@@ -15,52 +15,47 @@
 
 import * as runtime from '../runtime';
 import type {
-  AddWatchlistRequest,
   ErrorResponse,
   SuccessResponse,
-  UpdateWatchlistRequest,
-  WatchlistItemResponse,
-  WatchlistResponse,
 } from '../models/index';
 import {
-    AddWatchlistRequestFromJSON,
-    AddWatchlistRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-    UpdateWatchlistRequestFromJSON,
-    UpdateWatchlistRequestToJSON,
-    WatchlistItemResponseFromJSON,
-    WatchlistItemResponseToJSON,
-    WatchlistResponseFromJSON,
-    WatchlistResponseToJSON,
 } from '../models/index';
 
+export interface ApiUsersWatchlistGetRequest {
+    page?: number;
+    limit?: number;
+}
+
 export interface ApiUsersWatchlistIdDeleteRequest {
-    id: number;
+    id: string;
 }
 
 export interface ApiUsersWatchlistIdGetRequest {
-    id: number;
+    id: string;
+    page?: number;
+    limit?: number;
 }
 
 export interface ApiUsersWatchlistIdPutRequest {
-    id: number;
-    updateWatchlistRequest: UpdateWatchlistRequest;
+    id: string;
+    body: object;
 }
 
 export interface ApiUsersWatchlistPostRequest {
-    addWatchlistRequest: AddWatchlistRequest;
+    body: object;
 }
 
-export interface ApiWatchlistDeleteRequest {
-    id?: number;
-    symbol?: string;
+export interface ApiWatchlistGetRequest {
+    page?: number;
+    limit?: number;
 }
 
 export interface ApiWatchlistPostRequest {
-    addWatchlistRequest: AddWatchlistRequest;
+    body: object;
 }
 
 /**
@@ -69,11 +64,19 @@ export interface ApiWatchlistPostRequest {
 export class WatchlistApi extends runtime.BaseAPI {
 
     /**
-     * 获取当前用户的自选股列表
-     * 获取自选股列表
+     * 获取自选股的详细操作
+     * 获取自选股
      */
-    async apiUsersWatchlistGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WatchlistResponse>> {
+    async apiUsersWatchlistGetRaw(requestParameters: ApiUsersWatchlistGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['limit'] != null) {
+            queryParameters['limit'] = requestParameters['limit'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -95,20 +98,20 @@ export class WatchlistApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => WatchlistResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 获取当前用户的自选股列表
-     * 获取自选股列表
+     * 获取自选股的详细操作
+     * 获取自选股
      */
-    async apiUsersWatchlistGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WatchlistResponse> {
-        const response = await this.apiUsersWatchlistGetRaw(initOverrides);
+    async apiUsersWatchlistGet(requestParameters: ApiUsersWatchlistGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.apiUsersWatchlistGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 从自选股列表中移除股票
+     * 删除自选股的详细操作
      * 删除自选股
      */
     async apiUsersWatchlistIdDeleteRaw(requestParameters: ApiUsersWatchlistIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
@@ -132,7 +135,7 @@ export class WatchlistApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/watchlist/{id}`;
+        let urlPath = `/api/users/watchlist/[id]`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -146,7 +149,7 @@ export class WatchlistApi extends runtime.BaseAPI {
     }
 
     /**
-     * 从自选股列表中移除股票
+     * 删除自选股的详细操作
      * 删除自选股
      */
     async apiUsersWatchlistIdDelete(requestParameters: ApiUsersWatchlistIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
@@ -155,10 +158,10 @@ export class WatchlistApi extends runtime.BaseAPI {
     }
 
     /**
-     * 获取指定自选股的详细信息
-     * 获取自选股详情
+     * 获取自选股的详细操作
+     * 获取自选股
      */
-    async apiUsersWatchlistIdGetRaw(requestParameters: ApiUsersWatchlistIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WatchlistItemResponse>> {
+    async apiUsersWatchlistIdGetRaw(requestParameters: ApiUsersWatchlistIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -167,6 +170,14 @@ export class WatchlistApi extends runtime.BaseAPI {
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['limit'] != null) {
+            queryParameters['limit'] = requestParameters['limit'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -179,7 +190,7 @@ export class WatchlistApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/watchlist/{id}`;
+        let urlPath = `/api/users/watchlist/[id]`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -189,23 +200,23 @@ export class WatchlistApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => WatchlistItemResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 获取指定自选股的详细信息
-     * 获取自选股详情
+     * 获取自选股的详细操作
+     * 获取自选股
      */
-    async apiUsersWatchlistIdGet(requestParameters: ApiUsersWatchlistIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WatchlistItemResponse> {
+    async apiUsersWatchlistIdGet(requestParameters: ApiUsersWatchlistIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersWatchlistIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 更新自选股备注信息
+     * 更新自选股的详细操作
      * 更新自选股
      */
-    async apiUsersWatchlistIdPutRaw(requestParameters: ApiUsersWatchlistIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WatchlistItemResponse>> {
+    async apiUsersWatchlistIdPutRaw(requestParameters: ApiUsersWatchlistIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -213,10 +224,10 @@ export class WatchlistApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['updateWatchlistRequest'] == null) {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'updateWatchlistRequest',
-                'Required parameter "updateWatchlistRequest" was null or undefined when calling apiUsersWatchlistIdPut().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiUsersWatchlistIdPut().'
             );
         }
 
@@ -235,7 +246,7 @@ export class WatchlistApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/watchlist/{id}`;
+        let urlPath = `/api/users/watchlist/[id]`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -243,30 +254,30 @@ export class WatchlistApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UpdateWatchlistRequestToJSON(requestParameters['updateWatchlistRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => WatchlistItemResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 更新自选股备注信息
+     * 更新自选股的详细操作
      * 更新自选股
      */
-    async apiUsersWatchlistIdPut(requestParameters: ApiUsersWatchlistIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WatchlistItemResponse> {
+    async apiUsersWatchlistIdPut(requestParameters: ApiUsersWatchlistIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersWatchlistIdPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 将股票添加到自选股列表
-     * 添加自选股
+     * 创建自选股的详细操作
+     * 创建自选股
      */
-    async apiUsersWatchlistPostRaw(requestParameters: ApiUsersWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WatchlistItemResponse>> {
-        if (requestParameters['addWatchlistRequest'] == null) {
+    async apiUsersWatchlistPostRaw(requestParameters: ApiUsersWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'addWatchlistRequest',
-                'Required parameter "addWatchlistRequest" was null or undefined when calling apiUsersWatchlistPost().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiUsersWatchlistPost().'
             );
         }
 
@@ -292,35 +303,27 @@ export class WatchlistApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: AddWatchlistRequestToJSON(requestParameters['addWatchlistRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => WatchlistItemResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 将股票添加到自选股列表
-     * 添加自选股
+     * 创建自选股的详细操作
+     * 创建自选股
      */
-    async apiUsersWatchlistPost(requestParameters: ApiUsersWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WatchlistItemResponse> {
+    async apiUsersWatchlistPost(requestParameters: ApiUsersWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersWatchlistPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 从自选股列表中移除股票
+     * 删除自选股的详细操作
      * 删除自选股
      */
-    async apiWatchlistDeleteRaw(requestParameters: ApiWatchlistDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+    async apiWatchlistDeleteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         const queryParameters: any = {};
-
-        if (requestParameters['id'] != null) {
-            queryParameters['id'] = requestParameters['id'];
-        }
-
-        if (requestParameters['symbol'] != null) {
-            queryParameters['symbol'] = requestParameters['symbol'];
-        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -346,20 +349,28 @@ export class WatchlistApi extends runtime.BaseAPI {
     }
 
     /**
-     * 从自选股列表中移除股票
+     * 删除自选股的详细操作
      * 删除自选股
      */
-    async apiWatchlistDelete(requestParameters: ApiWatchlistDeleteRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiWatchlistDeleteRaw(requestParameters, initOverrides);
+    async apiWatchlistDelete(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.apiWatchlistDeleteRaw(initOverrides);
         return await response.value();
     }
 
     /**
-     * 获取当前用户的自选股列表，包含股票详情和活跃提醒
-     * 获取自选股列表
+     * 获取自选股的详细操作
+     * 获取自选股
      */
-    async apiWatchlistGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WatchlistResponse>> {
+    async apiWatchlistGetRaw(requestParameters: ApiWatchlistGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         const queryParameters: any = {};
+
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
+        }
+
+        if (requestParameters['limit'] != null) {
+            queryParameters['limit'] = requestParameters['limit'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -381,27 +392,27 @@ export class WatchlistApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => WatchlistResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 获取当前用户的自选股列表，包含股票详情和活跃提醒
-     * 获取自选股列表
+     * 获取自选股的详细操作
+     * 获取自选股
      */
-    async apiWatchlistGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WatchlistResponse> {
-        const response = await this.apiWatchlistGetRaw(initOverrides);
+    async apiWatchlistGet(requestParameters: ApiWatchlistGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.apiWatchlistGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 将股票添加到自选股列表
-     * 添加自选股
+     * 创建自选股的详细操作
+     * 创建自选股
      */
-    async apiWatchlistPostRaw(requestParameters: ApiWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<WatchlistItemResponse>> {
-        if (requestParameters['addWatchlistRequest'] == null) {
+    async apiWatchlistPostRaw(requestParameters: ApiWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'addWatchlistRequest',
-                'Required parameter "addWatchlistRequest" was null or undefined when calling apiWatchlistPost().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiWatchlistPost().'
             );
         }
 
@@ -427,17 +438,17 @@ export class WatchlistApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: AddWatchlistRequestToJSON(requestParameters['addWatchlistRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => WatchlistItemResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 将股票添加到自选股列表
-     * 添加自选股
+     * 创建自选股的详细操作
+     * 创建自选股
      */
-    async apiWatchlistPost(requestParameters: ApiWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<WatchlistItemResponse> {
+    async apiWatchlistPost(requestParameters: ApiWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiWatchlistPostRaw(requestParameters, initOverrides);
         return await response.value();
     }

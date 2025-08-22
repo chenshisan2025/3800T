@@ -6,8 +6,8 @@
 // 用户角色枚举
 export enum UserRole {
   ADMIN = 'ADMIN',
-  ANALYST = 'ANALYST', 
-  SUPPORT = 'SUPPORT'
+  ANALYST = 'ANALYST',
+  SUPPORT = 'SUPPORT',
 }
 
 // 权限枚举
@@ -16,38 +16,38 @@ export enum Permission {
   USER_READ = 'USER_READ',
   USER_WRITE = 'USER_WRITE',
   USER_DELETE = 'USER_DELETE',
-  
+
   // 订阅管理权限
   SUBSCRIPTION_READ = 'SUBSCRIPTION_READ',
   SUBSCRIPTION_WRITE = 'SUBSCRIPTION_WRITE',
-  
+
   // 自选股管理权限
   WATCHLIST_READ = 'WATCHLIST_READ',
   WATCHLIST_WRITE = 'WATCHLIST_WRITE',
   WATCHLIST_DELETE = 'WATCHLIST_DELETE',
-  
+
   // AI报告管理权限
   REPORT_READ = 'REPORT_READ',
   REPORT_WRITE = 'REPORT_WRITE',
   REPORT_DELETE = 'REPORT_DELETE',
-  
+
   // 数据源配置权限（仅管理员）
   DATASOURCE_READ = 'DATASOURCE_READ',
   DATASOURCE_WRITE = 'DATASOURCE_WRITE',
   DATASOURCE_DELETE = 'DATASOURCE_DELETE',
-  
+
   // 模型Key管理权限（仅管理员）
   MODEL_KEY_READ = 'MODEL_KEY_READ',
   MODEL_KEY_WRITE = 'MODEL_KEY_WRITE',
   MODEL_KEY_DELETE = 'MODEL_KEY_DELETE',
-  
+
   // 审计日志权限
   AUDIT_READ = 'AUDIT_READ',
   AUDIT_EXPORT = 'AUDIT_EXPORT',
-  
+
   // 系统管理权限
   SYSTEM_READ = 'SYSTEM_READ',
-  SYSTEM_WRITE = 'SYSTEM_WRITE'
+  SYSTEM_WRITE = 'SYSTEM_WRITE',
 }
 
 // 角色权限映射
@@ -74,9 +74,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.AUDIT_READ,
     Permission.AUDIT_EXPORT,
     Permission.SYSTEM_READ,
-    Permission.SYSTEM_WRITE
+    Permission.SYSTEM_WRITE,
   ],
-  
+
   [UserRole.ANALYST]: [
     // 分析师权限：用户、订阅、自选股、报告的读写权限，审计日志只读
     Permission.USER_READ,
@@ -90,9 +90,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.REPORT_WRITE,
     Permission.REPORT_DELETE,
     Permission.AUDIT_READ,
-    Permission.SYSTEM_READ
+    Permission.SYSTEM_READ,
   ],
-  
+
   [UserRole.SUPPORT]: [
     // 客服权限：用户、订阅、自选股的读权限，报告只读
     Permission.USER_READ,
@@ -100,14 +100,17 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.WATCHLIST_READ,
     Permission.REPORT_READ,
     Permission.AUDIT_READ,
-    Permission.SYSTEM_READ
-  ]
+    Permission.SYSTEM_READ,
+  ],
 };
 
 /**
  * 检查用户是否拥有指定权限
  */
-export function hasPermission(userRole: string, permission: Permission): boolean {
+export function hasPermission(
+  userRole: string,
+  permission: Permission
+): boolean {
   const role = userRole as UserRole;
   const permissions = ROLE_PERMISSIONS[role];
   return permissions ? permissions.includes(permission) : false;
@@ -123,11 +126,13 @@ export function canAccessPage(userRole: string, page: string): boolean {
     '/dashboard/watchlist': Permission.WATCHLIST_READ,
     '/dashboard/reports': Permission.REPORT_READ,
     '/dashboard/datasource': Permission.DATASOURCE_READ,
-    '/dashboard/audit': Permission.AUDIT_READ
+    '/dashboard/audit': Permission.AUDIT_READ,
   };
-  
+
   const requiredPermission = pagePermissions[page];
-  return requiredPermission ? hasPermission(userRole, requiredPermission) : false;
+  return requiredPermission
+    ? hasPermission(userRole, requiredPermission)
+    : false;
 }
 
 /**
@@ -139,48 +144,48 @@ export function getAccessibleMenuItems(userRole: string) {
       key: '/dashboard',
       label: '概览',
       icon: 'dashboard',
-      permission: null // 所有角色都可以访问
+      permission: null, // 所有角色都可以访问
     },
     {
       key: '/dashboard/users',
       label: '用户管理',
       icon: 'user',
-      permission: Permission.USER_READ
+      permission: Permission.USER_READ,
     },
     {
       key: '/dashboard/subscriptions',
       label: '订阅管理',
       icon: 'crown',
-      permission: Permission.SUBSCRIPTION_READ
+      permission: Permission.SUBSCRIPTION_READ,
     },
     {
       key: '/dashboard/watchlist',
       label: 'Watchlist&Alert',
       icon: 'star',
-      permission: Permission.WATCHLIST_READ
+      permission: Permission.WATCHLIST_READ,
     },
     {
       key: '/dashboard/reports',
       label: 'AI报告',
       icon: 'file-text',
-      permission: Permission.REPORT_READ
+      permission: Permission.REPORT_READ,
     },
     {
       key: '/dashboard/datasource',
       label: '数据源配置',
       icon: 'database',
-      permission: Permission.DATASOURCE_READ
+      permission: Permission.DATASOURCE_READ,
     },
     {
       key: '/dashboard/audit',
       label: '审计日志',
       icon: 'audit',
-      permission: Permission.AUDIT_READ
-    }
+      permission: Permission.AUDIT_READ,
+    },
   ];
-  
-  return allMenuItems.filter(item => 
-    !item.permission || hasPermission(userRole, item.permission)
+
+  return allMenuItems.filter(
+    item => !item.permission || hasPermission(userRole, item.permission)
   );
 }
 
@@ -214,11 +219,11 @@ export function requirePermission(permission: Permission) {
     if (!user) {
       return res.status(401).json({ error: 'Authentication required' });
     }
-    
+
     if (!hasPermission(user.role, permission)) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }
-    
+
     next();
   };
 }
@@ -232,11 +237,11 @@ export function requireRole(role: UserRole) {
     if (!user) {
       return res.status(401).json({ error: 'Authentication required' });
     }
-    
+
     if (user.role !== role) {
       return res.status(403).json({ error: 'Insufficient role permissions' });
     }
-    
+
     next();
   };
 }
@@ -254,10 +259,10 @@ export function requireAnalystOrAdmin(req: any, res: any, next: any) {
   if (!user) {
     return res.status(401).json({ error: 'Authentication required' });
   }
-  
+
   if (user.role !== UserRole.ADMIN && user.role !== UserRole.ANALYST) {
     return res.status(403).json({ error: 'Insufficient permissions' });
   }
-  
+
   next();
 }

@@ -80,7 +80,9 @@ export const RemoveFromWatchlistSchema = z.object({
 
 export type Watchlist = z.infer<typeof WatchlistSchema>;
 export type AddToWatchlistRequest = z.infer<typeof AddToWatchlistSchema>;
-export type RemoveFromWatchlistRequest = z.infer<typeof RemoveFromWatchlistSchema>;
+export type RemoveFromWatchlistRequest = z.infer<
+  typeof RemoveFromWatchlistSchema
+>;
 
 // 投资组合相关类型
 export const PortfolioSchema = z.object({
@@ -124,7 +126,12 @@ export const AiReportSchema = z.object({
   stock_id: z.string().uuid(),
   title: z.string(),
   content: z.string(),
-  analysis_type: z.enum(['technical', 'fundamental', 'sentiment', 'comprehensive']),
+  analysis_type: z.enum([
+    'technical',
+    'fundamental',
+    'sentiment',
+    'comprehensive',
+  ]),
   confidence_score: z.number().min(0).max(1),
   created_at: z.date(),
   updated_at: z.date(),
@@ -132,7 +139,12 @@ export const AiReportSchema = z.object({
 
 export const GenerateReportSchema = z.object({
   stock_code: z.string().regex(/^[0-9]{6}$/, '股票代码必须为6位数字'),
-  analysis_type: z.enum(['technical', 'fundamental', 'sentiment', 'comprehensive']),
+  analysis_type: z.enum([
+    'technical',
+    'fundamental',
+    'sentiment',
+    'comprehensive',
+  ]),
 });
 
 export type AiReport = z.infer<typeof AiReportSchema>;
@@ -175,8 +187,14 @@ export const StockQuerySchema = PaginationQuerySchema.extend({
 
 export const StockDataQuerySchema = z.object({
   stock_code: z.string().regex(/^[0-9]{6}$/, '股票代码必须为6位数字'),
-  start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '开始日期格式错误').optional(),
-  end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '结束日期格式错误').optional(),
+  start_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, '开始日期格式错误')
+    .optional(),
+  end_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, '结束日期格式错误')
+    .optional(),
   limit: z.coerce.number().min(1).max(1000).default(100),
 });
 
@@ -221,7 +239,7 @@ export interface EnvConfig {
 // 数据提供者相关类型
 export interface DataProviderMetadata {
   source: string;
-  delay?: number; // 延迟时间（毫秒）
+  lagMs?: number; // 延迟时间（毫秒）
   timestamp: number;
 }
 
@@ -329,6 +347,8 @@ export const IndicesQuerySchema = z.object({
 
 export const QuotesQuerySchema = z.object({
   codes: z.array(z.string().regex(/^[0-9]{6}$/, '股票代码必须为6位数字')), // 股票代码列表
+  market: z.enum(['SH', 'SZ', 'BJ']).optional(), // 市场代码
+  fields: z.array(z.string()).optional(), // 请求字段列表
 });
 
 export const KlineQuerySchema = z.object({
@@ -341,7 +361,9 @@ export const KlineQuerySchema = z.object({
 
 export const NewsQuerySchema = z.object({
   keywords: z.string().optional(), // 关键词搜索
-  stock_codes: z.array(z.string().regex(/^[0-9]{6}$/, '股票代码必须为6位数字')).optional(), // 相关股票
+  stock_codes: z
+    .array(z.string().regex(/^[0-9]{6}$/, '股票代码必须为6位数字'))
+    .optional(), // 相关股票
   start_time: z.number().optional(), // 开始时间戳
   end_time: z.number().optional(), // 结束时间戳
   limit: z.number().min(1).max(100).default(20), // 数据条数限制
@@ -355,19 +377,19 @@ export type NewsQuery = z.infer<typeof NewsQuerySchema>;
 // 数据提供者接口
 export interface IDataProvider {
   name: string;
-  
+
   // 获取指数数据
   getIndices(query?: IndicesQuery): Promise<IndexDataWithMetadata[]>;
-  
+
   // 获取股票报价数据
   getQuotes(query: QuotesQuery): Promise<QuoteDataWithMetadata[]>;
-  
+
   // 获取K线数据
   getKline(query: KlineQuery): Promise<KlineDataWithMetadata>;
-  
+
   // 获取新闻数据
   getNews(query?: NewsQuery): Promise<NewsDataWithMetadata>;
-  
+
   // 健康检查
   healthCheck(): Promise<boolean>;
 }

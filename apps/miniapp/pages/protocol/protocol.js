@@ -3,40 +3,40 @@ Page({
   data: {
     type: 'user', // user | privacy
     title: '',
-    content: ''
+    content: '',
   },
-  
+
   onLoad(options) {
-    const type = options.type || 'user'
-    this.setData({ type })
-    
+    const type = options.type || 'user';
+    this.setData({ type });
+
     // 设置页面标题和内容
-    this.initProtocol(type)
+    this.initProtocol(type);
   },
-  
+
   // 初始化协议内容
   initProtocol(type) {
     if (type === 'user') {
       this.setData({
         title: '用户协议',
-        content: this.getUserAgreement()
-      })
-      
+        content: this.getUserAgreement(),
+      });
+
       wx.setNavigationBarTitle({
-        title: '用户协议'
-      })
+        title: '用户协议',
+      });
     } else if (type === 'privacy') {
       this.setData({
         title: '隐私政策',
-        content: this.getPrivacyPolicy()
-      })
-      
+        content: this.getPrivacyPolicy(),
+      });
+
       wx.setNavigationBarTitle({
-        title: '隐私政策'
-      })
+        title: '隐私政策',
+      });
     }
   },
-  
+
   // 获取用户协议内容
   getUserAgreement() {
     return `
@@ -143,9 +143,9 @@ Page({
 ---
 
 **本协议的最终解释权归股灵通所有。**
-    `
+    `;
   },
-  
+
   // 获取隐私政策内容
   getPrivacyPolicy() {
     return `
@@ -294,6 +294,6 @@ Page({
 ---
 
 **感谢您信任股灵通！**
-    `
-  }
-})
+    `;
+  },
+});

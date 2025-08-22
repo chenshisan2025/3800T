@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   title: 古灵通股票投资平台 API
-  description: |
+  description: |-
     古灵通股票投资平台的 RESTful API 服务
-    
+        
     ## 功能特性
     - 用户认证与授权
     - 股票数据查询
@@ -11,10 +11,10 @@ info:
     - 投资组合管理
     - AI 投资报告
     - 实时行情数据
-    
+
     ## 认证方式
     使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。
-    
+
     ## 响应格式
     所有 API 响应都遵循统一的格式：
     ```json
@@ -32,130 +32,71 @@ info:
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-
 servers:
   - url: http://localhost:3001
     description: 开发环境
   - url: https://api.gulingtong.com
     description: 生产环境
-
 security:
   - BearerAuth: []
-
 paths:
-  # 健康检查
-  /api/health:
+  /api/watchlist:
     get:
       tags:
-        - System
-      summary: 健康检查
-      description: 检查 API 服务状态和数据库连接
-      security: []
+        - Watchlist
+      summary: 获取自选股
+      description: 获取自选股的详细操作
       responses:
         '200':
-          description: 服务正常
+          description: 请求成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponse'
-        '503':
-          description: 服务异常
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  # 用户认证
-  /api/auth/register:
-    post:
-      tags:
-        - Authentication
-      summary: 用户注册
-      description: 创建新用户账户
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterRequest'
-      responses:
-        '201':
-          description: 注册成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
+                $ref: '#/components/schemas/SuccessResponse'
         '400':
           description: 请求参数错误
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '409':
-          description: 邮箱已存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /api/auth/login:
-    post:
-      tags:
-        - Authentication
-      summary: 用户登录
-      description: 用户邮箱密码登录
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
-      responses:
-        '200':
-          description: 登录成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
         '401':
-          description: 认证失败
+          description: 未授权
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  /api/auth/logout:
-    post:
-      tags:
-        - Authentication
-      summary: 用户登出
-      description: 退出当前用户会话
-      responses:
-        '200':
-          description: 登出成功
+        '500':
+          description: 服务器内部错误
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessResponse'
-
-  /api/auth/start:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: 页码
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: 每页数量
+      security:
+        - BearerAuth: []
     post:
       tags:
-        - Authentication
-      summary: 发送魔法链接
-      description: 发送无密码登录链接到邮箱
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MagicLinkRequest'
+        - Watchlist
+      summary: 创建自选股
+      description: 创建自选股的详细操作
       responses:
         '200':
-          description: 魔法链接发送成功
+          description: 请求成功
           content:
             application/json:
               schema:
@@ -166,356 +107,148 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  /api/auth/callback:
-    get:
-      tags:
-        - Authentication
-      summary: 验证魔法链接
-      description: 验证魔法链接回调
-      security: []
-      parameters:
-        - name: token_hash
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: type
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: 验证成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          description: 验证失败
+        '401':
+          description: 未授权
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  /api/auth/wx/callback:
-    post:
-      tags:
-        - Authentication
-      summary: 微信登录回调
-      description: 微信登录回调处理（预留接口）
-      security: []
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                code:
-                  type: string
-                  description: 微信授权码
-                state:
-                  type: string
-                  description: 状态参数
-              required:
-                - code
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - Watchlist
+      summary: 删除自选股
+      description: 删除自选股的详细操作
       responses:
         '200':
-          description: 微信登录成功
+          description: 请求成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '501':
-          description: 功能未实现
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  /api/auth/me:
-    get:
-      tags:
-        - Authentication
-      summary: 获取当前用户信息
-      description: 获取已登录用户的详细信息
-      responses:
-        '200':
-          description: 用户信息获取成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
         '401':
           description: 未授权
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  # 股票数据
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /api/test-logger:
+    get:
+      tags:
+        - Other
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
   /api/stocks:
     get:
       tags:
         - Stocks
-      summary: 获取股票列表
-      description: 分页获取股票列表，支持搜索和筛选
+      summary: 获取股票信息
+      description: 获取股票信息的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       parameters:
         - name: page
           in: query
-          description: 页码
           schema:
             type: integer
             minimum: 1
             default: 1
+          description: 页码
         - name: limit
           in: query
-          description: 每页数量
           schema:
             type: integer
             minimum: 1
             maximum: 100
             default: 20
-        - name: search
-          in: query
-          description: 搜索关键词（股票代码或名称）
-          schema:
-            type: string
-        - name: market
-          in: query
-          description: 市场筛选
-          schema:
-            $ref: '#/components/schemas/StockMarket'
-        - name: industry
-          in: query
-          description: 行业筛选
-          schema:
-            type: string
-      responses:
-        '200':
-          description: 股票列表获取成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StockListResponse'
-
+          description: 每页数量
+      security:
+        - BearerAuth: []
     post:
       tags:
         - Stocks
-      summary: 创建股票
-      description: 添加新股票（管理员权限）
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateStockRequest'
-      responses:
-        '201':
-          description: 股票创建成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StockResponse'
-        '403':
-          description: 权限不足
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /api/stocks/{code}:
-    get:
-      tags:
-        - Stocks
-      summary: 获取股票详情
-      description: 获取指定股票的详细信息
-      parameters:
-        - name: code
-          in: path
-          required: true
-          description: 股票代码
-          schema:
-            type: string
-            pattern: '^[0-9]{6}$'
+      summary: 创建股票信息
+      description: 创建股票信息的详细操作
       responses:
         '200':
-          description: 股票详情获取成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StockDetailResponse'
-        '404':
-          description: 股票不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-    put:
-      tags:
-        - Stocks
-      summary: 更新股票信息
-      description: 更新股票基本信息（管理员权限）
-      parameters:
-        - name: code
-          in: path
-          required: true
-          description: 股票代码
-          schema:
-            type: string
-            pattern: '^[0-9]{6}$'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateStockRequest'
-      responses:
-        '200':
-          description: 股票更新成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StockResponse'
-
-    delete:
-      tags:
-        - Stocks
-      summary: 删除股票
-      description: 删除指定股票（管理员权限）
-      parameters:
-        - name: code
-          in: path
-          required: true
-          description: 股票代码
-          schema:
-            type: string
-            pattern: '^[0-9]{6}$'
-      responses:
-        '200':
-          description: 股票删除成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-
-  /api/stocks/{code}/data:
-    get:
-      tags:
-        - Stocks
-      summary: 获取股票历史数据
-      description: 获取股票的历史价格和交易数据
-      parameters:
-        - name: code
-          in: path
-          required: true
-          description: 股票代码
-          schema:
-            type: string
-            pattern: '^[0-9]{6}$'
-        - name: start_date
-          in: query
-          description: 开始日期
-          schema:
-            type: string
-            format: date
-        - name: end_date
-          in: query
-          description: 结束日期
-          schema:
-            type: string
-            format: date
-        - name: limit
-          in: query
-          description: 数据条数限制
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 1000
-            default: 100
-      responses:
-        '200':
-          description: 股票数据获取成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StockDataListResponse'
-
-  # 自选股管理
-  /api/watchlist:
-    get:
-      tags:
-        - Watchlist
-      summary: 获取自选股列表
-      description: 获取当前用户的自选股列表，包含股票详情和活跃提醒
-      responses:
-        '200':
-          description: 自选股列表获取成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WatchlistResponse'
-        '401':
-          description: 未授权
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-    post:
-      tags:
-        - Watchlist
-      summary: 添加自选股
-      description: 将股票添加到自选股列表
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddWatchlistRequest'
-      responses:
-        '201':
-          description: 自选股添加成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WatchlistItemResponse'
-        '400':
-          description: 请求参数错误或股票已存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 股票不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-    delete:
-      tags:
-        - Watchlist
-      summary: 删除自选股
-      description: 从自选股列表中移除股票
-      parameters:
-        - name: id
-          in: query
-          description: 自选股 ID
-          schema:
-            type: integer
-        - name: symbol
-          in: query
-          description: 股票代码
-          schema:
-            type: string
-            pattern: '^[0-9]{6}$'
-      responses:
-        '200':
-          description: 自选股删除成功
+          description: 请求成功
           content:
             application/json:
               schema:
@@ -526,229 +259,204 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 自选股不存在
+        '401':
+          description: 未授权
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  # 用户自选股（兼容性保留）
-  /api/users/watchlist:
-    get:
-      tags:
-        - Watchlist
-      summary: 获取自选股列表
-      description: 获取当前用户的自选股列表
-      responses:
-        '200':
-          description: 自选股列表获取成功
+        '500':
+          description: 服务器内部错误
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WatchlistResponse'
-
-    post:
-      tags:
-        - Watchlist
-      summary: 添加自选股
-      description: 将股票添加到自选股列表
+                $ref: '#/components/schemas/ErrorResponse'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddWatchlistRequest'
-      responses:
-        '201':
-          description: 自选股添加成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WatchlistItemResponse'
-
-  /api/users/watchlist/{id}:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/pricing:
     get:
       tags:
-        - Watchlist
-      summary: 获取自选股详情
-      description: 获取指定自选股的详细信息
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 自选股 ID
-          schema:
-            type: integer
+        - Pricing
+      summary: 获取定价信息
+      description: 获取定价信息的详细操作
       responses:
         '200':
-          description: 自选股详情获取成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WatchlistItemResponse'
-
-    put:
-      tags:
-        - Watchlist
-      summary: 更新自选股
-      description: 更新自选股备注信息
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 自选股 ID
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateWatchlistRequest'
-      responses:
-        '200':
-          description: 自选股更新成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WatchlistItemResponse'
-
-    delete:
-      tags:
-        - Watchlist
-      summary: 删除自选股
-      description: 从自选股列表中移除股票
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 自选股 ID
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 自选股删除成功
+          description: 请求成功
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
-  # 价格提醒管理
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /api/legal:
+    get:
+      tags:
+        - Other
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /api/cron:
+    get:
+      tags:
+        - Other
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Other
+      summary: 创建资源
+      description: 创建资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
   /api/alerts:
     get:
       tags:
         - Alerts
-      summary: 获取提醒规则列表
-      description: 获取当前用户的价格提醒规则
-      parameters:
-        - name: watchlistId
-          in: query
-          description: 自选股 ID 筛选
-          schema:
-            type: integer
-        - name: stockSymbol
-          in: query
-          description: 股票代码筛选
-          schema:
-            type: string
-            pattern: '^[0-9]{6}$'
-        - name: isActive
-          in: query
-          description: 是否激活筛选
-          schema:
-            type: boolean
+      summary: 获取价格提醒
+      description: 获取价格提醒的详细操作
       responses:
         '200':
-          description: 提醒规则列表获取成功
+          description: 请求成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AlertListResponse'
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: 未授权
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
     post:
       tags:
         - Alerts
-      summary: 创建提醒规则
-      description: 为自选股创建价格提醒规则
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateAlertRequest'
-      responses:
-        '201':
-          description: 提醒规则创建成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AlertResponse'
-        '400':
-          description: 请求参数错误或规则已存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 自选股不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-    put:
-      tags:
-        - Alerts
-      summary: 更新提醒规则
-      description: 更新现有的价格提醒规则
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateAlertRequest'
+      summary: 创建价格提醒
+      description: 创建价格提醒的详细操作
       responses:
         '200':
-          description: 提醒规则更新成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AlertResponse'
-        '400':
-          description: 请求参数错误
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 提醒规则不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-    delete:
-      tags:
-        - Alerts
-      summary: 删除提醒规则
-      description: 删除指定的价格提醒规则
-      parameters:
-        - name: id
-          in: query
-          required: true
-          description: 提醒规则 ID
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 提醒规则删除成功
+          description: 请求成功
           content:
             application/json:
               schema:
@@ -759,48 +467,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: 提醒规则不存在
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  # 定时任务管理
-  /api/cron:
-    get:
-      tags:
-        - System
-      summary: 获取定时任务状态
-      description: 获取当前定时任务的运行状态
-      responses:
-        '200':
-          description: 任务状态获取成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CronStatusResponse'
         '401':
           description: 未授权
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-    post:
-      tags:
-        - System
-      summary: 管理定时任务
-      description: 启动、停止或立即执行定时任务
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CronActionRequest'
+              type: object
+      security:
+        - BearerAuth: []
+    put:
+      tags:
+        - Alerts
+      summary: 更新价格提醒
+      description: 更新价格提醒的详细操作
       responses:
         '200':
-          description: 任务操作成功
+          description: 请求成功
           content:
             application/json:
               schema:
@@ -811,1334 +505,2060 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-  # 投资组合
-  /api/users/portfolio:
-    get:
-      tags:
-        - Portfolio
-      summary: 获取投资组合列表
-      description: 获取当前用户的投资组合列表
-      responses:
-        '200':
-          description: 投资组合列表获取成功
+        '401':
+          description: 未授权
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PortfolioListResponse'
-
-    post:
-      tags:
-        - Portfolio
-      summary: 创建投资组合
-      description: 创建新的投资组合
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePortfolioRequest'
-      responses:
-        '201':
-          description: 投资组合创建成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PortfolioResponse'
-
-  /api/users/portfolio/{id}:
-    get:
-      tags:
-        - Portfolio
-      summary: 获取投资组合详情
-      description: 获取指定投资组合的详细信息和统计数据
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 投资组合 ID
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 投资组合详情获取成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PortfolioDetailResponse'
-
-    put:
-      tags:
-        - Portfolio
-      summary: 更新投资组合
-      description: 更新投资组合基本信息
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 投资组合 ID
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePortfolioRequest'
-      responses:
-        '200':
-          description: 投资组合更新成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PortfolioResponse'
-
+              type: object
+      security:
+        - BearerAuth: []
     delete:
       tags:
-        - Portfolio
-      summary: 删除投资组合
-      description: 删除指定投资组合及其所有持仓
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 投资组合 ID
-          schema:
-            type: integer
+        - Alerts
+      summary: 删除价格提醒
+      description: 删除价格提醒的详细操作
       responses:
         '200':
-          description: 投资组合删除成功
+          description: 请求成功
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
-  /api/users/portfolio/{id}/items:
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /api/users/watchlist:
     get:
       tags:
-        - Portfolio
-      summary: 获取持仓列表
-      description: 获取投资组合的持仓项目列表
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 投资组合 ID
-          schema:
-            type: integer
+        - Watchlist
+      summary: 获取自选股
+      description: 获取自选股的详细操作
       responses:
         '200':
-          description: 持仓列表获取成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PortfolioItemListResponse'
-
-    post:
-      tags:
-        - Portfolio
-      summary: 添加持仓
-      description: 向投资组合添加新的持仓项目
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 投资组合 ID
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddPortfolioItemRequest'
-      responses:
-        '201':
-          description: 持仓添加成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PortfolioItemResponse'
-
-  /api/users/portfolio/{id}/items/{itemId}:
-    get:
-      tags:
-        - Portfolio
-      summary: 获取持仓详情
-      description: 获取指定持仓项目的详细信息
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 投资组合 ID
-          schema:
-            type: integer
-        - name: itemId
-          in: path
-          required: true
-          description: 持仓项目 ID
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 持仓详情获取成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PortfolioItemResponse'
-
-    put:
-      tags:
-        - Portfolio
-      summary: 更新持仓
-      description: 更新持仓项目的数量和成本
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 投资组合 ID
-          schema:
-            type: integer
-        - name: itemId
-          in: path
-          required: true
-          description: 持仓项目 ID
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdatePortfolioItemRequest'
-      responses:
-        '200':
-          description: 持仓更新成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PortfolioItemResponse'
-
-    delete:
-      tags:
-        - Portfolio
-      summary: 删除持仓
-      description: 从投资组合中删除持仓项目
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: 投资组合 ID
-          schema:
-            type: integer
-        - name: itemId
-          in: path
-          required: true
-          description: 持仓项目 ID
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 持仓删除成功
+          description: 请求成功
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
-
-  # AI 报告
-  /api/ai/reports:
-    get:
-      tags:
-        - AI Reports
-      summary: 获取 AI 报告列表
-      description: 分页获取 AI 投资分析报告
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       parameters:
         - name: page
           in: query
-          description: 页码
           schema:
             type: integer
             minimum: 1
             default: 1
+          description: 页码
         - name: limit
           in: query
-          description: 每页数量
           schema:
             type: integer
             minimum: 1
-            maximum: 50
-            default: 10
-        - name: stock_code
-          in: query
-          description: 股票代码筛选
-          schema:
-            type: string
-        - name: report_type
-          in: query
-          description: 报告类型筛选
-          schema:
-            $ref: '#/components/schemas/ReportType'
+            maximum: 100
+            default: 20
+          description: 每页数量
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Watchlist
+      summary: 创建自选股
+      description: 创建自选股的详细操作
       responses:
         '200':
-          description: AI 报告列表获取成功
+          description: 请求成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AiReportListResponse'
-
-  /api/ai/reports/{id}:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/users/portfolio:
+    get:
+      tags:
+        - Portfolio
+      summary: 获取投资组合
+      description: 获取投资组合的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Portfolio
+      summary: 创建投资组合
+      description: 创建投资组合的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/stocks/[code]:
+    get:
+      tags:
+        - Stocks
+      summary: 获取股票信息
+      description: 获取股票信息的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: code 参数
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: 页码
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: 每页数量
+      security:
+        - BearerAuth: []
+    put:
+      tags:
+        - Stocks
+      summary: 更新股票信息
+      description: 更新股票信息的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: code 参数
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - Stocks
+      summary: 删除股票信息
+      description: 删除股票信息的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: code 参数
+      security:
+        - BearerAuth: []
+  /api/pricing/compare:
+    get:
+      tags:
+        - Pricing
+      summary: 获取定价信息
+      description: 获取定价信息的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /api/monitor/health:
+    get:
+      tags:
+        - System
+      summary: 健康检查
+      description: 健康检查的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security: []
+  /api/monitor/errors:
+    get:
+      tags:
+        - Other
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Other
+      summary: 创建资源
+      description: 创建资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+    patch:
+      tags:
+        - Other
+      summary: 修改资源
+      description: 修改资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/monitor/circuit-breakers:
+    get:
+      tags:
+        - Other
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Other
+      summary: 创建资源
+      description: 创建资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/data/quotes:
+    get:
+      tags:
+        - Other
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /api/data/news:
+    get:
+      tags:
+        - News
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /api/data/kline:
+    get:
+      tags:
+        - Other
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /api/data/indices:
+    get:
+      tags:
+        - Other
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+  /api/auth/start:
+    post:
+      tags:
+        - Authentication
+      summary: 创建资源
+      description: 创建资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: 用户注册
+      description: 用户注册的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security: []
+  /api/auth/magic-link:
+    get:
+      tags:
+        - Authentication
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Authentication
+      summary: 创建资源
+      description: 创建资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/auth/logout:
+    get:
+      tags:
+        - Authentication
+      summary: 用户登出
+      description: 用户登出的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Authentication
+      summary: 用户登出
+      description: 用户登出的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: 用户登录
+      description: 用户登录的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security: []
+  /api/auth/callback:
+    get:
+      tags:
+        - Authentication
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Authentication
+      summary: 创建资源
+      description: 创建资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/ai/reports:
     get:
       tags:
         - AI Reports
-      summary: 获取 AI 报告详情
-      description: 获取指定 AI 报告的详细内容
+      summary: 获取AI报告
+      description: 获取AI报告的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - AI Reports
+      summary: 创建AI报告
+      description: 创建AI报告的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/ai/analyze:
+    get:
+      tags:
+        - AI Reports
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - AI Reports
+      summary: 创建资源
+      description: 创建资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/users/watchlist/[id]:
+    get:
+      tags:
+        - Watchlist
+      summary: 获取自选股
+      description: 获取自选股的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       parameters:
         - name: id
           in: path
           required: true
-          description: 报告 ID
+          schema:
+            type: string
+          description: id 参数
+        - name: page
+          in: query
           schema:
             type: integer
+            minimum: 1
+            default: 1
+          description: 页码
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: 每页数量
+      security:
+        - BearerAuth: []
+    put:
+      tags:
+        - Watchlist
+      summary: 更新自选股
+      description: 更新自选股的详细操作
       responses:
         '200':
-          description: AI 报告详情获取成功
+          description: 请求成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AiReportResponse'
-
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - Watchlist
+      summary: 删除自选股
+      description: 删除自选股的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+      security:
+        - BearerAuth: []
+  /api/users/portfolio/[id]:
+    get:
+      tags:
+        - Portfolio
+      summary: 获取投资组合
+      description: 获取投资组合的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+      security:
+        - BearerAuth: []
+    put:
+      tags:
+        - Portfolio
+      summary: 更新投资组合
+      description: 更新投资组合的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - Portfolio
+      summary: 删除投资组合
+      description: 删除投资组合的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+      security:
+        - BearerAuth: []
+  /api/stocks/[code]/data:
+    get:
+      tags:
+        - Stocks
+      summary: 获取股票信息
+      description: 获取股票信息的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: code 参数
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: 页码
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: 每页数量
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Stocks
+      summary: 创建股票信息
+      description: 创建股票信息的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: code 参数
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/pricing/upgrade-prompts/[feature]:
+    get:
+      tags:
+        - Pricing
+      summary: 获取定价信息
+      description: 获取定价信息的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: feature
+          in: path
+          required: true
+          schema:
+            type: string
+          description: feature 参数
+      security:
+        - BearerAuth: []
+  /api/auth/wx/callback:
+    get:
+      tags:
+        - Authentication
+      summary: 获取资源
+      description: 获取资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Authentication
+      summary: 创建资源
+      description: 创建资源的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/ai/reports/[id]:
+    get:
+      tags:
+        - AI Reports
+      summary: 获取AI报告
+      description: 获取AI报告的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+      security:
+        - BearerAuth: []
+    put:
+      tags:
+        - AI Reports
+      summary: 更新AI报告
+      description: 更新AI报告的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - AI Reports
+      summary: 删除AI报告
+      description: 删除AI报告的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+      security:
+        - BearerAuth: []
+  /api/users/portfolio/[id]/items:
+    get:
+      tags:
+        - Portfolio
+      summary: 获取投资组合
+      description: 获取投资组合的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+      security:
+        - BearerAuth: []
+    post:
+      tags:
+        - Portfolio
+      summary: 创建投资组合
+      description: 创建投资组合的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+  /api/users/portfolio/[id]/items/[itemId]:
+    get:
+      tags:
+        - Portfolio
+      summary: 获取投资组合
+      description: 获取投资组合的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: itemId 参数
+      security:
+        - BearerAuth: []
+    put:
+      tags:
+        - Portfolio
+      summary: 更新投资组合
+      description: 更新投资组合的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: itemId 参数
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - BearerAuth: []
+    delete:
+      tags:
+        - Portfolio
+      summary: 删除投资组合
+      description: 删除投资组合的详细操作
+      responses:
+        '200':
+          description: 请求成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: id 参数
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: itemId 参数
+      security:
+        - BearerAuth: []
 components:
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: 使用 Supabase Auth 获取的 JWT Token
-
   schemas:
-    # 基础响应类型
-    BaseResponse:
+    SuccessResponse:
       type: object
       properties:
         success:
           type: boolean
-          description: 请求是否成功
+          example: true
         message:
           type: string
-          description: 响应消息
+          example: 操作成功
         timestamp:
           type: string
           format: date-time
-          description: 响应时间戳
-      required:
-        - success
-        - timestamp
-
-    SuccessResponse:
-      allOf:
-        - $ref: '#/components/schemas/BaseResponse'
-        - type: object
-          properties:
-            data:
-              type: object
-              nullable: true
-
     ErrorResponse:
-      allOf:
-        - $ref: '#/components/schemas/BaseResponse'
-        - type: object
-          properties:
-            error:
-              type: object
-              properties:
-                code:
-                  type: string
-                  description: 错误代码
-                details:
-                  type: object
-                  description: 错误详情
-              required:
-                - code
-
-    PaginationMeta:
       type: object
       properties:
-        page:
-          type: integer
-          description: 当前页码
-        limit:
-          type: integer
-          description: 每页数量
-        total:
-          type: integer
-          description: 总记录数
-        total_pages:
-          type: integer
-          description: 总页数
-        has_next:
+        success:
           type: boolean
-          description: 是否有下一页
-        has_prev:
-          type: boolean
-          description: 是否有上一页
-      required:
-        - page
-        - limit
-        - total
-        - total_pages
-        - has_next
-        - has_prev
-
-    # 健康检查
+          example: false
+        error:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
     HealthResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              type: object
-              properties:
-                status:
-                  type: string
-                  enum: [healthy, unhealthy]
-                database:
-                  type: object
-                  properties:
-                    status:
-                      type: string
-                      enum: [connected, disconnected]
-                    response_time:
-                      type: number
-                      description: 数据库响应时间（毫秒）
-                memory:
-                  type: object
-                  properties:
-                    used:
-                      type: number
-                      description: 已使用内存（字节）
-                    total:
-                      type: number
-                      description: 总内存（字节）
-                    usage_percent:
-                      type: number
-                      description: 内存使用率（百分比）
-                environment:
-                  type: string
-                  description: 运行环境
-
-    # 用户认证
-    RegisterRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          description: 用户邮箱
-        password:
-          type: string
-          minLength: 6
-          description: 用户密码
-        nickname:
-          type: string
-          minLength: 1
-          maxLength: 50
-          description: 用户昵称
-      required:
-        - email
-        - password
-        - nickname
-
-    LoginRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          description: 用户邮箱
-        password:
-          type: string
-          description: 用户密码
-      required:
-        - email
-        - password
-
-    MagicLinkRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          description: 用户邮箱
-      required:
-        - email
-
-    AuthResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              type: object
-              properties:
-                user:
-                  $ref: '#/components/schemas/User'
-                session:
-                  type: object
-                  properties:
-                    access_token:
-                      type: string
-                      description: 访问令牌
-                    refresh_token:
-                      type: string
-                      description: 刷新令牌
-                    expires_at:
-                      type: string
-                      format: date-time
-                      description: 令牌过期时间
-
-    UserResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '#/components/schemas/UserDetail'
-
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: 用户 ID
-        supabase_id:
-          type: string
-          description: Supabase 用户 ID
-        email:
-          type: string
-          format: email
-          description: 用户邮箱
-        nickname:
-          type: string
-          description: 用户昵称
-        avatar_url:
-          type: string
-          format: uri
-          nullable: true
-          description: 头像 URL
-        created_at:
-          type: string
-          format: date-time
-          description: 创建时间
-        updated_at:
-          type: string
-          format: date-time
-          description: 更新时间
-      required:
-        - id
-        - supabase_id
-        - email
-        - nickname
-        - created_at
-        - updated_at
-
-    UserDetail:
-      allOf:
-        - $ref: '#/components/schemas/User'
-        - type: object
-          properties:
-            watchlist_count:
-              type: integer
-              description: 自选股数量
-            portfolio_count:
-              type: integer
-              description: 投资组合数量
-
-    # 股票相关
-    StockMarket:
-      type: string
-      enum: [SH, SZ, BJ]
-      description: 股票市场（SH=上海，SZ=深圳，BJ=北京）
-
-    Stock:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: 股票 ID
-        code:
-          type: string
-          pattern: '^[0-9]{6}$'
-          description: 股票代码
-        name:
-          type: string
-          description: 股票名称
-        market:
-          $ref: '#/components/schemas/StockMarket'
-        industry:
-          type: string
-          nullable: true
-          description: 所属行业
-        current_price:
-          type: number
-          format: float
-          nullable: true
-          description: 当前价格
-        change_percent:
-          type: number
-          format: float
-          nullable: true
-          description: 涨跌幅（百分比）
-        volume:
-          type: integer
-          nullable: true
-          description: 成交量
-        market_cap:
-          type: number
-          format: float
-          nullable: true
-          description: 市值
-        pe_ratio:
-          type: number
-          format: float
-          nullable: true
-          description: 市盈率
-        created_at:
-          type: string
-          format: date-time
-          description: 创建时间
-        updated_at:
-          type: string
-          format: date-time
-          description: 更新时间
-      required:
-        - id
-        - code
-        - name
-        - market
-        - created_at
-        - updated_at
-
-    StockData:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: 数据 ID
-        stock_id:
-          type: integer
-          description: 股票 ID
-        date:
-          type: string
-          format: date
-          description: 交易日期
-        open_price:
-          type: number
-          format: float
-          description: 开盘价
-        close_price:
-          type: number
-          format: float
-          description: 收盘价
-        high_price:
-          type: number
-          format: float
-          description: 最高价
-        low_price:
-          type: number
-          format: float
-          description: 最低价
-        volume:
-          type: integer
-          description: 成交量
-        turnover:
-          type: number
-          format: float
-          description: 成交额
-        change_percent:
-          type: number
-          format: float
-          description: 涨跌幅
-        created_at:
-          type: string
-          format: date-time
-          description: 创建时间
-      required:
-        - id
-        - stock_id
-        - date
-        - open_price
-        - close_price
-        - high_price
-        - low_price
-        - volume
-        - turnover
-        - change_percent
-        - created_at
-
-    CreateStockRequest:
-      type: object
-      properties:
-        code:
-          type: string
-          pattern: '^[0-9]{6}$'
-          description: 股票代码
-        name:
-          type: string
-          description: 股票名称
-        market:
-          $ref: '#/components/schemas/StockMarket'
-        industry:
-          type: string
-          nullable: true
-          description: 所属行业
-      required:
-        - code
-        - name
-        - market
-
-    UpdateStockRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: 股票名称
-        industry:
-          type: string
-          nullable: true
-          description: 所属行业
-        current_price:
-          type: number
-          format: float
-          nullable: true
-          description: 当前价格
-        change_percent:
-          type: number
-          format: float
-          nullable: true
-          description: 涨跌幅
-        volume:
-          type: integer
-          nullable: true
-          description: 成交量
-        market_cap:
-          type: number
-          format: float
-          nullable: true
-          description: 市值
-        pe_ratio:
-          type: number
-          format: float
-          nullable: true
-          description: 市盈率
-
-    StockResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '#/components/schemas/Stock'
-
-    StockListResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              type: object
-              properties:
-                stocks:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Stock'
-                pagination:
-                  $ref: '#/components/schemas/PaginationMeta'
-
-    StockDetailResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              allOf:
-                - $ref: '#/components/schemas/Stock'
-                - type: object
-                  properties:
-                    recent_data:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/StockData'
-                      description: 最近的股票数据
-                    ai_reports:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/AiReport'
-                      description: 相关 AI 报告
-
-    StockDataListResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              type: object
-              properties:
-                stock_data:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/StockData'
-                pagination:
-                  $ref: '#/components/schemas/PaginationMeta'
-
-    # 自选股
-    WatchlistItem:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: 自选股 ID
-        user_id:
-          type: integer
-          description: 用户 ID
-        stock:
-          $ref: '#/components/schemas/Stock'
-        notes:
-          type: string
-          nullable: true
-          description: 备注
-        added_at:
-          type: string
-          format: date-time
-          description: 添加时间
-        updated_at:
-          type: string
-          format: date-time
-          description: 更新时间
-      required:
-        - id
-        - user_id
-        - stock
-        - added_at
-        - updated_at
-
-    AddWatchlistRequest:
-      type: object
-      properties:
-        stock_code:
-          type: string
-          pattern: '^[0-9]{6}$'
-          description: 股票代码
-        notes:
-          type: string
-          nullable: true
-          description: 备注
-      required:
-        - stock_code
-
-    UpdateWatchlistRequest:
-      type: object
-      properties:
-        notes:
-          type: string
-          nullable: true
-          description: 备注
-
-    WatchlistResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              type: object
-              properties:
-                watchlist:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/WatchlistItem'
-                total_count:
-                  type: integer
-                  description: 总数量
-
-    WatchlistItemResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '#/components/schemas/WatchlistItem'
-
-    # 投资组合
-    Portfolio:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: 投资组合 ID
-        user_id:
-          type: integer
-          description: 用户 ID
-        name:
-          type: string
-          description: 投资组合名称
-        description:
-          type: string
-          nullable: true
-          description: 描述
-        created_at:
-          type: string
-          format: date-time
-          description: 创建时间
-        updated_at:
-          type: string
-          format: date-time
-          description: 更新时间
-      required:
-        - id
-        - user_id
-        - name
-        - created_at
-        - updated_at
-
-    PortfolioStats:
-      type: object
-      properties:
-        total_value:
-          type: number
-          format: float
-          description: 总市值
-        total_cost:
-          type: number
-          format: float
-          description: 总成本
-        total_gain_loss:
-          type: number
-          format: float
-          description: 总盈亏
-        total_gain_loss_percent:
-          type: number
-          format: float
-          description: 总盈亏百分比
-        item_count:
-          type: integer
-          description: 持仓数量
-      required:
-        - total_value
-        - total_cost
-        - total_gain_loss
-        - total_gain_loss_percent
-        - item_count
-
-    PortfolioItem:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: 持仓 ID
-        portfolio_id:
-          type: integer
-          description: 投资组合 ID
-        stock:
-          $ref: '#/components/schemas/Stock'
-        quantity:
-          type: number
-          format: float
-          description: 持仓数量
-        average_cost:
-          type: number
-          format: float
-          description: 平均成本
-        current_value:
-          type: number
-          format: float
-          description: 当前市值
-        cost_value:
-          type: number
-          format: float
-          description: 成本价值
-        gain_loss:
-          type: number
-          format: float
-          description: 盈亏金额
-        gain_loss_percent:
-          type: number
-          format: float
-          description: 盈亏百分比
-        added_at:
-          type: string
-          format: date-time
-          description: 添加时间
-        updated_at:
-          type: string
-          format: date-time
-          description: 更新时间
-      required:
-        - id
-        - portfolio_id
-        - stock
-        - quantity
-        - average_cost
-        - current_value
-        - cost_value
-        - gain_loss
-        - gain_loss_percent
-        - added_at
-        - updated_at
-
-    CreatePortfolioRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: 投资组合名称
-        description:
-          type: string
-          nullable: true
-          maxLength: 500
-          description: 描述
-      required:
-        - name
-
-    UpdatePortfolioRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-          description: 投资组合名称
-        description:
-          type: string
-          nullable: true
-          maxLength: 500
-          description: 描述
-
-    AddPortfolioItemRequest:
-      type: object
-      properties:
-        stock_code:
-          type: string
-          pattern: '^[0-9]{6}$'
-          description: 股票代码
-        quantity:
-          type: number
-          format: float
-          minimum: 0.01
-          description: 持仓数量
-        average_cost:
-          type: number
-          format: float
-          minimum: 0.01
-          description: 平均成本
-      required:
-        - stock_code
-        - quantity
-        - average_cost
-
-    UpdatePortfolioItemRequest:
-      type: object
-      properties:
-        quantity:
-          type: number
-          format: float
-          minimum: 0.01
-          description: 持仓数量
-        average_cost:
-          type: number
-          format: float
-          minimum: 0.01
-          description: 平均成本
-
-    PortfolioResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '#/components/schemas/Portfolio'
-
-    PortfolioListResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              type: object
-              properties:
-                portfolios:
-                  type: array
-                  items:
-                    allOf:
-                      - $ref: '#/components/schemas/Portfolio'
-                      - type: object
-                        properties:
-                          stats:
-                            $ref: '#/components/schemas/PortfolioStats'
-                total_count:
-                  type: integer
-                  description: 总数量
-
-    PortfolioDetailResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              allOf:
-                - $ref: '#/components/schemas/Portfolio'
-                - type: object
-                  properties:
-                    stats:
-                      $ref: '#/components/schemas/PortfolioStats'
-                    items:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/PortfolioItem'
-
-    PortfolioItemResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '#/components/schemas/PortfolioItem'
-
-    PortfolioItemListResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              type: object
-              properties:
-                items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/PortfolioItem'
-                stats:
-                  $ref: '#/components/schemas/PortfolioStats'
-
-    # AI 报告
-    ReportType:
-      type: string
-      enum: [technical, fundamental, sentiment, recommendation]
-      description: 报告类型（technical=技术分析，fundamental=基本面分析，sentiment=情绪分析，recommendation=投资建议）
-
-    AiReport:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: 报告 ID
-        stock_id:
-          type: integer
-          description: 股票 ID
-        stock:
-          $ref: '#/components/schemas/Stock'
-        report_type:
-          $ref: '#/components/schemas/ReportType'
-        title:
-          type: string
-          description: 报告标题
-        content:
-          type: string
-          description: 报告内容
-        summary:
-          type: string
-          nullable: true
-          description: 报告摘要
-        score:
-          type: number
-          format: float
-          minimum: 0
-          maximum: 100
-          nullable: true
-          description: 评分（0-100）
-        recommendation:
-          type: string
-          enum: [buy, hold, sell]
-          nullable: true
-          description: 投资建议
-        confidence:
-          type: number
-          format: float
-          minimum: 0
-          maximum: 1
-          nullable: true
-          description: 置信度（0-1）
-        created_at:
-          type: string
-          format: date-time
-          description: 创建时间
-        updated_at:
-          type: string
-          format: date-time
-          description: 更新时间
-      required:
-        - id
-        - stock_id
-        - stock
-        - report_type
-        - title
-        - content
-        - created_at
-        - updated_at
-
-    AiReportResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              $ref: '#/components/schemas/AiReport'
-
-    AiReportListResponse:
-      allOf:
-        - $ref: '#/components/schemas/SuccessResponse'
-        - type: object
-          properties:
-            data:
-              type: object
-              properties:
-                reports:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/AiReport'
-                pagination:
-                  $ref: '#/components/schemas/PaginationMeta'
-
-    # 价格提醒相关 Schema
-    Alert:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: 提醒规则 ID
-          example: 1
-        watchlistId:
-          type: integer
-          description: 自选股 ID
-          example: 1
-        stockSymbol:
-          type: string
-          description: 股票代码
-          example: "000001"
-        stockName:
-          type: string
-          description: 股票名称
-          example: "平安银行"
-        condition:
-          type: string
-          enum: [">=", "<="]
-          description: 价格条件
-          example: ">="
-        targetPrice:
-          type: number
-          format: float
-          description: 目标价格
-          example: 15.50
-        isActive:
-          type: boolean
-          description: 是否激活
-          example: true
-        createdAt:
-          type: string
-          format: date-time
-          description: 创建时间
-          example: "2024-01-15T10:30:00Z"
-        updatedAt:
-          type: string
-          format: date-time
-          description: 更新时间
-          example: "2024-01-15T10:30:00Z"
-      required:
-        - id
-        - watchlistId
-        - stockSymbol
-        - stockName
-        - condition
-        - targetPrice
-        - isActive
-        - createdAt
-        - updatedAt
-
-    CreateAlertRequest:
-      type: object
-      properties:
-        watchlistId:
-          type: integer
-          description: 自选股 ID
-          example: 1
-        condition:
-          type: string
-          enum: [">=", "<="]
-          description: 价格条件
-          example: ">="
-        targetPrice:
-          type: number
-          format: float
-          minimum: 0.01
-          description: 目标价格
-          example: 15.50
-      required:
-        - watchlistId
-        - condition
-        - targetPrice
-
-    UpdateAlertRequest:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: 提醒规则 ID
-          example: 1
-        condition:
-          type: string
-          enum: [">=", "<="]
-          description: 价格条件
-          example: ">="
-        targetPrice:
-          type: number
-          format: float
-          minimum: 0.01
-          description: 目标价格
-          example: 15.50
-        isActive:
-          type: boolean
-          description: 是否激活
-          example: true
-      required:
-        - id
-
-    AlertResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        data:
-          $ref: '#/components/schemas/Alert'
-      required:
-        - success
-        - data
-
-    AlertListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Alert'
-      required:
-        - success
-        - data
-
-    # 定时任务相关 Schema
-    CronStatusResponse:
       type: object
       properties:
         success:
@@ -2147,67 +2567,14 @@ components:
         data:
           type: object
           properties:
-            runningTasks:
-              type: array
-              items:
-                type: string
-              description: 正在运行的任务列表
-              example: ["market-scan"]
-            marketScanStatus:
-              type: object
-              properties:
-                isRunning:
-                  type: boolean
-                  description: 市场扫描任务是否运行中
-                  example: true
-                lastRun:
-                  type: string
-                  format: date-time
-                  description: 上次运行时间
-                  example: "2024-01-15T10:30:00Z"
-                nextRun:
-                  type: string
-                  format: date-time
-                  description: 下次运行时间
-                  example: "2024-01-15T10:35:00Z"
-              required:
-                - isRunning
-          required:
-            - runningTasks
-            - marketScanStatus
-      required:
-        - success
-        - data
-
-    CronActionRequest:
-      type: object
-      properties:
-        task:
-          type: string
-          enum: ["market-scan"]
-          description: 任务名称
-          example: "market-scan"
-        action:
-          type: string
-          enum: ["start", "stop", "run-once"]
-          description: 操作类型
-          example: "start"
-      required:
-        - task
-        - action
-
-tags:
-  - name: System
-    description: 系统相关接口
-  - name: Authentication
-    description: 用户认证相关接口
-  - name: Stocks
-    description: 股票数据相关接口
-  - name: Watchlist
-    description: 自选股管理接口
-  - name: Alerts
-    description: 价格提醒管理接口
-  - name: Portfolio
-    description: 投资组合管理接口
-  - name: AI Reports
-    description: AI 投资报告接口
+            status:
+              type: string
+              example: healthy
+            database:
+              type: string
+              example: connected
+            uptime:
+              type: number
+            timestamp:
+              type: string
+              format: date-time

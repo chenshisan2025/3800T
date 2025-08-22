@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { market, category, page, limit } = validation.data;
-    
+
     logger.info('获取指数数据请求', {
       market,
       category,

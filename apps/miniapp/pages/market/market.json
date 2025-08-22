@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "市场",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 50,
+  "usingComponents": {
+    "skeleton": "/components/skeleton/skeleton",
+    "error-placeholder": "/components/error-placeholder/error-placeholder"
+  }
+}

@@ -192,16 +192,25 @@ class _StockDetailPageState extends State<StockDetailPage> {
               ],
             ),
           ),
-          // 免责声明
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: const Text(
-              AppStrings.disclaimer,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
-              textAlign: TextAlign.center,
+          // 合规组件
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                InvestmentDisclaimer(
+                  position: ComponentPosition.bottom,
+                  theme: ComponentTheme.light,
+                  showIcon: true,
+                  closable: true,
+                ),
+                SizedBox(height: 8),
+                RealtimeDataSourceHint(
+                  position: ComponentPosition.bottom,
+                  theme: ComponentTheme.light,
+                  showIcon: true,
+                  closable: false,
+                ),
+              ],
             ),
           ),
         ],

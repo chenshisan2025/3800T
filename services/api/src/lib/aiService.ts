@@ -1,5 +1,5 @@
 import { recordError, ErrorType, ErrorSeverity } from './errorMonitor';
-import { logWarn, logInfo } from './logger';
+import logger from './logger';
 
 // AI分析类型
 export enum AIAnalysisType {
@@ -48,37 +48,43 @@ class AIService {
   ): Promise<AIAnalysisResult> {
     const startTime = Date.now();
     let attempt = 0;
-    
+
     while (attempt < this.config.retryAttempts) {
       try {
         attempt++;
-        
+
         // 创建超时Promise
         const timeoutPromise = new Promise<never>((_, reject) => {
           setTimeout(() => {
-            reject(new Error(`AI analysis timeout after ${this.config.timeout}ms`));
+            reject(
+              new Error(`AI analysis timeout after ${this.config.timeout}ms`)
+            );
           }, this.config.timeout);
         });
-        
+
         // 创建AI分析Promise
-        const analysisPromise = this.performAIAnalysis(stockCode, analysisType, stockData);
-        
+        const analysisPromise = this.performAIAnalysis(
+          stockCode,
+          analysisType,
+          stockData
+        );
+
         // 竞争执行，哪个先完成就返回哪个
         const result = await Promise.race([analysisPromise, timeoutPromise]);
-        
+
         const duration = Date.now() - startTime;
-        logInfo(`AI analysis completed for ${stockCode}`, {
+        logger.info(`AI analysis completed for ${stockCode}`, {
           type: analysisType,
           duration,
           attempt,
         });
-        
+
         return result;
-        
       } catch (error) {
         const duration = Date.now() - startTime;
-        const isTimeout = error instanceof Error && error.message.includes('timeout');
-        
+        const isTimeout =
+          error instanceof Error && error.message.includes('timeout');
+
         // 记录错误
         recordError(
           error instanceof Error ? error : 'AI analysis failed',
@@ -93,28 +99,44 @@ class AIService {
             isTimeout,
           }
         );
-        
+
         // 如果是最后一次尝试或者启用了降级，返回简版结果
-        if (attempt >= this.config.retryAttempts || (isTimeout && this.config.enableFallback)) {
-          logWarn(`AI analysis failed for ${stockCode}, returning simplified result`, {
-            type: analysisType,
-            attempts: attempt,
-            duration,
-            reason: isTimeout ? 'timeout' : 'error',
-          });
-          
-          return this.generateSimplifiedAnalysis(stockCode, analysisType, stockData, isTimeout);
+        if (
+          attempt >= this.config.retryAttempts ||
+          (isTimeout && this.config.enableFallback)
+        ) {
+          logger.warn(
+            `AI analysis failed for ${stockCode}, returning simplified result`,
+            {
+              type: analysisType,
+              attempts: attempt,
+              duration,
+              reason: isTimeout ? 'timeout' : 'error',
+            }
+          );
+
+          return this.generateSimplifiedAnalysis(
+            stockCode,
+            analysisType,
+            stockData,
+            isTimeout
+          );
         }
-        
+
         // 等待一段时间后重试
         await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
       }
     }
-    
+
     // 这里不应该到达，但为了类型安全
-    return this.generateSimplifiedAnalysis(stockCode, analysisType, stockData, true);
+    return this.generateSimplifiedAnalysis(
+      stockCode,
+      analysisType,
+      stockData,
+      true
+    );
   }
-  
+
   // 执行实际的AI分析（这里模拟AI服务调用）
   private async performAIAnalysis(
     stockCode: string,
@@ -124,16 +146,17 @@ class AIService {
     // 模拟AI服务调用延迟
     const delay = Math.random() * 8000 + 2000; // 2-10秒随机延迟
     await new Promise(resolve => setTimeout(resolve, delay));
-    
+
     // 模拟偶发性失败
-    if (Math.random() < 0.2) { // 20%失败率
+    if (Math.random() < 0.2) {
+      // 20%失败率
       throw new Error('AI service temporarily unavailable');
     }
-    
+
     // 生成完整的AI分析结果
     return this.generateFullAnalysis(stockCode, analysisType, stockData);
   }
-  
+
   // 生成完整的AI分析结果
   private generateFullAnalysis(
     stockCode: string,
@@ -167,9 +190,9 @@ class AIService {
         summary: `投资建议：${this.getRandomRecommendation()}`,
       },
     };
-    
+
     const template = analysisTemplates[analysisType];
-    
+
     return {
       id: `ai_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       stock_code: stockCode,
@@ -184,7 +207,7 @@ class AIService {
       is_simplified: false,
     };
   }
-  
+
   // 生成简版分析结果
   private generateSimplifiedAnalysis(
     stockCode: string,
@@ -219,12 +242,12 @@ class AIService {
         summary: '投资建议简要版',
       },
     };
-    
+
     const template = simplifiedTemplates[analysisType];
-    const timeoutNotice = isTimeout 
+    const timeoutNotice = isTimeout
       ? 'AI分析服务响应超时，已为您提供简化版分析结果。完整分析报告将在稍后提供。'
       : 'AI分析服务暂时不可用，已为您提供简化版分析结果。';
-    
+
     return {
       id: `ai_simple_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       stock_code: stockCode,
@@ -240,7 +263,7 @@ class AIService {
       timeout_notice: timeoutNotice,
     };
   }
-  
+
   // 批量生成分析报告
   async generateBatchAnalysis(
     stockCode: string,
@@ -248,9 +271,11 @@ class AIService {
     stockData?: any
   ): Promise<AIAnalysisResult[]> {
     const results = await Promise.allSettled(
-      analysisTypes.map(type => this.generateAnalysis(stockCode, type, stockData))
+      analysisTypes.map(type =>
+        this.generateAnalysis(stockCode, type, stockData)
+      )
     );
-    
+
     return results.map((result, index) => {
       if (result.status === 'fulfilled') {
         return result.value;
@@ -263,115 +288,128 @@ class AIService {
           'AIService.batchAnalysis',
           { stockCode, analysisType: analysisTypes[index] }
         );
-        
-        return this.generateSimplifiedAnalysis(stockCode, analysisTypes[index], stockData, false);
+
+        return this.generateSimplifiedAnalysis(
+          stockCode,
+          analysisTypes[index],
+          stockData,
+          false
+        );
       }
     });
   }
-  
+
   // 随机生成器方法（用于模拟AI分析结果）
   private getRandomTrend(): string {
     const trends = ['上升', '下降', '震荡', '盘整'];
     return trends[Math.floor(Math.random() * trends.length)];
   }
-  
+
   private getRandomSignal(): string {
     const signals = ['买入', '卖出', '持有', '观望'];
     return signals[Math.floor(Math.random() * signals.length)];
   }
-  
+
   private getRandomVolumeAnalysis(): string {
     const analyses = ['放量上涨', '缩量下跌', '量价配合', '量价背离'];
     return analyses[Math.floor(Math.random() * analyses.length)];
   }
-  
+
   private getRandomFinancialStatus(): string {
     const statuses = ['良好', '稳健', '一般', '需关注'];
     return statuses[Math.floor(Math.random() * statuses.length)];
   }
-  
+
   private getRandomIndustryPosition(): string {
     const positions = ['领先', '中等', '落后'];
     return positions[Math.floor(Math.random() * positions.length)];
   }
-  
+
   private getRandomPerformance(): string {
     const performances = ['优秀', '良好', '一般', '较差'];
     return performances[Math.floor(Math.random() * performances.length)];
   }
-  
+
   private getRandomValuation(): string {
     const valuations = ['合理', '偏高', '偏低', '高估'];
     return valuations[Math.floor(Math.random() * valuations.length)];
   }
-  
+
   private getRandomRating(): string {
     const ratings = ['优秀', '良好', '中等', '一般'];
     return ratings[Math.floor(Math.random() * ratings.length)];
   }
-  
+
   private getRandomSentiment(): string {
     const sentiments = ['积极', '中性', '谨慎', '悲观'];
     return sentiments[Math.floor(Math.random() * sentiments.length)];
   }
-  
+
   private getRandomHeat(): string {
     const heats = ['很高', '较高', '一般', '较低'];
     return heats[Math.floor(Math.random() * heats.length)];
   }
-  
+
   private getRandomConfidence(): string {
     const confidences = ['较高', '中等', '较低'];
     return confidences[Math.floor(Math.random() * confidences.length)];
   }
-  
+
   private getRandomImpact(): string {
     const impacts = ['积极', '中性', '负面'];
     return impacts[Math.floor(Math.random() * impacts.length)];
   }
-  
+
   private getRandomRisk(): string {
     const risks = ['较低', '中等', '较高'];
     return risks[Math.floor(Math.random() * risks.length)];
   }
-  
+
   private getRandomSpecificRisk(): string {
     const risks = ['可控', '需关注', '较高'];
     return risks[Math.floor(Math.random() * risks.length)];
   }
-  
+
   private getRandomRiskLevel(): string {
     const levels = ['低', '中', '高'];
     return levels[Math.floor(Math.random() * levels.length)];
   }
-  
+
   private getRandomValue(): string {
     const values = ['较高', '中等', '较低'];
     return values[Math.floor(Math.random() * values.length)];
   }
-  
+
   private getRandomStrategy(): string {
     const strategies = ['积极配置', '适度配置', '谨慎配置', '暂时观望'];
     return strategies[Math.floor(Math.random() * strategies.length)];
   }
-  
+
   private getRandomTargetPrice(): string {
     const base = Math.random() * 100 + 10;
     return `${base.toFixed(2)}元`;
   }
-  
+
   private getRandomRecommendation(): string {
     const recommendations = ['买入', '持有', '卖出'];
     return recommendations[Math.floor(Math.random() * recommendations.length)];
   }
-  
+
   private getRandomSentimentValue(): 'positive' | 'neutral' | 'negative' {
-    const sentiments: ('positive' | 'neutral' | 'negative')[] = ['positive', 'neutral', 'negative'];
+    const sentiments: ('positive' | 'neutral' | 'negative')[] = [
+      'positive',
+      'neutral',
+      'negative',
+    ];
     return sentiments[Math.floor(Math.random() * sentiments.length)];
   }
-  
+
   private getRandomRecommendationValue(): 'buy' | 'hold' | 'sell' {
-    const recommendations: ('buy' | 'hold' | 'sell')[] = ['buy', 'hold', 'sell'];
+    const recommendations: ('buy' | 'hold' | 'sell')[] = [
+      'buy',
+      'hold',
+      'sell',
+    ];
     return recommendations[Math.floor(Math.random() * recommendations.length)];
   }
 }

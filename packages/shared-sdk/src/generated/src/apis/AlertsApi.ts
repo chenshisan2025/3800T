@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * 古灵通股票投资平台 API
- * 古灵通股票投资平台的 RESTful API 服务  ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ``` 
+ * 古灵通股票投资平台的 RESTful API 服务      ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ```
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@gulingtong.com
@@ -15,44 +15,22 @@
 
 import * as runtime from '../runtime';
 import type {
-  AlertListResponse,
-  AlertResponse,
-  CreateAlertRequest,
   ErrorResponse,
   SuccessResponse,
-  UpdateAlertRequest,
 } from '../models/index';
 import {
-    AlertListResponseFromJSON,
-    AlertListResponseToJSON,
-    AlertResponseFromJSON,
-    AlertResponseToJSON,
-    CreateAlertRequestFromJSON,
-    CreateAlertRequestToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-    UpdateAlertRequestFromJSON,
-    UpdateAlertRequestToJSON,
 } from '../models/index';
 
-export interface ApiAlertsDeleteRequest {
-    id: number;
-}
-
-export interface ApiAlertsGetRequest {
-    watchlistId?: number;
-    stockSymbol?: string;
-    isActive?: boolean;
-}
-
 export interface ApiAlertsPostRequest {
-    createAlertRequest: CreateAlertRequest;
+    body: object;
 }
 
 export interface ApiAlertsPutRequest {
-    updateAlertRequest: UpdateAlertRequest;
+    body: object;
 }
 
 /**
@@ -61,22 +39,11 @@ export interface ApiAlertsPutRequest {
 export class AlertsApi extends runtime.BaseAPI {
 
     /**
-     * 删除指定的价格提醒规则
-     * 删除提醒规则
+     * 删除价格提醒的详细操作
+     * 删除价格提醒
      */
-    async apiAlertsDeleteRaw(requestParameters: ApiAlertsDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiAlertsDelete().'
-            );
-        }
-
+    async apiAlertsDeleteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         const queryParameters: any = {};
-
-        if (requestParameters['id'] != null) {
-            queryParameters['id'] = requestParameters['id'];
-        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -102,32 +69,20 @@ export class AlertsApi extends runtime.BaseAPI {
     }
 
     /**
-     * 删除指定的价格提醒规则
-     * 删除提醒规则
+     * 删除价格提醒的详细操作
+     * 删除价格提醒
      */
-    async apiAlertsDelete(requestParameters: ApiAlertsDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAlertsDeleteRaw(requestParameters, initOverrides);
+    async apiAlertsDelete(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.apiAlertsDeleteRaw(initOverrides);
         return await response.value();
     }
 
     /**
-     * 获取当前用户的价格提醒规则
-     * 获取提醒规则列表
+     * 获取价格提醒的详细操作
+     * 获取价格提醒
      */
-    async apiAlertsGetRaw(requestParameters: ApiAlertsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AlertListResponse>> {
+    async apiAlertsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         const queryParameters: any = {};
-
-        if (requestParameters['watchlistId'] != null) {
-            queryParameters['watchlistId'] = requestParameters['watchlistId'];
-        }
-
-        if (requestParameters['stockSymbol'] != null) {
-            queryParameters['stockSymbol'] = requestParameters['stockSymbol'];
-        }
-
-        if (requestParameters['isActive'] != null) {
-            queryParameters['isActive'] = requestParameters['isActive'];
-        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
@@ -149,27 +104,27 @@ export class AlertsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AlertListResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 获取当前用户的价格提醒规则
-     * 获取提醒规则列表
+     * 获取价格提醒的详细操作
+     * 获取价格提醒
      */
-    async apiAlertsGet(requestParameters: ApiAlertsGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AlertListResponse> {
-        const response = await this.apiAlertsGetRaw(requestParameters, initOverrides);
+    async apiAlertsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
+        const response = await this.apiAlertsGetRaw(initOverrides);
         return await response.value();
     }
 
     /**
-     * 为自选股创建价格提醒规则
-     * 创建提醒规则
+     * 创建价格提醒的详细操作
+     * 创建价格提醒
      */
-    async apiAlertsPostRaw(requestParameters: ApiAlertsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AlertResponse>> {
-        if (requestParameters['createAlertRequest'] == null) {
+    async apiAlertsPostRaw(requestParameters: ApiAlertsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'createAlertRequest',
-                'Required parameter "createAlertRequest" was null or undefined when calling apiAlertsPost().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiAlertsPost().'
             );
         }
 
@@ -195,30 +150,30 @@ export class AlertsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: CreateAlertRequestToJSON(requestParameters['createAlertRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AlertResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 为自选股创建价格提醒规则
-     * 创建提醒规则
+     * 创建价格提醒的详细操作
+     * 创建价格提醒
      */
-    async apiAlertsPost(requestParameters: ApiAlertsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AlertResponse> {
+    async apiAlertsPost(requestParameters: ApiAlertsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiAlertsPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 更新现有的价格提醒规则
-     * 更新提醒规则
+     * 更新价格提醒的详细操作
+     * 更新价格提醒
      */
-    async apiAlertsPutRaw(requestParameters: ApiAlertsPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<AlertResponse>> {
-        if (requestParameters['updateAlertRequest'] == null) {
+    async apiAlertsPutRaw(requestParameters: ApiAlertsPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'updateAlertRequest',
-                'Required parameter "updateAlertRequest" was null or undefined when calling apiAlertsPut().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiAlertsPut().'
             );
         }
 
@@ -244,17 +199,17 @@ export class AlertsApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UpdateAlertRequestToJSON(requestParameters['updateAlertRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AlertResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 更新现有的价格提醒规则
-     * 更新提醒规则
+     * 更新价格提醒的详细操作
+     * 更新价格提醒
      */
-    async apiAlertsPut(requestParameters: ApiAlertsPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<AlertResponse> {
+    async apiAlertsPut(requestParameters: ApiAlertsPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiAlertsPutRaw(requestParameters, initOverrides);
         return await response.value();
     }

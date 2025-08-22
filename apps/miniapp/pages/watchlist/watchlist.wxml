@@ -1,26 +1,42 @@
 <!--pages/watchlist/watchlist.wxml-->
 <view class="watchlist-page">
-  <!-- 头部栏 -->
-  <view class="header-bar">
-    <text class="header-title">我的自选</text>
-    <view class="header-actions">
-      <text wx:if="{{!editMode && watchlist.length > 0}}" class="action-btn" bindtap="enterEditMode">编辑</text>
-      <view wx:elif="{{editMode}}" class="edit-actions">
-        <text class="action-btn" bindtap="onSelectAll">
-          {{selectedStocks.length === watchlist.length ? '取消全选' : '全选'}}
-        </text>
-        <text class="action-btn" bindtap="exitEditMode">取消</text>
+  <!-- 骨架屏 -->
+  <skeleton 
+    wx:if="{{loading && !refreshing}}" 
+    type="market" 
+    count="6" 
+    show-avatar="{{false}}" 
+    show-subtitle="{{true}}"
+  />
+  
+  <!-- 错误占位 -->
+  <error-placeholder 
+    wx:elif="{{error && !loading}}" 
+    type="{{errorType}}" 
+    title="{{errorTitle}}" 
+    description="{{errorDescription}}" 
+    bind:retry="handleRetry" 
+    bind:refresh="handleRefresh"
+  />
+  
+  <!-- 主要内容 -->
+  <view wx:else class="watchlist-content">
+    <!-- 头部栏 -->
+    <view class="header-bar">
+      <text class="header-title">我的自选</text>
+      <view class="header-actions">
+        <text wx:if="{{!editMode && watchlist.length > 0}}" class="action-btn" bindtap="enterEditMode">编辑</text>
+        <view wx:elif="{{editMode}}" class="edit-actions">
+          <text class="action-btn" bindtap="onSelectAll">
+            {{selectedStocks.length === watchlist.length ? '取消全选' : '全选'}}
+          </text>
+          <text class="action-btn" bindtap="exitEditMode">取消</text>
+        </view>
       </view>
     </view>
-  </view>
 
-  <!-- 加载状态 -->
-  <view wx:if="{{loading}}" class="loading">
-    <text>加载中...</text>
-  </view>
-
-  <!-- 未登录状态 -->
-  <view wx:elif="{{!isLogin}}" class="login-prompt">
+    <!-- 未登录状态 -->
+    <view wx:if="{{!isLogin}}" class="login-prompt">
     <view class="login-content">
       <text class="login-icon">👤</text>
       <text class="login-title">请先登录</text>
@@ -29,8 +45,8 @@
     </view>
   </view>
 
-  <!-- 主要内容 -->
-  <view wx:else class="content">
+    <!-- 主要内容 -->
+    <view wx:else class="content">
     <!-- 空状态 -->
     <view wx:if="{{watchlist.length === 0}}" class="empty">
       <view class="empty-content">

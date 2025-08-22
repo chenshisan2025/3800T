@@ -100,12 +100,17 @@ export abstract class LLMProvider {
  */
 export class OpenAIProvider extends LLMProvider {
   constructor(apiKey?: string, config: LLMAnalysisConfig = {}) {
-    super('openai', {
-      model: 'gpt-4',
-      temperature: 0.7,
-      max_tokens: 2000,
-      ...config,
-    }, apiKey, 'https://api.openai.com/v1');
+    super(
+      'openai',
+      {
+        model: 'gpt-4',
+        temperature: 0.7,
+        max_tokens: 2000,
+        ...config,
+      },
+      apiKey,
+      'https://api.openai.com/v1'
+    );
   }
 
   async analyze(prompt: string, config?: LLMAnalysisConfig): Promise<string> {
@@ -118,7 +123,7 @@ export class OpenAIProvider extends LLMProvider {
     config?: LLMAnalysisConfig
   ): Promise<LLMAnalysisResponse> {
     const finalConfig = { ...this.config, ...config };
-    
+
     try {
       if (!this.apiKey) {
         throw new Error('OpenAI API key not configured');
@@ -135,14 +140,15 @@ export class OpenAIProvider extends LLMProvider {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify({
           model: finalConfig.model,
           messages: [
             {
               role: 'system',
-              content: '你是一个专业的股票分析师，请基于提供的数据进行客观、专业的分析。使用"倾向"、"情景"等温和措辞。',
+              content:
+                '你是一个专业的股票分析师，请基于提供的数据进行客观、专业的分析。使用"倾向"、"情景"等温和措辞。',
             },
             {
               role: 'user',
@@ -156,11 +162,13 @@ export class OpenAIProvider extends LLMProvider {
       });
 
       if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `OpenAI API error: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
-      
+
       const result: LLMAnalysisResponse = {
         content: data.choices[0]?.message?.content || '',
         usage: data.usage,
@@ -175,7 +183,6 @@ export class OpenAIProvider extends LLMProvider {
       });
 
       return result;
-
     } catch (error) {
       logger.error('OpenAI分析失败', {
         error: error instanceof Error ? error.message : String(error),
@@ -193,7 +200,7 @@ export class OpenAIProvider extends LLMProvider {
 
       const response = await fetch(`${this.baseUrl}/models`, {
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
+          Authorization: `Bearer ${this.apiKey}`,
         },
         signal: AbortSignal.timeout(10000),
       });
@@ -213,12 +220,17 @@ export class OpenAIProvider extends LLMProvider {
  */
 export class ClaudeProvider extends LLMProvider {
   constructor(apiKey?: string, config: LLMAnalysisConfig = {}) {
-    super('claude', {
-      model: 'claude-3-sonnet-20240229',
-      temperature: 0.7,
-      max_tokens: 2000,
-      ...config,
-    }, apiKey, 'https://api.anthropic.com/v1');
+    super(
+      'claude',
+      {
+        model: 'claude-3-sonnet-20240229',
+        temperature: 0.7,
+        max_tokens: 2000,
+        ...config,
+      },
+      apiKey,
+      'https://api.anthropic.com/v1'
+    );
   }
 
   async analyze(prompt: string, config?: LLMAnalysisConfig): Promise<string> {
@@ -231,7 +243,7 @@ export class ClaudeProvider extends LLMProvider {
     config?: LLMAnalysisConfig
   ): Promise<LLMAnalysisResponse> {
     const finalConfig = { ...this.config, ...config };
-    
+
     try {
       if (!this.apiKey) {
         throw new Error('Claude API key not configured');
@@ -255,7 +267,8 @@ export class ClaudeProvider extends LLMProvider {
           model: finalConfig.model,
           max_tokens: finalConfig.max_tokens,
           temperature: finalConfig.temperature,
-          system: '你是一个专业的股票分析师，请基于提供的数据进行客观、专业的分析。使用"倾向"、"情景"等温和措辞。',
+          system:
+            '你是一个专业的股票分析师，请基于提供的数据进行客观、专业的分析。使用"倾向"、"情景"等温和措辞。',
           messages: [
             {
               role: 'user',
@@ -267,11 +280,13 @@ export class ClaudeProvider extends LLMProvider {
       });
 
       if (!response.ok) {
-        throw new Error(`Claude API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Claude API error: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
-      
+
       const result: LLMAnalysisResponse = {
         content: data.content[0]?.text || '',
         usage: data.usage,
@@ -286,7 +301,6 @@ export class ClaudeProvider extends LLMProvider {
       });
 
       return result;
-
     } catch (error) {
       logger.error('Claude分析失败', {
         error: error instanceof Error ? error.message : String(error),
@@ -338,12 +352,17 @@ export class ClaudeProvider extends LLMProvider {
  */
 export class GeminiProvider extends LLMProvider {
   constructor(apiKey?: string, config: LLMAnalysisConfig = {}) {
-    super('gemini', {
-      model: 'gemini-pro',
-      temperature: 0.7,
-      max_tokens: 2000,
-      ...config,
-    }, apiKey, 'https://generativelanguage.googleapis.com/v1');
+    super(
+      'gemini',
+      {
+        model: 'gemini-pro',
+        temperature: 0.7,
+        max_tokens: 2000,
+        ...config,
+      },
+      apiKey,
+      'https://generativelanguage.googleapis.com/v1'
+    );
   }
 
   async analyze(prompt: string, config?: LLMAnalysisConfig): Promise<string> {
@@ -356,7 +375,7 @@ export class GeminiProvider extends LLMProvider {
     config?: LLMAnalysisConfig
   ): Promise<LLMAnalysisResponse> {
     const finalConfig = { ...this.config, ...config };
-    
+
     try {
       if (!this.apiKey) {
         throw new Error('Gemini API key not configured');
@@ -369,7 +388,8 @@ export class GeminiProvider extends LLMProvider {
         prompt_length: prompt.length,
       });
 
-      const systemPrompt = '你是一个专业的股票分析师，请基于提供的数据进行客观、专业的分析。使用"倾向"、"情景"等温和措辞。';
+      const systemPrompt =
+        '你是一个专业的股票分析师，请基于提供的数据进行客观、专业的分析。使用"倾向"、"情景"等温和措辞。';
       const fullPrompt = `${systemPrompt}\n\n${prompt}`;
 
       const response = await fetch(
@@ -399,18 +419,22 @@ export class GeminiProvider extends LLMProvider {
       );
 
       if (!response.ok) {
-        throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Gemini API error: ${response.status} ${response.statusText}`
+        );
       }
 
       const data = await response.json();
-      
+
       const result: LLMAnalysisResponse = {
         content: data.candidates[0]?.content?.parts[0]?.text || '',
-        usage: data.usageMetadata ? {
-          prompt_tokens: data.usageMetadata.promptTokenCount,
-          completion_tokens: data.usageMetadata.candidatesTokenCount,
-          total_tokens: data.usageMetadata.totalTokenCount,
-        } : undefined,
+        usage: data.usageMetadata
+          ? {
+              prompt_tokens: data.usageMetadata.promptTokenCount,
+              completion_tokens: data.usageMetadata.candidatesTokenCount,
+              total_tokens: data.usageMetadata.totalTokenCount,
+            }
+          : undefined,
         model: finalConfig.model || 'gemini-pro',
         provider: 'gemini',
       };
@@ -422,7 +446,6 @@ export class GeminiProvider extends LLMProvider {
       });
 
       return result;
-
     } catch (error) {
       logger.error('Gemini分析失败', {
         error: error instanceof Error ? error.message : String(error),
@@ -485,7 +508,7 @@ export class MockLLMProvider extends LLMProvider {
     config?: LLMAnalysisConfig
   ): Promise<LLMAnalysisResponse> {
     const finalConfig = { ...this.config, ...config };
-    
+
     try {
       logger.info('发送Mock LLM分析请求', {
         model: finalConfig.model,
@@ -493,11 +516,14 @@ export class MockLLMProvider extends LLMProvider {
       });
 
       // 模拟网络延迟
-      await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+      await new Promise(resolve =>
+        setTimeout(resolve, 500 + Math.random() * 1000)
+      );
 
       // 随机选择一个响应
-      const content = this.responses[Math.floor(Math.random() * this.responses.length)];
-      
+      const content =
+        this.responses[Math.floor(Math.random() * this.responses.length)];
+
       const result: LLMAnalysisResponse = {
         content,
         usage: {
@@ -516,7 +542,6 @@ export class MockLLMProvider extends LLMProvider {
       });
 
       return result;
-
     } catch (error) {
       logger.error('Mock LLM分析失败', {
         error: error instanceof Error ? error.message : String(error),

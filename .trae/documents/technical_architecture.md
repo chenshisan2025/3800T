@@ -7,39 +7,39 @@ graph TD
     A[用户设备] --> B[Flutter Mobile App]
     A --> C[微信小程序]
     A --> D[Next.js Admin Dashboard]
-    
+
     B --> E[Shared SDK - TypeScript]
     C --> E
     D --> E
-    
+
     E --> F[Next.js API Services]
     F --> G[PostgreSQL Database]
     F --> H[Prisma ORM]
     F --> I[Auth Services]
     F --> J[Logging System]
-    
+
     K[OpenAPI Schema] --> L[TypeScript Client]
     K --> M[Flutter Client]
-    
+
     subgraph "前端层"
         B
         C
         D
     end
-    
+
     subgraph "共享层"
         E
         K
         L
         M
     end
-    
+
     subgraph "后端服务层"
         F
         I
         J
     end
-    
+
     subgraph "数据层"
         G
         H
@@ -59,43 +59,47 @@ graph TD
 ## 3. 路由定义
 
 ### 3.1 移动端路由 (Flutter)
-| 路由 | 用途 |
-|------|------|
-| /home | 首页，显示市场概览和快速导航 |
-| /market | 行情页面，展示股票列表和搜索功能 |
-| /stock/:id | 个股详情页面，显示具体股票信息 |
-| /ai | AI分析页面，提供智能投资建议 |
-| /portfolio | 投资组合页面，管理持仓和自选股 |
-| /profile | 个人中心，用户信息和设置 |
-| /login | 登录页面 |
-| /register | 注册页面 |
+
+| 路由       | 用途                             |
+| ---------- | -------------------------------- |
+| /home      | 首页，显示市场概览和快速导航     |
+| /market    | 行情页面，展示股票列表和搜索功能 |
+| /stock/:id | 个股详情页面，显示具体股票信息   |
+| /ai        | AI分析页面，提供智能投资建议     |
+| /portfolio | 投资组合页面，管理持仓和自选股   |
+| /profile   | 个人中心，用户信息和设置         |
+| /login     | 登录页面                         |
+| /register  | 注册页面                         |
 
 ### 3.2 小程序路由
-| 路由 | 用途 |
-|------|------|
-| pages/index/index | 首页，市场概览 |
-| pages/market/market | 行情列表页面 |
-| pages/stock/stock | 个股详情页面 |
-| pages/ai/ai | AI分析页面 |
-| pages/profile/profile | 个人中心页面 |
+
+| 路由                  | 用途           |
+| --------------------- | -------------- |
+| pages/index/index     | 首页，市场概览 |
+| pages/market/market   | 行情列表页面   |
+| pages/stock/stock     | 个股详情页面   |
+| pages/ai/ai           | AI分析页面     |
+| pages/profile/profile | 个人中心页面   |
 
 ### 3.3 管理后台路由 (Next.js)
-| 路由 | 用途 |
-|------|------|
-| /dashboard | 概览页面，显示系统统计数据 |
-| /users | 用户管理页面 |
-| /subscriptions | 订阅管理页面 |
-| /watchlist | 自选股和提醒管理 |
-| /ai-reports | AI报告管理页面 |
-| /data-sources | 数据源配置页面 |
-| /audit-logs | 审计日志页面 |
-| /login | 管理员登录页面 |
+
+| 路由           | 用途                       |
+| -------------- | -------------------------- |
+| /dashboard     | 概览页面，显示系统统计数据 |
+| /users         | 用户管理页面               |
+| /subscriptions | 订阅管理页面               |
+| /watchlist     | 自选股和提醒管理           |
+| /ai-reports    | AI报告管理页面             |
+| /data-sources  | 数据源配置页面             |
+| /audit-logs    | 审计日志页面               |
+| /login         | 管理员登录页面             |
 
 ## 4. API定义
 
 ### 4.1 核心API
 
 **用户认证相关**
+
 ```
 POST /api/auth/login
 ```
@@ -115,6 +119,7 @@ POST /api/auth/login
 | user | object | 用户信息 |
 
 **股票数据相关**
+
 ```
 GET /api/stocks
 ```
@@ -133,6 +138,7 @@ GET /api/stocks
 | total | number | 总数量 |
 
 **AI分析相关**
+
 ```
 POST /api/ai/analyze
 ```
@@ -144,6 +150,7 @@ POST /api/ai/analyze
 | type | string | true | 分析类型：technical/fundamental |
 
 响应示例:
+
 ```json
 {
   "symbol": "000001",
@@ -164,29 +171,29 @@ graph TD
     C --> D[数据访问层]
     D --> E[Prisma ORM]
     E --> F[(PostgreSQL)]
-    
+
     B --> G[认证中间件]
     G --> H[Supabase Auth]
-    
+
     B --> I[日志中间件]
     I --> J[Winston Logger]
-    
+
     subgraph "API服务层"
         B
         G
         I
     end
-    
+
     subgraph "业务层"
         C
     end
-    
+
     subgraph "数据层"
         D
         E
         F
     end
-    
+
     subgraph "外部服务"
         H
         J
@@ -203,14 +210,14 @@ erDiagram
     USER ||--o{ WATCHLIST : creates
     USER ||--o{ PORTFOLIO : owns
     USER ||--o{ AI_REPORT : receives
-    
+
     STOCK ||--o{ WATCHLIST : contains
     STOCK ||--o{ PORTFOLIO_ITEM : included_in
     STOCK ||--o{ AI_REPORT : analyzed
     STOCK ||--o{ STOCK_DATA : has_data
-    
+
     PORTFOLIO ||--o{ PORTFOLIO_ITEM : contains
-    
+
     USER {
         uuid id PK
         string email UK
@@ -220,7 +227,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
-    
+
     STOCK {
         string symbol PK
         string name
@@ -231,7 +238,7 @@ erDiagram
         bigint volume
         timestamp updated_at
     }
-    
+
     SUBSCRIPTION {
         uuid id PK
         uuid user_id FK
@@ -240,7 +247,7 @@ erDiagram
         timestamp end_date
         string status
     }
-    
+
     WATCHLIST {
         uuid id PK
         uuid user_id FK
@@ -248,7 +255,7 @@ erDiagram
         decimal alert_price
         timestamp created_at
     }
-    
+
     PORTFOLIO {
         uuid id PK
         uuid user_id FK
@@ -256,7 +263,7 @@ erDiagram
         decimal total_value
         timestamp created_at
     }
-    
+
     PORTFOLIO_ITEM {
         uuid id PK
         uuid portfolio_id FK
@@ -265,7 +272,7 @@ erDiagram
         decimal avg_cost
         timestamp created_at
     }
-    
+
     AI_REPORT {
         uuid id PK
         uuid user_id FK
@@ -275,7 +282,7 @@ erDiagram
         integer score
         timestamp created_at
     }
-    
+
     STOCK_DATA {
         uuid id PK
         string stock_symbol FK
@@ -291,6 +298,7 @@ erDiagram
 ### 6.2 数据定义语言
 
 **用户表 (users)**
+
 ```sql
 -- 创建用户表
 CREATE TABLE users (
@@ -309,6 +317,7 @@ CREATE INDEX idx_users_subscription ON users(subscription_plan);
 ```
 
 **股票表 (stocks)**
+
 ```sql
 -- 创建股票表
 CREATE TABLE stocks (
@@ -329,6 +338,7 @@ CREATE INDEX idx_stocks_change_percent ON stocks(change_percent DESC);
 ```
 
 **自选股表 (watchlist)**
+
 ```sql
 -- 创建自选股表
 CREATE TABLE watchlist (
@@ -346,6 +356,7 @@ CREATE INDEX idx_watchlist_stock_symbol ON watchlist(stock_symbol);
 ```
 
 **AI报告表 (ai_reports)**
+
 ```sql
 -- 创建AI报告表
 CREATE TABLE ai_reports (

@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * 古灵通股票投资平台 API
- * 古灵通股票投资平台的 RESTful API 服务  ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ``` 
+ * 古灵通股票投资平台的 RESTful API 服务      ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ```
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@gulingtong.com
@@ -15,80 +15,56 @@
 
 import * as runtime from '../runtime';
 import type {
-  AddPortfolioItemRequest,
-  CreatePortfolioRequest,
-  PortfolioDetailResponse,
-  PortfolioItemListResponse,
-  PortfolioItemResponse,
-  PortfolioListResponse,
-  PortfolioResponse,
+  ErrorResponse,
   SuccessResponse,
-  UpdatePortfolioItemRequest,
-  UpdatePortfolioRequest,
 } from '../models/index';
 import {
-    AddPortfolioItemRequestFromJSON,
-    AddPortfolioItemRequestToJSON,
-    CreatePortfolioRequestFromJSON,
-    CreatePortfolioRequestToJSON,
-    PortfolioDetailResponseFromJSON,
-    PortfolioDetailResponseToJSON,
-    PortfolioItemListResponseFromJSON,
-    PortfolioItemListResponseToJSON,
-    PortfolioItemResponseFromJSON,
-    PortfolioItemResponseToJSON,
-    PortfolioListResponseFromJSON,
-    PortfolioListResponseToJSON,
-    PortfolioResponseFromJSON,
-    PortfolioResponseToJSON,
+    ErrorResponseFromJSON,
+    ErrorResponseToJSON,
     SuccessResponseFromJSON,
     SuccessResponseToJSON,
-    UpdatePortfolioItemRequestFromJSON,
-    UpdatePortfolioItemRequestToJSON,
-    UpdatePortfolioRequestFromJSON,
-    UpdatePortfolioRequestToJSON,
 } from '../models/index';
 
 export interface ApiUsersPortfolioIdDeleteRequest {
-    id: number;
+    id: string;
 }
 
 export interface ApiUsersPortfolioIdGetRequest {
-    id: number;
+    id: string;
 }
 
 export interface ApiUsersPortfolioIdItemsGetRequest {
-    id: number;
+    id: string;
 }
 
 export interface ApiUsersPortfolioIdItemsItemIdDeleteRequest {
-    id: number;
-    itemId: number;
+    id: string;
+    itemId: string;
 }
 
 export interface ApiUsersPortfolioIdItemsItemIdGetRequest {
-    id: number;
-    itemId: number;
+    id: string;
+    itemId: string;
 }
 
 export interface ApiUsersPortfolioIdItemsItemIdPutRequest {
-    id: number;
-    itemId: number;
-    updatePortfolioItemRequest: UpdatePortfolioItemRequest;
+    id: string;
+    itemId: string;
+    body: object;
 }
 
 export interface ApiUsersPortfolioIdItemsPostRequest {
-    id: number;
-    addPortfolioItemRequest: AddPortfolioItemRequest;
+    id: string;
+    body: object;
 }
 
 export interface ApiUsersPortfolioIdPutRequest {
-    id: number;
-    updatePortfolioRequest: UpdatePortfolioRequest;
+    id: string;
+    body: object;
 }
 
 export interface ApiUsersPortfolioPostRequest {
-    createPortfolioRequest: CreatePortfolioRequest;
+    body: object;
 }
 
 /**
@@ -97,10 +73,10 @@ export interface ApiUsersPortfolioPostRequest {
 export class PortfolioApi extends runtime.BaseAPI {
 
     /**
-     * 获取当前用户的投资组合列表
-     * 获取投资组合列表
+     * 获取投资组合的详细操作
+     * 获取投资组合
      */
-    async apiUsersPortfolioGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PortfolioListResponse>> {
+    async apiUsersPortfolioGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -123,20 +99,20 @@ export class PortfolioApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PortfolioListResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 获取当前用户的投资组合列表
-     * 获取投资组合列表
+     * 获取投资组合的详细操作
+     * 获取投资组合
      */
-    async apiUsersPortfolioGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PortfolioListResponse> {
+    async apiUsersPortfolioGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersPortfolioGetRaw(initOverrides);
         return await response.value();
     }
 
     /**
-     * 删除指定投资组合及其所有持仓
+     * 删除投资组合的详细操作
      * 删除投资组合
      */
     async apiUsersPortfolioIdDeleteRaw(requestParameters: ApiUsersPortfolioIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
@@ -160,7 +136,7 @@ export class PortfolioApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/portfolio/{id}`;
+        let urlPath = `/api/users/portfolio/[id]`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -174,7 +150,7 @@ export class PortfolioApi extends runtime.BaseAPI {
     }
 
     /**
-     * 删除指定投资组合及其所有持仓
+     * 删除投资组合的详细操作
      * 删除投资组合
      */
     async apiUsersPortfolioIdDelete(requestParameters: ApiUsersPortfolioIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
@@ -183,10 +159,10 @@ export class PortfolioApi extends runtime.BaseAPI {
     }
 
     /**
-     * 获取指定投资组合的详细信息和统计数据
-     * 获取投资组合详情
+     * 获取投资组合的详细操作
+     * 获取投资组合
      */
-    async apiUsersPortfolioIdGetRaw(requestParameters: ApiUsersPortfolioIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PortfolioDetailResponse>> {
+    async apiUsersPortfolioIdGetRaw(requestParameters: ApiUsersPortfolioIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -207,7 +183,7 @@ export class PortfolioApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/portfolio/{id}`;
+        let urlPath = `/api/users/portfolio/[id]`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -217,23 +193,23 @@ export class PortfolioApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PortfolioDetailResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 获取指定投资组合的详细信息和统计数据
-     * 获取投资组合详情
+     * 获取投资组合的详细操作
+     * 获取投资组合
      */
-    async apiUsersPortfolioIdGet(requestParameters: ApiUsersPortfolioIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PortfolioDetailResponse> {
+    async apiUsersPortfolioIdGet(requestParameters: ApiUsersPortfolioIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersPortfolioIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 获取投资组合的持仓项目列表
-     * 获取持仓列表
+     * 获取投资组合的详细操作
+     * 获取投资组合
      */
-    async apiUsersPortfolioIdItemsGetRaw(requestParameters: ApiUsersPortfolioIdItemsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PortfolioItemListResponse>> {
+    async apiUsersPortfolioIdItemsGetRaw(requestParameters: ApiUsersPortfolioIdItemsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -254,7 +230,7 @@ export class PortfolioApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/portfolio/{id}/items`;
+        let urlPath = `/api/users/portfolio/[id]/items`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -264,21 +240,21 @@ export class PortfolioApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PortfolioItemListResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 获取投资组合的持仓项目列表
-     * 获取持仓列表
+     * 获取投资组合的详细操作
+     * 获取投资组合
      */
-    async apiUsersPortfolioIdItemsGet(requestParameters: ApiUsersPortfolioIdItemsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PortfolioItemListResponse> {
+    async apiUsersPortfolioIdItemsGet(requestParameters: ApiUsersPortfolioIdItemsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersPortfolioIdItemsGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 从投资组合中删除持仓项目
-     * 删除持仓
+     * 删除投资组合的详细操作
+     * 删除投资组合
      */
     async apiUsersPortfolioIdItemsItemIdDeleteRaw(requestParameters: ApiUsersPortfolioIdItemsItemIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['id'] == null) {
@@ -308,7 +284,7 @@ export class PortfolioApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/portfolio/{id}/items/{itemId}`;
+        let urlPath = `/api/users/portfolio/[id]/items/[itemId]`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
         urlPath = urlPath.replace(`{${"itemId"}}`, encodeURIComponent(String(requestParameters['itemId'])));
 
@@ -323,8 +299,8 @@ export class PortfolioApi extends runtime.BaseAPI {
     }
 
     /**
-     * 从投资组合中删除持仓项目
-     * 删除持仓
+     * 删除投资组合的详细操作
+     * 删除投资组合
      */
     async apiUsersPortfolioIdItemsItemIdDelete(requestParameters: ApiUsersPortfolioIdItemsItemIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersPortfolioIdItemsItemIdDeleteRaw(requestParameters, initOverrides);
@@ -332,10 +308,10 @@ export class PortfolioApi extends runtime.BaseAPI {
     }
 
     /**
-     * 获取指定持仓项目的详细信息
-     * 获取持仓详情
+     * 获取投资组合的详细操作
+     * 获取投资组合
      */
-    async apiUsersPortfolioIdItemsItemIdGetRaw(requestParameters: ApiUsersPortfolioIdItemsItemIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PortfolioItemResponse>> {
+    async apiUsersPortfolioIdItemsItemIdGetRaw(requestParameters: ApiUsersPortfolioIdItemsItemIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -363,7 +339,7 @@ export class PortfolioApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/portfolio/{id}/items/{itemId}`;
+        let urlPath = `/api/users/portfolio/[id]/items/[itemId]`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
         urlPath = urlPath.replace(`{${"itemId"}}`, encodeURIComponent(String(requestParameters['itemId'])));
 
@@ -374,23 +350,23 @@ export class PortfolioApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PortfolioItemResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 获取指定持仓项目的详细信息
-     * 获取持仓详情
+     * 获取投资组合的详细操作
+     * 获取投资组合
      */
-    async apiUsersPortfolioIdItemsItemIdGet(requestParameters: ApiUsersPortfolioIdItemsItemIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PortfolioItemResponse> {
+    async apiUsersPortfolioIdItemsItemIdGet(requestParameters: ApiUsersPortfolioIdItemsItemIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersPortfolioIdItemsItemIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 更新持仓项目的数量和成本
-     * 更新持仓
+     * 更新投资组合的详细操作
+     * 更新投资组合
      */
-    async apiUsersPortfolioIdItemsItemIdPutRaw(requestParameters: ApiUsersPortfolioIdItemsItemIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PortfolioItemResponse>> {
+    async apiUsersPortfolioIdItemsItemIdPutRaw(requestParameters: ApiUsersPortfolioIdItemsItemIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -405,10 +381,10 @@ export class PortfolioApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['updatePortfolioItemRequest'] == null) {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'updatePortfolioItemRequest',
-                'Required parameter "updatePortfolioItemRequest" was null or undefined when calling apiUsersPortfolioIdItemsItemIdPut().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiUsersPortfolioIdItemsItemIdPut().'
             );
         }
 
@@ -427,7 +403,7 @@ export class PortfolioApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/portfolio/{id}/items/{itemId}`;
+        let urlPath = `/api/users/portfolio/[id]/items/[itemId]`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
         urlPath = urlPath.replace(`{${"itemId"}}`, encodeURIComponent(String(requestParameters['itemId'])));
 
@@ -436,26 +412,26 @@ export class PortfolioApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UpdatePortfolioItemRequestToJSON(requestParameters['updatePortfolioItemRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PortfolioItemResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 更新持仓项目的数量和成本
-     * 更新持仓
+     * 更新投资组合的详细操作
+     * 更新投资组合
      */
-    async apiUsersPortfolioIdItemsItemIdPut(requestParameters: ApiUsersPortfolioIdItemsItemIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PortfolioItemResponse> {
+    async apiUsersPortfolioIdItemsItemIdPut(requestParameters: ApiUsersPortfolioIdItemsItemIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersPortfolioIdItemsItemIdPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 向投资组合添加新的持仓项目
-     * 添加持仓
+     * 创建投资组合的详细操作
+     * 创建投资组合
      */
-    async apiUsersPortfolioIdItemsPostRaw(requestParameters: ApiUsersPortfolioIdItemsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PortfolioItemResponse>> {
+    async apiUsersPortfolioIdItemsPostRaw(requestParameters: ApiUsersPortfolioIdItemsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -463,10 +439,10 @@ export class PortfolioApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['addPortfolioItemRequest'] == null) {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'addPortfolioItemRequest',
-                'Required parameter "addPortfolioItemRequest" was null or undefined when calling apiUsersPortfolioIdItemsPost().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiUsersPortfolioIdItemsPost().'
             );
         }
 
@@ -485,7 +461,7 @@ export class PortfolioApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/portfolio/{id}/items`;
+        let urlPath = `/api/users/portfolio/[id]/items`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -493,26 +469,26 @@ export class PortfolioApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: AddPortfolioItemRequestToJSON(requestParameters['addPortfolioItemRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PortfolioItemResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 向投资组合添加新的持仓项目
-     * 添加持仓
+     * 创建投资组合的详细操作
+     * 创建投资组合
      */
-    async apiUsersPortfolioIdItemsPost(requestParameters: ApiUsersPortfolioIdItemsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PortfolioItemResponse> {
+    async apiUsersPortfolioIdItemsPost(requestParameters: ApiUsersPortfolioIdItemsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersPortfolioIdItemsPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 更新投资组合基本信息
+     * 更新投资组合的详细操作
      * 更新投资组合
      */
-    async apiUsersPortfolioIdPutRaw(requestParameters: ApiUsersPortfolioIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PortfolioResponse>> {
+    async apiUsersPortfolioIdPutRaw(requestParameters: ApiUsersPortfolioIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -520,10 +496,10 @@ export class PortfolioApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['updatePortfolioRequest'] == null) {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'updatePortfolioRequest',
-                'Required parameter "updatePortfolioRequest" was null or undefined when calling apiUsersPortfolioIdPut().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiUsersPortfolioIdPut().'
             );
         }
 
@@ -542,7 +518,7 @@ export class PortfolioApi extends runtime.BaseAPI {
             }
         }
 
-        let urlPath = `/api/users/portfolio/{id}`;
+        let urlPath = `/api/users/portfolio/[id]`;
         urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
 
         const response = await this.request({
@@ -550,30 +526,30 @@ export class PortfolioApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: UpdatePortfolioRequestToJSON(requestParameters['updatePortfolioRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PortfolioResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 更新投资组合基本信息
+     * 更新投资组合的详细操作
      * 更新投资组合
      */
-    async apiUsersPortfolioIdPut(requestParameters: ApiUsersPortfolioIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PortfolioResponse> {
+    async apiUsersPortfolioIdPut(requestParameters: ApiUsersPortfolioIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersPortfolioIdPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * 创建新的投资组合
+     * 创建投资组合的详细操作
      * 创建投资组合
      */
-    async apiUsersPortfolioPostRaw(requestParameters: ApiUsersPortfolioPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PortfolioResponse>> {
-        if (requestParameters['createPortfolioRequest'] == null) {
+    async apiUsersPortfolioPostRaw(requestParameters: ApiUsersPortfolioPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
+        if (requestParameters['body'] == null) {
             throw new runtime.RequiredError(
-                'createPortfolioRequest',
-                'Required parameter "createPortfolioRequest" was null or undefined when calling apiUsersPortfolioPost().'
+                'body',
+                'Required parameter "body" was null or undefined when calling apiUsersPortfolioPost().'
             );
         }
 
@@ -599,17 +575,17 @@ export class PortfolioApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: CreatePortfolioRequestToJSON(requestParameters['createPortfolioRequest']),
+            body: requestParameters['body'] as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PortfolioResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
     }
 
     /**
-     * 创建新的投资组合
+     * 创建投资组合的详细操作
      * 创建投资组合
      */
-    async apiUsersPortfolioPost(requestParameters: ApiUsersPortfolioPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PortfolioResponse> {
+    async apiUsersPortfolioPost(requestParameters: ApiUsersPortfolioPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
         const response = await this.apiUsersPortfolioPostRaw(requestParameters, initOverrides);
         return await response.value();
     }

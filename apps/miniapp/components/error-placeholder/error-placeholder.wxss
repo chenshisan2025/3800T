@@ -1,0 +1,228 @@
+/* components/error-placeholder/error-placeholder.wxss */
+.error-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400rpx;
+  padding: 60rpx 40rpx;
+  background: #fff;
+}
+
+.error-content {
+  text-align: center;
+  max-width: 500rpx;
+}
+
+/* 错误图标 */
+.error-icon {
+  margin-bottom: 40rpx;
+}
+
+.error-image {
+  width: 200rpx;
+  height: 200rpx;
+  opacity: 0.6;
+}
+
+.error-icon-default {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border: 2rpx solid #e0e0e0;
+}
+
+.error-icon-text {
+  font-size: 60rpx;
+  color: #999;
+  font-weight: bold;
+}
+
+/* 错误标题 */
+.error-title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+  line-height: 1.4;
+}
+
+/* 错误描述 */
+.error-description {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 40rpx;
+}
+
+/* 操作按钮区域 */
+.error-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  align-items: center;
+}
+
+.error-btn {
+  min-width: 200rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.error-btn::after {
+  border: none;
+}
+
+.error-btn-primary {
+  background: #007aff;
+  color: #fff;
+}
+
+.error-btn-primary:active {
+  background: #0056cc;
+  transform: scale(0.98);
+}
+
+.error-btn-secondary {
+  background: #f8f9fa;
+  color: #333;
+  border: 1rpx solid #e0e0e0;
+}
+
+.error-btn-secondary:active {
+  background: #e9ecef;
+  transform: scale(0.98);
+}
+
+/* 额外信息 */
+.error-extra {
+  margin-top: 30rpx;
+  padding-top: 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.error-extra-text {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.4;
+}
+
+/* 不同错误类型的样式 */
+.error-placeholder[data-type="network"] .error-icon-default {
+  background: #fff3cd;
+  border-color: #ffeaa7;
+}
+
+.error-placeholder[data-type="network"] .error-icon-text {
+  color: #856404;
+}
+
+.error-placeholder[data-type="server"] .error-icon-default {
+  background: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.error-placeholder[data-type="server"] .error-icon-text {
+  color: #721c24;
+}
+
+.error-placeholder[data-type="empty"] .error-icon-default {
+  background: #d1ecf1;
+  border-color: #bee5eb;
+}
+
+.error-placeholder[data-type="empty"] .error-icon-text {
+  color: #0c5460;
+}
+
+/* 紧凑模式 */
+.error-placeholder[data-compact="true"] {
+  min-height: 300rpx;
+  padding: 40rpx 20rpx;
+}
+
+.error-placeholder[data-compact="true"] .error-image {
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.error-placeholder[data-compact="true"] .error-icon-default {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.error-placeholder[data-compact="true"] .error-icon-text {
+  font-size: 40rpx;
+}
+
+.error-placeholder[data-compact="true"] .error-title {
+  font-size: 28rpx;
+  margin-bottom: 15rpx;
+}
+
+.error-placeholder[data-compact="true"] .error-description {
+  font-size: 24rpx;
+  margin-bottom: 30rpx;
+}
+
+.error-placeholder[data-compact="true"] .error-btn {
+  height: 70rpx;
+  font-size: 26rpx;
+  min-width: 160rpx;
+}
+
+/* 横向布局 */
+.error-placeholder[data-layout="horizontal"] .error-content {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  max-width: none;
+}
+
+.error-placeholder[data-layout="horizontal"] .error-icon {
+  margin-right: 30rpx;
+  margin-bottom: 0;
+}
+
+.error-placeholder[data-layout="horizontal"] .error-image {
+  width: 100rpx;
+  height: 100rpx;
+}
+
+.error-placeholder[data-layout="horizontal"] .error-icon-default {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.error-placeholder[data-layout="horizontal"] .error-icon-text {
+  font-size: 30rpx;
+}
+
+.error-placeholder[data-layout="horizontal"] .error-actions {
+  flex-direction: row;
+  gap: 15rpx;
+  margin-top: 20rpx;
+}
+
+/* 响应式适配 */
+@media (max-width: 750rpx) {
+  .error-actions {
+    width: 100%;
+  }
+  
+  .error-btn {
+    width: 100%;
+    max-width: 300rpx;
+  }
+}

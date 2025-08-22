@@ -1,17 +1,19 @@
 import { NextRequest } from 'next/server';
 import { createRouteHandlerClient } from '@/lib/supabase';
 import { apiResponse, handleApiError } from '@/utils';
-import { logInfo, logError } from '@/lib/logger';
+import { createRequestLogger } from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 
 // GET /api/auth/callback - 处理 Email Magic Link 回调验证
 export async function GET(request: NextRequest) {
+  const logger = createRequestLogger(request);
+
   try {
     const { searchParams } = new URL(request.url);
     const token_hash = searchParams.get('token_hash');
     const type = searchParams.get('type');
     const next = searchParams.get('next') || '/';
-    
+
     if (!token_hash || !type) {
       return apiResponse.error(
         '无效的魔法链接参数',
@@ -19,18 +21,18 @@ export async function GET(request: NextRequest) {
         'INVALID_MAGIC_LINK_PARAMS'
       );
     }
-    
+
     const supabase = createRouteHandlerClient(request);
-    
+
     // 验证魔法链接
     const { data, error } = await supabase.auth.verifyOtp({
       token_hash,
       type: type as any,
     });
-    
+
     if (error) {
-      logError(new Error(error.message), 'AuthCallback');
-      
+      logger.error('魔法链接验证失败', { error: new Error(error.message) });
+
       if (error.message.includes('expired')) {
         return apiResponse.error(
           '魔法链接已过期，请重新申请',
@@ -38,22 +40,18 @@ export async function GET(request: NextRequest) {
           'MAGIC_LINK_EXPIRED'
         );
       }
-      
+
       if (error.message.includes('invalid')) {
-        return apiResponse.error(
-          '无效的魔法链接',
-          400,
-          'INVALID_MAGIC_LINK'
-        );
+        return apiResponse.error('无效的魔法链接', 400, 'INVALID_MAGIC_LINK');
       }
-      
+
       return apiResponse.error(
         '魔法链接验证失败',
         500,
         'MAGIC_LINK_VERIFY_FAILED'
       );
     }
-    
+
     if (!data.user || !data.session) {
       return apiResponse.error(
         '魔法链接验证失败，用户信息为空',
@@ -61,7 +59,7 @@ export async function GET(request: NextRequest) {
         'USER_DATA_MISSING'
       );
     }
-    
+
     // 同步用户信息到数据库
     try {
       await prisma.user.upsert({
@@ -80,16 +78,18 @@ export async function GET(request: NextRequest) {
           subscriptionPlan: 'free',
         },
       });
-      
-      logInfo(`用户登录成功: ${data.user.email}`, { userId: data.user.id });
+
+      logger.info('用户登录成功', {
+        email: data.user.email,
+        userId: data.user.id,
+      });
     } catch (dbError) {
-      logError(dbError as Error, 'AuthCallback-DB');
+      logger.error('用户信息同步失败', { error: dbError as Error });
       // 数据库同步失败不影响登录流程
     }
-    
+
     // 重定向到指定页面
     return Response.redirect(new URL(next, request.url));
-    
   } catch (error) {
     return handleApiError(error, 'AuthCallback');
   }
@@ -97,10 +97,12 @@ export async function GET(request: NextRequest) {
 
 // POST /api/auth/callback - 处理前端 AJAX 回调验证
 export async function POST(request: NextRequest) {
+  const logger = createRequestLogger(request);
+
   try {
     const body = await request.json();
     const { token_hash, type } = body;
-    
+
     if (!token_hash || !type) {
       return apiResponse.error(
         '无效的魔法链接参数',
@@ -108,18 +110,18 @@ export async function POST(request: NextRequest) {
         'INVALID_MAGIC_LINK_PARAMS'
       );
     }
-    
+
     const supabase = createRouteHandlerClient(request);
-    
+
     // 验证魔法链接
     const { data, error } = await supabase.auth.verifyOtp({
       token_hash,
       type: type as any,
     });
-    
+
     if (error) {
-      logError(new Error(error.message), 'AuthCallbackPost');
-      
+      logger.error('魔法链接验证失败', { error: new Error(error.message) });
+
       if (error.message.includes('expired')) {
         return apiResponse.error(
           '魔法链接已过期，请重新申请',
@@ -127,22 +129,18 @@ export async function POST(request: NextRequest) {
           'MAGIC_LINK_EXPIRED'
         );
       }
-      
+
       if (error.message.includes('invalid')) {
-        return apiResponse.error(
-          '无效的魔法链接',
-          400,
-          'INVALID_MAGIC_LINK'
-        );
+        return apiResponse.error('无效的魔法链接', 400, 'INVALID_MAGIC_LINK');
       }
-      
+
       return apiResponse.error(
         '魔法链接验证失败',
         500,
         'MAGIC_LINK_VERIFY_FAILED'
       );
     }
-    
+
     if (!data.user || !data.session) {
       return apiResponse.error(
         '魔法链接验证失败，用户信息为空',
@@ -150,7 +148,7 @@ export async function POST(request: NextRequest) {
         'USER_DATA_MISSING'
       );
     }
-    
+
     // 同步用户信息到数据库
     try {
       const user = await prisma.user.upsert({
@@ -169,9 +167,12 @@ export async function POST(request: NextRequest) {
           subscriptionPlan: 'free',
         },
       });
-      
-      logInfo(`用户登录成功: ${data.user.email}`, { userId: data.user.id });
-      
+
+      logger.info('用户登录成功', {
+        email: data.user.email,
+        userId: data.user.id,
+      });
+
       return apiResponse.success(
         {
           user: {
@@ -191,14 +192,9 @@ export async function POST(request: NextRequest) {
         '登录成功'
       );
     } catch (dbError) {
-      logError(dbError as Error, 'AuthCallbackPost-DB');
-      return apiResponse.error(
-        '用户信息同步失败',
-        500,
-        'USER_SYNC_FAILED'
-      );
+      logger.error('用户信息同步失败', { error: dbError as Error });
+      return apiResponse.error('用户信息同步失败', 500, 'USER_SYNC_FAILED');
     }
-    
   } catch (error) {
     return handleApiError(error, 'AuthCallbackPost');
   }

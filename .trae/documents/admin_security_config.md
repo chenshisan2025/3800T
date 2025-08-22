@@ -5,6 +5,7 @@
 ### 1.1 配置文件结构
 
 创建 `apps/admin/config/ip-whitelist.json`：
+
 ```json
 {
   "version": "1.0",
@@ -63,6 +64,7 @@
 ### 1.2 环境变量配置
 
 在 `apps/admin/.env.production` 中添加：
+
 ```env
 # 域名配置
 ALLOWED_DOMAINS=admin.gulingtong.internal,admin.gulingtong.com
@@ -87,6 +89,7 @@ SECURE_COOKIES=true
 ### 1.3 中间件实现
 
 创建 `apps/admin/src/middleware/security.ts`：
+
 ```typescript
 import { NextRequest, NextResponse } from 'next/server';
 import { readFileSync } from 'fs';
@@ -126,7 +129,8 @@ interface IPWhitelistConfig {
 
 class SecurityMiddleware {
   private config: IPWhitelistConfig;
-  private blockedIPs: Map<string, { count: number; lastAttempt: number }> = new Map();
+  private blockedIPs: Map<string, { count: number; lastAttempt: number }> =
+    new Map();
 
   constructor() {
     this.loadConfig();
@@ -152,27 +156,27 @@ class SecurityMiddleware {
         internal_networks: [
           { network: '192.168.0.0/16', description: '内网A段', enabled: true },
           { network: '10.0.0.0/8', description: '内网B段', enabled: true },
-          { network: '172.16.0.0/12', description: '内网C段', enabled: true }
+          { network: '172.16.0.0/12', description: '内网C段', enabled: true },
         ],
         external_ips: [],
         emergency_access: {
           enabled: false,
           temp_ips: [],
-          expires_at: null
-        }
+          expires_at: null,
+        },
       },
       settings: {
         strict_mode: true,
         log_blocked_attempts: true,
         max_attempts_per_hour: 10,
-        auto_ban_duration: 3600
-      }
+        auto_ban_duration: 3600,
+      },
     };
   }
 
   public async handle(request: NextRequest): Promise<NextResponse> {
     const clientIP = this.getClientIP(request);
-    
+
     // 检查是否启用IP白名单
     if (!process.env.IP_WHITELIST_ENABLED) {
       return NextResponse.next();
@@ -200,7 +204,7 @@ class SecurityMiddleware {
     // 添加安全头
     const response = NextResponse.next();
     this.addSecurityHeaders(response);
-    
+
     this.logSecurityEvent('ACCESS_GRANTED', clientIP, request);
     return response;
   }
@@ -246,9 +250,11 @@ class SecurityMiddleware {
 
     // 检查外网白名单IP
     for (const allowedIP of this.config.whitelist.external_ips) {
-      if (allowedIP.enabled && 
-          ip === allowedIP.ip && 
-          new Date() < new Date(allowedIP.expires)) {
+      if (
+        allowedIP.enabled &&
+        ip === allowedIP.ip &&
+        new Date() < new Date(allowedIP.expires)
+      ) {
         return true;
       }
     }
@@ -259,15 +265,20 @@ class SecurityMiddleware {
   private isIPInNetwork(ip: string, network: string): boolean {
     const [networkAddr, prefixLength] = network.split('/');
     const prefix = parseInt(prefixLength, 10);
-    
+
     // 简化的IP网段检查（实际应用中建议使用专业库如ipaddr.js）
     const ipParts = ip.split('.').map(Number);
     const networkParts = networkAddr.split('.').map(Number);
-    
-    const ipInt = (ipParts[0] << 24) + (ipParts[1] << 16) + (ipParts[2] << 8) + ipParts[3];
-    const networkInt = (networkParts[0] << 24) + (networkParts[1] << 16) + (networkParts[2] << 8) + networkParts[3];
+
+    const ipInt =
+      (ipParts[0] << 24) + (ipParts[1] << 16) + (ipParts[2] << 8) + ipParts[3];
+    const networkInt =
+      (networkParts[0] << 24) +
+      (networkParts[1] << 16) +
+      (networkParts[2] << 8) +
+      networkParts[3];
     const mask = (-1 << (32 - prefix)) >>> 0;
-    
+
     return (ipInt & mask) === (networkInt & mask);
   }
 
@@ -281,7 +292,10 @@ class SecurityMiddleware {
     if (!blocked) return false;
 
     const now = Date.now();
-    if (now - blocked.lastAttempt > this.config.settings.auto_ban_duration * 1000) {
+    if (
+      now - blocked.lastAttempt >
+      this.config.settings.auto_ban_duration * 1000
+    ) {
       this.blockedIPs.delete(ip);
       return false;
     }
@@ -292,12 +306,12 @@ class SecurityMiddleware {
   private recordFailedAttempt(ip: string): void {
     const now = Date.now();
     const blocked = this.blockedIPs.get(ip) || { count: 0, lastAttempt: 0 };
-    
+
     // 重置计数器如果超过1小时
     if (now - blocked.lastAttempt > 3600000) {
       blocked.count = 0;
     }
-    
+
     blocked.count++;
     blocked.lastAttempt = now;
     this.blockedIPs.set(ip, blocked);
@@ -308,14 +322,24 @@ class SecurityMiddleware {
     response.headers.set('X-Content-Type-Options', 'nosniff');
     response.headers.set('X-XSS-Protection', '1; mode=block');
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-    response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-    
+    response.headers.set(
+      'Permissions-Policy',
+      'camera=(), microphone=(), geolocation=()'
+    );
+
     if (process.env.FORCE_HTTPS === 'true') {
-      response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+      response.headers.set(
+        'Strict-Transport-Security',
+        'max-age=31536000; includeSubDomains'
+      );
     }
   }
 
-  private logSecurityEvent(event: string, ip: string, request: NextRequest): void {
+  private logSecurityEvent(
+    event: string,
+    ip: string,
+    request: NextRequest
+  ): void {
     if (!this.config.settings.log_blocked_attempts) return;
 
     const logData = {
@@ -325,11 +349,11 @@ class SecurityMiddleware {
       userAgent: request.headers.get('user-agent') || 'unknown',
       url: request.url,
       method: request.method,
-      host: request.headers.get('host') || 'unknown'
+      host: request.headers.get('host') || 'unknown',
     };
 
     console.log(`[SECURITY] ${JSON.stringify(logData)}`);
-    
+
     // 这里可以集成到日志系统或安全监控平台
     // 例如发送到ELK Stack、Splunk等
   }
@@ -345,9 +369,7 @@ export async function middleware(request: NextRequest) {
 
 // 配置匹配路径
 export const config = {
-  matcher: [
-    '/((?!api/health|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/((?!api/health|_next/static|_next/image|favicon.ico).*)'],
 };
 ```
 
@@ -356,6 +378,7 @@ export const config = {
 ### 2.1 主配置文件
 
 创建 `/etc/nginx/sites-available/admin.gulingtong.conf`：
+
 ```nginx
 # 上游服务器配置
 upstream admin_backend {
@@ -377,7 +400,7 @@ server {
 server {
     listen 443 ssl http2;
     server_name admin.gulingtong.com admin.gulingtong.internal;
-    
+
     # SSL证书配置
     ssl_certificate /etc/ssl/certs/admin.gulingtong.com.crt;
     ssl_certificate_key /etc/ssl/private/admin.gulingtong.com.key;
@@ -386,31 +409,31 @@ server {
     ssl_prefer_server_ciphers off;
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 10m;
-    
+
     # 安全头
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
     add_header X-Frame-Options "DENY" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-    
+
     # IP白名单配置
     location / {
         # 内网IP段
         allow 192.168.0.0/16;
         allow 10.0.0.0/8;
         allow 172.16.0.0/12;
-        
+
         # 公司公网IP
         allow 203.0.113.0/24;
         allow 198.51.100.50;
-        
+
         # 拒绝其他IP
         deny all;
-        
+
         # 请求频率限制
         limit_req zone=admin_limit burst=20 nodelay;
-        
+
         # 代理配置
         proxy_pass http://admin_backend;
         proxy_http_version 1.1;
@@ -421,26 +444,26 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
-        
+
         # 超时配置
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
     }
-    
+
     # 健康检查端点（不受IP限制）
     location /api/health {
         proxy_pass http://admin_backend;
         access_log off;
     }
-    
+
     # 静态资源缓存
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
         expires 1y;
         add_header Cache-Control "public, immutable";
         proxy_pass http://admin_backend;
     }
-    
+
     # 日志配置
     access_log /var/log/nginx/admin.access.log combined;
     error_log /var/log/nginx/admin.error.log warn;
@@ -450,6 +473,7 @@ server {
 ### 2.2 防火墙配置
 
 使用UFW配置防火墙：
+
 ```bash
 # 启用UFW
 sudo ufw enable
@@ -479,6 +503,7 @@ sudo ufw status numbered
 ### 3.1 安全日志监控
 
 创建 `apps/admin/src/lib/security-monitor.ts`：
+
 ```typescript
 import { writeFileSync, appendFileSync } from 'fs';
 import { join } from 'path';
@@ -504,7 +529,7 @@ class SecurityMonitor {
       /<script/i, // XSS尝试
       /union.*select/i, // SQL注入
       /eval\(/i, // 代码注入
-    ]
+    ],
   };
 
   constructor() {
@@ -543,13 +568,13 @@ class SecurityMonitor {
       title: `安全告警: ${event.event}`,
       message: `检测到可疑活动\nIP: ${event.ip}\nURL: ${event.url}\n时间: ${event.timestamp}`,
       severity: event.severity,
-      timestamp: event.timestamp
+      timestamp: event.timestamp,
     };
 
     // 这里可以集成到告警系统
     // 例如：钉钉、企业微信、邮件、短信等
     console.error(`[SECURITY ALERT] ${JSON.stringify(alertData)}`);
-    
+
     // 示例：发送到钉钉机器人
     if (process.env.DINGTALK_WEBHOOK) {
       try {
@@ -559,9 +584,9 @@ class SecurityMonitor {
           body: JSON.stringify({
             msgtype: 'text',
             text: {
-              content: `🚨 ${alertData.title}\n${alertData.message}`
-            }
-          })
+              content: `🚨 ${alertData.title}\n${alertData.message}`,
+            },
+          }),
         });
       } catch (error) {
         console.error('Failed to send DingTalk alert:', error);
@@ -579,8 +604,8 @@ class SecurityMonitor {
         blocked_attempts: 0,
         allowed_access: 0,
         top_blocked_ips: [],
-        security_alerts: 0
-      }
+        security_alerts: 0,
+      },
     };
   }
 }
@@ -591,6 +616,7 @@ export const securityMonitor = new SecurityMonitor();
 ### 3.2 系统监控脚本
 
 创建 `scripts/security-check.sh`：
+
 ```bash
 #!/bin/bash
 
@@ -632,6 +658,7 @@ echo "\n=== 检查完成 ==="
 ### 4.1 自动部署脚本
 
 创建 `scripts/deploy-admin.sh`：
+
 ```bash
 #!/bin/bash
 
@@ -725,6 +752,7 @@ echo "内网地址: https://admin.gulingtong.internal"
 ### 4.2 SSL证书自动更新脚本
 
 创建 `scripts/renew-ssl.sh`：
+
 ```bash
 #!/bin/bash
 
@@ -738,10 +766,10 @@ if [ -f "$CERT_FILE" ]; then
   EXPIRY_TIMESTAMP=$(date -d "$EXPIRY_DATE" +%s)
   CURRENT_TIMESTAMP=$(date +%s)
   DAYS_UNTIL_EXPIRY=$(( (EXPIRY_TIMESTAMP - CURRENT_TIMESTAMP) / 86400 ))
-  
+
   echo "证书有效期至: $EXPIRY_DATE"
   echo "剩余天数: $DAYS_UNTIL_EXPIRY"
-  
+
   # 如果证书在30天内过期，尝试更新
   if [ $DAYS_UNTIL_EXPIRY -lt 30 ]; then
     echo "证书即将过期，开始更新..."
@@ -770,6 +798,7 @@ fi
 ### 5.1 Systemd服务文件
 
 创建 `/etc/systemd/system/gulingtong-admin.service`：
+
 ```ini
 [Unit]
 Description=Gulingtong Admin Panel
@@ -808,6 +837,7 @@ WantedBy=multi-user.target
 ### 5.2 日志轮转配置
 
 创建 `/etc/logrotate.d/gulingtong-admin`：
+
 ```
 /opt/gulingtong/apps/admin/logs/*.log {
     daily
@@ -839,6 +869,7 @@ WantedBy=multi-user.target
 ## 6. 安全检查清单
 
 ### 6.1 部署前检查
+
 - [ ] IP白名单配置文件已创建并验证
 - [ ] SSL证书已安装并有效
 - [ ] Nginx配置已测试通过
@@ -848,6 +879,7 @@ WantedBy=multi-user.target
 - [ ] 环境变量已配置
 
 ### 6.2 部署后验证
+
 - [ ] 管理后台可正常访问
 - [ ] IP白名单生效（非白名单IP被拒绝）
 - [ ] HTTPS强制跳转正常
@@ -857,6 +889,7 @@ WantedBy=multi-user.target
 - [ ] 证书自动更新配置
 
 ### 6.3 定期维护
+
 - [ ] 每周检查安全日志
 - [ ] 每月更新IP白名单
 - [ ] 每季度安全审计
@@ -865,4 +898,4 @@ WantedBy=multi-user.target
 
 ---
 
-*配置文档最后更新: 2024年1月*
+_配置文档最后更新: 2024年1月_

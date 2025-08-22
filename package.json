@@ -29,15 +29,30 @@
     "db:migrate": "pnpm --filter @gulingtong/api db:migrate",
     "db:studio": "pnpm --filter @gulingtong/api db:studio",
     "db:seed": "pnpm --filter @gulingtong/api db:seed",
+    "openapi:generate": "pnpm --filter @gulingtong/api openapi:generate",
+    "sdk:generate": "tsx scripts/generate-sdk.ts",
+    "sdk:drift-guard": "tsx scripts/sdk-drift-guard.ts",
+    "sdk:drift-guard:fix": "tsx scripts/sdk-drift-guard.ts --fix",
+    "sdk:version:update": "pnpm --filter @gulingtong/shared-sdk version:update",
+    "sdk:version:patch": "pnpm --filter @gulingtong/shared-sdk version:patch",
+    "sdk:version:minor": "pnpm --filter @gulingtong/shared-sdk version:minor",
+    "sdk:version:major": "pnpm --filter @gulingtong/shared-sdk version:major",
+    "sdk:ci": "npm run openapi:generate && npm run sdk:generate && npm run sdk:drift-guard:fix",
+    "prepare": "husky",
     "postinstall": "pnpm db:generate"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@types/node": "^20.10.0",
     "@typescript-eslint/eslint-plugin": "^8.39.1",
     "@typescript-eslint/parser": "^8.39.1",
     "concurrently": "^8.2.2",
     "eslint": "^8.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
     "prettier": "^3.0.0",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.0"
   },
   "engines": {
@@ -53,5 +68,14 @@
     "miniprogram"
   ],
   "author": "GuLingTong Team",
-  "license": "MIT"
+  "license": "MIT",
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,yaml,yml}": [
+      "prettier --write"
+    ]
+  }
 }

@@ -1,5 +1,5 @@
 // 导入全局主题配置
-const themeConfig = require('../../../theme.config.js')
+const themeConfig = require('../../../theme.config.js');
 
 export const theme = {
   token: {
@@ -9,22 +9,22 @@ export const theme = {
     colorWarning: themeConfig.colors.warning,
     colorError: themeConfig.colors.error,
     colorInfo: themeConfig.colors.info,
-    
+
     // A股特色颜色
     colorTextSuccess: themeConfig.colors.stockDown, // 绿色表示下跌
-    colorTextDanger: themeConfig.colors.stockUp,    // 红色表示上涨
-    
+    colorTextDanger: themeConfig.colors.stockUp, // 红色表示上涨
+
     // 字体
     fontFamily: themeConfig.typography.fontFamily.primary,
     fontSize: 14,
-    
+
     // 圆角
     borderRadius: 6,
-    
+
     // 间距
     padding: 16,
     margin: 16,
-    
+
     // 中性色
     colorBgContainer: themeConfig.colors.white,
     colorBgLayout: themeConfig.colors.background.secondary,
@@ -33,7 +33,7 @@ export const theme = {
     colorTextTertiary: themeConfig.colors.text.tertiary,
     colorBorder: themeConfig.colors.border.light,
   },
-  
+
   components: {
     Layout: {
       headerBg: themeConfig.colors.primary,
@@ -50,31 +50,31 @@ export const theme = {
       colorTextDanger: themeConfig.colors.stockUp,
     },
   },
-}
+};
 
 // 股票相关的样式工具函数
 export const stockUtils = {
   // 获取股票变化的颜色类名
   getChangeColor: (change: number) => {
-    if (change > 0) return themeConfig.colors.stockUp    // 红色上涨
-    if (change < 0) return themeConfig.colors.stockDown  // 绿色下跌
-    return themeConfig.colors.stockFlat                  // 灰色平盘
+    if (change > 0) return themeConfig.colors.stockUp; // 红色上涨
+    if (change < 0) return themeConfig.colors.stockDown; // 绿色下跌
+    return themeConfig.colors.stockFlat; // 灰色平盘
   },
-  
+
   // 获取股票变化的文本前缀
   getChangePrefix: (change: number) => {
-    if (change > 0) return '+'
-    return ''
+    if (change > 0) return '+';
+    return '';
   },
-  
+
   // 格式化价格显示
   formatPrice: (price: number, precision: number = 2) => {
-    return price.toFixed(precision)
+    return price.toFixed(precision);
   },
-  
+
   // 格式化百分比显示
   formatPercent: (percent: number, precision: number = 2) => {
-    const prefix = percent > 0 ? '+' : ''
-    return `${prefix}${percent.toFixed(precision)}%`
-  }
-}
+    const prefix = percent > 0 ? '+' : '';
+    return `${prefix}${percent.toFixed(precision)}%`;
+  },
+};

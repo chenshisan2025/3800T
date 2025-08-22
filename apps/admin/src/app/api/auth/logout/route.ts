@@ -27,22 +27,25 @@ function extractAccessToken(request: NextRequest): string | null {
 // 记录登出日志
 function logLogoutAttempt(email: string, success: boolean, ip?: string) {
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] Logout attempt: ${email}, Success: ${success}, IP: ${ip || 'unknown'}`);
+  console.log(
+    `[${timestamp}] Logout attempt: ${email}, Success: ${success}, IP: ${ip || 'unknown'}`
+  );
 }
 
 // POST /api/auth/logout
 export async function POST(request: NextRequest) {
   try {
     // 获取客户端IP
-    const clientIP = request.headers.get('x-forwarded-for') || 
-                    request.headers.get('x-real-ip') || 
-                    'unknown';
+    const clientIP =
+      request.headers.get('x-forwarded-for') ||
+      request.headers.get('x-real-ip') ||
+      'unknown';
 
     // 提取访问令牌
     const accessToken = extractAccessToken(request);
-    
+
     let userEmail = 'unknown';
-    
+
     // 如果有令牌，验证并获取用户信息
     if (accessToken) {
       const verification = await verifyAccessToken(accessToken);
@@ -78,10 +81,9 @@ export async function POST(request: NextRequest) {
     logLogoutAttempt(userEmail, true, clientIP);
 
     return response;
-
   } catch (error) {
     console.error('Logout error:', error);
-    
+
     // 即使出错也要清除cookies
     const response = NextResponse.json<LogoutResponse>({
       success: true,
@@ -115,15 +117,21 @@ export async function GET(request: NextRequest) {
 
 // 不支持其他HTTP方法
 export async function PUT() {
-  return NextResponse.json({
-    error: 'Method not allowed',
-    message: '此端点仅支持POST和GET请求',
-  }, { status: 405 });
+  return NextResponse.json(
+    {
+      error: 'Method not allowed',
+      message: '此端点仅支持POST和GET请求',
+    },
+    { status: 405 }
+  );
 }
 
 export async function DELETE() {
-  return NextResponse.json({
-    error: 'Method not allowed',
-    message: '此端点仅支持POST和GET请求',
-  }, { status: 405 });
+  return NextResponse.json(
+    {
+      error: 'Method not allowed',
+      message: '此端点仅支持POST和GET请求',
+    },
+    { status: 405 }
+  );
 }

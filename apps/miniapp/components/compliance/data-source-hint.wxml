@@ -1,0 +1,65 @@
+<!-- components/compliance/data-source-hint.wxml -->
+<view 
+  class="data-source-hint {{position === 'bottom' ? 'hint-bottom' : ''}} {{position === 'top' ? 'hint-top' : ''}} {{theme}} {{customClass}}"
+  wx:if="{{shouldShow && config && !loading}}"
+>
+  <view class="hint-content">
+    <!-- 图标 -->
+    <view class="hint-icon" wx:if="{{showIcon}}">
+      <view class="icon-wrapper {{type}}">
+        <text class="icon-text" wx:if="{{type === 'realtime'}}">●</text>
+        <text class="icon-text" wx:elif="{{type === 'delayed'}}">⏱</text>
+        <text class="icon-text" wx:elif="{{type === 'historical'}}">📊</text>
+        <text class="icon-text" wx:else>📈</text>
+      </view>
+    </view>
+    
+    <!-- 主要内容 -->
+    <view class="hint-main">
+      <!-- 标题 -->
+      <view class="hint-title" wx:if="{{config.title}}">
+        {{config.title}}
+      </view>
+      
+      <!-- 内容 -->
+      <view class="hint-text" wx:if="{{config.content}}">
+        {{config.content}}
+      </view>
+      
+      <!-- 数据提供商 -->
+      <view class="hint-providers" wx:if="{{config.providers && config.providers.length > 0}}">
+        <text class="providers-label">数据来源：</text>
+        <view class="providers-list">
+          <text 
+            class="provider-item"
+            wx:for="{{config.providers}}"
+            wx:key="code"
+            data-provider="{{item}}"
+            bindtap="handleProviderTap"
+          >
+            {{item.name}}
+          </text>
+        </view>
+      </view>
+      
+      <!-- 链接 -->
+      <view 
+        class="hint-link" 
+        wx:if="{{config.linkText && config.linkUrl}}"
+        bindtap="handleLinkTap"
+      >
+        {{config.linkText}}
+      </view>
+    </view>
+    
+    <!-- 关闭按钮 -->
+    <view class="hint-close" wx:if="{{closable}}" bindtap="handleClose">
+      <text class="close-icon">×</text>
+    </view>
+  </view>
+  
+  <!-- 加载状态 -->
+  <view class="hint-loading" wx:if="{{loading}}">
+    <text class="loading-text">加载中...</text>
+  </view>
+</view>

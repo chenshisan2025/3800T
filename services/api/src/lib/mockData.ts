@@ -13,7 +13,7 @@ export const mockStocks = [
     updated_at: new Date(),
     latest_data: {
       date: new Date(),
-      close_price: 12.50,
+      close_price: 12.5,
       change_percent: 2.15,
       volume: 125000000,
     },
@@ -61,7 +61,7 @@ export const mockStocks = [
     updated_at: new Date(),
     latest_data: {
       date: new Date(),
-      close_price: 35.20,
+      close_price: 35.2,
       change_percent: 1.85,
       volume: 78000000,
     },
@@ -77,7 +77,7 @@ export const mockStocks = [
     updated_at: new Date(),
     latest_data: {
       date: new Date(),
-      close_price: 168.50,
+      close_price: 168.5,
       change_percent: -0.75,
       volume: 45000000,
     },
@@ -85,19 +85,22 @@ export const mockStocks = [
 ];
 
 // Mock股票历史数据
-export const generateMockHistoryData = (stockCode: string, days: number = 30) => {
+export const generateMockHistoryData = (
+  stockCode: string,
+  days: number = 30
+) => {
   const data = [];
   const basePrice = Math.random() * 100 + 10; // 基础价格10-110
-  
+
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);
-    
+
     // 生成随机价格变动
     const changePercent = (Math.random() - 0.5) * 10; // -5% 到 +5%
     const price = basePrice * (1 + changePercent / 100);
     const volume = Math.floor(Math.random() * 100000000) + 10000000; // 1000万到1亿
-    
+
     data.push({
       date,
       open_price: price * (1 + (Math.random() - 0.5) * 0.02),
@@ -108,16 +111,22 @@ export const generateMockHistoryData = (stockCode: string, days: number = 30) =>
       change_percent: changePercent,
     });
   }
-  
+
   return data;
 };
 
 // Mock AI分析报告
 export const generateMockAIReports = (stockCode: string, count: number = 5) => {
-  const reportTypes = ['技术分析', '基本面分析', '市场情绪分析', '风险评估', '投资建议'];
+  const reportTypes = [
+    '技术分析',
+    '基本面分析',
+    '市场情绪分析',
+    '风险评估',
+    '投资建议',
+  ];
   const sentiments = ['积极', '中性', '谨慎'];
   const recommendations = ['买入', '持有', '卖出'];
-  
+
   return Array.from({ length: count }, (_, index) => ({
     id: `mock_report_${stockCode}_${index + 1}`,
     stock_code: stockCode,
@@ -126,7 +135,8 @@ export const generateMockAIReports = (stockCode: string, count: number = 5) => {
     summary: `${reportTypes[index % reportTypes.length]}显示${sentiments[Math.floor(Math.random() * sentiments.length)]}信号`,
     sentiment: sentiments[Math.floor(Math.random() * sentiments.length)],
     confidence_score: Math.floor(Math.random() * 30) + 70, // 70-100
-    recommendation: recommendations[Math.floor(Math.random() * recommendations.length)],
+    recommendation:
+      recommendations[Math.floor(Math.random() * recommendations.length)],
     created_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000), // 最近7天内
     updated_at: new Date(),
   }));
@@ -135,7 +145,7 @@ export const generateMockAIReports = (stockCode: string, count: number = 5) => {
 // Mock技术指标
 export const generateMockTechnicalIndicators = (stockCode: string) => {
   const currentPrice = Math.random() * 100 + 10;
-  
+
   return {
     ma5: currentPrice * (1 + (Math.random() - 0.5) * 0.1),
     ma20: currentPrice * (1 + (Math.random() - 0.5) * 0.15),
@@ -159,45 +169,49 @@ export const generateMockFollowStats = (stockCode: string) => {
 // 数据源降级服务
 export class MockDataService {
   // 获取Mock股票列表
-  static getMockStocks(options: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    market?: string;
-    industry?: string;
-  } = {}) {
+  static getMockStocks(
+    options: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      market?: string;
+      industry?: string;
+    } = {}
+  ) {
     let filteredStocks = [...mockStocks];
-    
+
     // 应用搜索过滤
     if (options.search) {
       const searchTerm = options.search.toLowerCase();
       filteredStocks = filteredStocks.filter(
-        stock => 
+        stock =>
           stock.code.includes(searchTerm) ||
           stock.name.toLowerCase().includes(searchTerm)
       );
     }
-    
+
     // 应用市场过滤
     if (options.market) {
-      filteredStocks = filteredStocks.filter(stock => stock.market === options.market);
-    }
-    
-    // 应用行业过滤
-    if (options.industry) {
       filteredStocks = filteredStocks.filter(
-        stock => stock.industry.includes(options.industry!)
+        stock => stock.market === options.market
       );
     }
-    
+
+    // 应用行业过滤
+    if (options.industry) {
+      filteredStocks = filteredStocks.filter(stock =>
+        stock.industry.includes(options.industry!)
+      );
+    }
+
     // 应用分页
     const page = options.page || 1;
     const limit = options.limit || 20;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
-    
+
     const paginatedStocks = filteredStocks.slice(startIndex, endIndex);
-    
+
     return {
       data: paginatedStocks,
       pagination: {
@@ -210,14 +224,14 @@ export class MockDataService {
       },
     };
   }
-  
+
   // 获取Mock股票详情
   static getMockStockDetail(stockCode: string) {
     const stock = mockStocks.find(s => s.code === stockCode);
     if (!stock) {
       return null;
     }
-    
+
     return {
       ...stock,
       history_data: generateMockHistoryData(stockCode, 30),
@@ -226,13 +240,16 @@ export class MockDataService {
       follow_stats: generateMockFollowStats(stockCode),
     };
   }
-  
+
   // 检查是否应该使用Mock数据
-  static shouldUseMockData(errorCount: number, timeWindow: number = 5): boolean {
+  static shouldUseMockData(
+    errorCount: number,
+    timeWindow: number = 5
+  ): boolean {
     // 如果在5分钟内出现3次或以上错误，启用Mock数据
     return errorCount >= 3;
   }
-  
+
   // 生成降级提示消息
   static getDegradationNotice(): string {
     return '当前数据服务暂时不可用，正在使用备用数据源。数据可能存在延迟，请以实际交易数据为准。';

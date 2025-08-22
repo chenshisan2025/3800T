@@ -68,30 +68,37 @@ function isValidPassword(password: string): boolean {
 
 // 查找用户
 function findUserByEmail(email: string) {
-  return INTERNAL_ACCOUNTS.find(account => 
-    account.email.toLowerCase() === email.toLowerCase() && 
-    account.status === 'active'
+  return INTERNAL_ACCOUNTS.find(
+    account =>
+      account.email.toLowerCase() === email.toLowerCase() &&
+      account.status === 'active'
   );
 }
 
 // 验证密码（实际项目中应该使用bcrypt等加密库）
-function verifyPassword(inputPassword: string, storedPassword: string): boolean {
+function verifyPassword(
+  inputPassword: string,
+  storedPassword: string
+): boolean {
   return inputPassword === storedPassword;
 }
 
 // 记录登录日志（实际项目中应该写入数据库）
 function logLoginAttempt(email: string, success: boolean, ip?: string) {
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] Login attempt: ${email}, Success: ${success}, IP: ${ip || 'unknown'}`);
+  console.log(
+    `[${timestamp}] Login attempt: ${email}, Success: ${success}, IP: ${ip || 'unknown'}`
+  );
 }
 
 // POST /api/auth/login
 export async function POST(request: NextRequest) {
   try {
     // 获取客户端IP
-    const clientIP = request.headers.get('x-forwarded-for') || 
-                    request.headers.get('x-real-ip') || 
-                    'unknown';
+    const clientIP =
+      request.headers.get('x-forwarded-for') ||
+      request.headers.get('x-real-ip') ||
+      'unknown';
 
     // 解析请求体
     const body: LoginRequest = await request.json();
@@ -99,43 +106,58 @@ export async function POST(request: NextRequest) {
 
     // 验证输入
     if (!email || !password) {
-      return NextResponse.json<LoginResponse>({
-        success: false,
-        message: '邮箱和密码不能为空',
-      }, { status: 400 });
+      return NextResponse.json<LoginResponse>(
+        {
+          success: false,
+          message: '邮箱和密码不能为空',
+        },
+        { status: 400 }
+      );
     }
 
     if (!isValidEmail(email)) {
-      return NextResponse.json<LoginResponse>({
-        success: false,
-        message: '邮箱格式不正确',
-      }, { status: 400 });
+      return NextResponse.json<LoginResponse>(
+        {
+          success: false,
+          message: '邮箱格式不正确',
+        },
+        { status: 400 }
+      );
     }
 
     if (!isValidPassword(password)) {
-      return NextResponse.json<LoginResponse>({
-        success: false,
-        message: '密码长度至少6位',
-      }, { status: 400 });
+      return NextResponse.json<LoginResponse>(
+        {
+          success: false,
+          message: '密码长度至少6位',
+        },
+        { status: 400 }
+      );
     }
 
     // 查找用户
     const user = findUserByEmail(email);
     if (!user) {
       logLoginAttempt(email, false, clientIP);
-      return NextResponse.json<LoginResponse>({
-        success: false,
-        message: '用户不存在或已被禁用',
-      }, { status: 401 });
+      return NextResponse.json<LoginResponse>(
+        {
+          success: false,
+          message: '用户不存在或已被禁用',
+        },
+        { status: 401 }
+      );
     }
 
     // 验证密码
     if (!verifyPassword(password, user.password)) {
       logLoginAttempt(email, false, clientIP);
-      return NextResponse.json<LoginResponse>({
-        success: false,
-        message: '密码错误',
-      }, { status: 401 });
+      return NextResponse.json<LoginResponse>(
+        {
+          success: false,
+          message: '密码错误',
+        },
+        { status: 401 }
+      );
     }
 
     // 生成JWT令牌
@@ -181,20 +203,25 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-
   } catch (error) {
     console.error('Login error:', error);
-    return NextResponse.json<LoginResponse>({
-      success: false,
-      message: '服务器内部错误',
-    }, { status: 500 });
+    return NextResponse.json<LoginResponse>(
+      {
+        success: false,
+        message: '服务器内部错误',
+      },
+      { status: 500 }
+    );
   }
 }
 
 // 不支持其他HTTP方法
 export async function GET() {
-  return NextResponse.json({
-    error: 'Method not allowed',
-    message: '此端点仅支持POST请求',
-  }, { status: 405 });
+  return NextResponse.json(
+    {
+      error: 'Method not allowed',
+      message: '此端点仅支持POST请求',
+    },
+    { status: 405 }
+  );
 }

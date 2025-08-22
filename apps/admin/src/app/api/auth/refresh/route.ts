@@ -53,9 +53,8 @@ interface RefreshResponse {
 
 // 查找用户
 function findUserById(userId: string) {
-  return INTERNAL_ACCOUNTS.find(account => 
-    account.id === userId && 
-    account.status === 'active'
+  return INTERNAL_ACCOUNTS.find(
+    account => account.id === userId && account.status === 'active'
   );
 }
 
@@ -90,19 +89,25 @@ export async function POST(request: NextRequest) {
     }
 
     if (!refreshToken) {
-      return NextResponse.json<RefreshResponse>({
-        success: false,
-        message: '未提供刷新令牌',
-      }, { status: 400 });
+      return NextResponse.json<RefreshResponse>(
+        {
+          success: false,
+          message: '未提供刷新令牌',
+        },
+        { status: 400 }
+      );
     }
 
     // 验证刷新令牌
     const verification = await verifyRefreshToken(refreshToken);
     if (!verification.valid || !verification.payload) {
-      return NextResponse.json<RefreshResponse>({
-        success: false,
-        message: verification.error || '刷新令牌无效',
-      }, { status: 401 });
+      return NextResponse.json<RefreshResponse>(
+        {
+          success: false,
+          message: verification.error || '刷新令牌无效',
+        },
+        { status: 401 }
+      );
     }
 
     const { userId, email, role } = verification.payload;
@@ -110,18 +115,24 @@ export async function POST(request: NextRequest) {
     // 验证用户是否仍然存在且有效
     const user = findUserById(userId);
     if (!user) {
-      return NextResponse.json<RefreshResponse>({
-        success: false,
-        message: '用户不存在或已被禁用',
-      }, { status: 401 });
+      return NextResponse.json<RefreshResponse>(
+        {
+          success: false,
+          message: '用户不存在或已被禁用',
+        },
+        { status: 401 }
+      );
     }
 
     // 检查用户信息是否一致
     if (user.email !== email || user.role !== role) {
-      return NextResponse.json<RefreshResponse>({
-        success: false,
-        message: '用户信息已变更，请重新登录',
-      }, { status: 401 });
+      return NextResponse.json<RefreshResponse>(
+        {
+          success: false,
+          message: '用户信息已变更，请重新登录',
+        },
+        { status: 401 }
+      );
     }
 
     // 生成新的令牌对
@@ -164,20 +175,25 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-
   } catch (error) {
     console.error('Token refresh error:', error);
-    return NextResponse.json<RefreshResponse>({
-      success: false,
-      message: '服务器内部错误',
-    }, { status: 500 });
+    return NextResponse.json<RefreshResponse>(
+      {
+        success: false,
+        message: '服务器内部错误',
+      },
+      { status: 500 }
+    );
   }
 }
 
 // 不支持其他HTTP方法
 export async function GET() {
-  return NextResponse.json({
-    error: 'Method not allowed',
-    message: '此端点仅支持POST请求',
-  }, { status: 405 });
+  return NextResponse.json(
+    {
+      error: 'Method not allowed',
+      message: '此端点仅支持POST请求',
+    },
+    { status: 405 }
+  );
 }

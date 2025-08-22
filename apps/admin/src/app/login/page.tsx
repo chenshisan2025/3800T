@@ -1,7 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Form, Input, Button, Card, Typography, Divider, Space, message } from 'antd';
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Typography,
+  Divider,
+  Space,
+  message,
+} from 'antd';
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -54,104 +63,104 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className='min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4'>
+      <div className='w-full max-w-md'>
         {/* Logo 和标题 */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
-            <span className="text-2xl font-bold text-white">古</span>
+        <div className='text-center mb-8'>
+          <div className='inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4'>
+            <span className='text-2xl font-bold text-white'>古</span>
           </div>
-          <Title level={2} className="!mb-2 !text-gray-800">
+          <Title level={2} className='!mb-2 !text-gray-800'>
             古灵通管理后台
           </Title>
-          <Text type="secondary" className="text-base">
+          <Text type='secondary' className='text-base'>
             股票分析平台管理系统
           </Text>
         </div>
 
         {/* 登录表单 */}
-        <Card className="shadow-lg border-0">
+        <Card className='shadow-lg border-0'>
           <Form
             form={form}
-            name="login"
+            name='login'
             onFinish={handleSubmit}
-            layout="vertical"
-            size="large"
-            autoComplete="off"
+            layout='vertical'
+            size='large'
+            autoComplete='off'
           >
             <Form.Item
-              name="email"
-              label="邮箱地址"
+              name='email'
+              label='邮箱地址'
               rules={[
                 { required: true, message: '请输入邮箱地址' },
                 { type: 'email', message: '请输入有效的邮箱地址' },
               ]}
             >
               <Input
-                prefix={<MailOutlined className="text-gray-400" />}
-                placeholder="请输入邮箱地址"
-                autoComplete="email"
+                prefix={<MailOutlined className='text-gray-400' />}
+                placeholder='请输入邮箱地址'
+                autoComplete='email'
               />
             </Form.Item>
 
             <Form.Item
-              name="password"
-              label="密码"
+              name='password'
+              label='密码'
               rules={[
                 { required: true, message: '请输入密码' },
                 { min: 6, message: '密码至少6位字符' },
               ]}
             >
               <Input.Password
-                prefix={<LockOutlined className="text-gray-400" />}
-                placeholder="请输入密码"
-                autoComplete="current-password"
+                prefix={<LockOutlined className='text-gray-400' />}
+                placeholder='请输入密码'
+                autoComplete='current-password'
               />
             </Form.Item>
 
-            <Form.Item className="mb-4">
-              <div className="flex justify-between items-center">
+            <Form.Item className='mb-4'>
+              <div className='flex justify-between items-center'>
                 <Link
-                  href="/forgot-password"
-                  className="text-primary hover:text-primary-hover text-sm"
+                  href='/forgot-password'
+                  className='text-primary hover:text-primary-hover text-sm'
                 >
                   忘记密码？
                 </Link>
               </div>
             </Form.Item>
 
-            <Form.Item className="mb-4">
+            <Form.Item className='mb-4'>
               <Button
-                type="primary"
-                htmlType="submit"
+                type='primary'
+                htmlType='submit'
                 loading={loading}
                 block
-                size="large"
-                className="h-12 text-base font-medium"
+                size='large'
+                className='h-12 text-base font-medium'
               >
                 登录
               </Button>
             </Form.Item>
 
-            <Divider className="!my-6">
-              <Text type="secondary" className="text-sm">
+            <Divider className='!my-6'>
+              <Text type='secondary' className='text-sm'>
                 或者
               </Text>
             </Divider>
 
-            <Space direction="vertical" className="w-full" size="middle">
+            <Space direction='vertical' className='w-full' size='middle'>
               <Button
                 block
-                size="large"
+                size='large'
                 loading={loading}
                 onClick={handleDemoLogin}
-                className="h-12 text-base"
+                className='h-12 text-base'
               >
                 演示登录
               </Button>
 
-              <div className="text-center">
-                <Text type="secondary" className="text-sm">
+              <div className='text-center'>
+                <Text type='secondary' className='text-sm'>
                   仅限内部账号登录
                 </Text>
               </div>
@@ -160,8 +169,8 @@ export default function LoginPage() {
         </Card>
 
         {/* 底部信息 */}
-        <div className="text-center mt-8">
-          <Text type="secondary" className="text-xs">
+        <div className='text-center mt-8'>
+          <Text type='secondary' className='text-xs'>
             © 2024 古灵通. 保留所有权利.
           </Text>
         </div>

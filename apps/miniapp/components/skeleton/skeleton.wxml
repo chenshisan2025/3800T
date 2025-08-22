@@ -1,0 +1,43 @@
+<!-- components/skeleton/skeleton.wxml -->
+<view class="skeleton-container" wx:if="{{show}}">
+  <!-- 搜索栏骨架 -->
+  <view class="skeleton-search" wx:if="{{type === 'market' || type === 'full'}}">
+    <view class="skeleton-item skeleton-search-bar"></view>
+  </view>
+  
+  <!-- 市场概览骨架 -->
+  <view class="skeleton-overview" wx:if="{{type === 'market' || type === 'full'}}">
+    <view class="skeleton-overview-item" wx:for="{{3}}" wx:key="index">
+      <view class="skeleton-item skeleton-title"></view>
+      <view class="skeleton-item skeleton-value"></view>
+      <view class="skeleton-item skeleton-change"></view>
+    </view>
+  </view>
+  
+  <!-- 标签栏骨架 -->
+  <view class="skeleton-tabs" wx:if="{{type === 'market' || type === 'full'}}">
+    <view class="skeleton-item skeleton-tab" wx:for="{{4}}" wx:key="index"></view>
+  </view>
+  
+  <!-- 排序栏骨架 -->
+  <view class="skeleton-sort" wx:if="{{type === 'market' || type === 'full'}}">
+    <view class="skeleton-item skeleton-sort-item" wx:for="{{4}}" wx:key="index"></view>
+  </view>
+  
+  <!-- 列表骨架 -->
+  <view class="skeleton-list">
+    <view class="skeleton-list-item" wx:for="{{count || 8}}" wx:key="index">
+      <view class="skeleton-item-left">
+        <view class="skeleton-item skeleton-avatar" wx:if="{{showAvatar}}"></view>
+        <view class="skeleton-item-content">
+          <view class="skeleton-item skeleton-title"></view>
+          <view class="skeleton-item skeleton-subtitle" wx:if="{{showSubtitle}}"></view>
+        </view>
+      </view>
+      <view class="skeleton-item-right">
+        <view class="skeleton-item skeleton-price"></view>
+        <view class="skeleton-item skeleton-change"></view>
+      </view>
+    </view>
+  </view>
+</view>

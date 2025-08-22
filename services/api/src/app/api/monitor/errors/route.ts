@@ -1,7 +1,10 @@
 import { NextRequest } from 'next/server';
 import { apiResponse } from '@/utils';
 import { errorMonitor, ErrorType, ErrorSeverity } from '@/lib/errorMonitor';
-import { createRateLimiter, rateLimitConfigs } from '@/lib/middleware/rateLimiter';
+import {
+  createRateLimiter,
+  rateLimitConfigs,
+} from '@/lib/middleware/rateLimiter';
 
 // GET /api/monitor/errors - 获取错误统计
 export async function GET(request: NextRequest) {
@@ -70,10 +73,7 @@ export async function POST(request: NextRequest) {
       metadata
     );
 
-    return apiResponse.success(
-      { errorId },
-      '错误记录成功'
-    );
+    return apiResponse.success({ errorId }, '错误记录成功');
   } catch (error) {
     console.error('Error recording error:', error);
     return apiResponse.error('记录错误失败', 500);

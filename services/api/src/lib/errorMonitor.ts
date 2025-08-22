@@ -1,4 +1,4 @@
-import { logError, logWarn, logInfo } from './logger';
+import logger from './logger';
 
 // 错误类型枚举
 export enum ErrorType {
@@ -53,7 +53,8 @@ interface ErrorStats {
 class ErrorMonitor {
   private errors: ErrorRecord[] = [];
   private maxErrors = 1000; // 最多保存1000条错误记录
-  private errorCounts: Map<string, { count: number; lastOccurred: Date }> = new Map();
+  private errorCounts: Map<string, { count: number; lastOccurred: Date }> =
+    new Map();
 
   // 记录错误
   recordError(
@@ -65,7 +66,7 @@ class ErrorMonitor {
   ): string {
     const errorMessage = typeof error === 'string' ? error : error.message;
     const errorStack = typeof error === 'string' ? undefined : error.stack;
-    
+
     const errorRecord: ErrorRecord = {
       id: this.generateErrorId(),
       type,
@@ -80,7 +81,7 @@ class ErrorMonitor {
 
     // 添加到错误列表
     this.errors.unshift(errorRecord);
-    
+
     // 保持错误记录数量限制
     if (this.errors.length > this.maxErrors) {
       this.errors = this.errors.slice(0, this.maxErrors);
@@ -106,13 +107,19 @@ class ErrorMonitor {
     switch (severity) {
       case ErrorSeverity.CRITICAL:
       case ErrorSeverity.HIGH:
-        logError(new Error(logMessage), context);
+        logger.error(logMessage, {
+          errorId: errorRecord.id,
+          severity,
+          context,
+          metadata,
+          stack: errorStack,
+        });
         break;
       case ErrorSeverity.MEDIUM:
-        logWarn(logMessage, logMeta);
+        logger.warn(logMessage, logMeta);
         break;
       case ErrorSeverity.LOW:
-        logInfo(logMessage, logMeta);
+        logger.info(logMessage, logMeta);
         break;
     }
 
@@ -127,7 +134,7 @@ class ErrorMonitor {
     const error = this.errors.find(e => e.id === errorId);
     if (error) {
       error.resolved = true;
-      logInfo(`Error resolved: ${errorId}`);
+      logger.info('错误已解决', { errorId });
       return true;
     }
     return false;
@@ -159,7 +166,7 @@ class ErrorMonitor {
     recentErrors.forEach(error => {
       stats.byType[error.type]++;
       stats.bySeverity[error.severity]++;
-      
+
       const hour = error.timestamp.getHours().toString().padStart(2, '0');
       stats.byHour[hour] = (stats.byHour[hour] || 0) + 1;
     });
@@ -182,30 +189,26 @@ class ErrorMonitor {
 
   // 获取特定类型的错误
   getErrorsByType(type: ErrorType, limit: number = 50): ErrorRecord[] {
-    return this.errors
-      .filter(e => e.type === type)
-      .slice(0, limit);
+    return this.errors.filter(e => e.type === type).slice(0, limit);
   }
 
   // 获取未解决的错误
   getUnresolvedErrors(limit: number = 50): ErrorRecord[] {
-    return this.errors
-      .filter(e => !e.resolved)
-      .slice(0, limit);
+    return this.errors.filter(e => !e.resolved).slice(0, limit);
   }
 
   // 清理旧错误记录
   cleanupOldErrors(days: number = 7): number {
     const cutoffTime = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     const initialCount = this.errors.length;
-    
+
     this.errors = this.errors.filter(e => e.timestamp >= cutoffTime);
-    
+
     const removedCount = initialCount - this.errors.length;
     if (removedCount > 0) {
-      logInfo(`Cleaned up ${removedCount} old error records`);
+      logger.info('清理旧错误记录', { removedCount });
     }
-    
+
     return removedCount;
   }
 
@@ -223,8 +226,9 @@ class ErrorMonitor {
 
     // 检查错误频率
     const recentErrors = this.errors.filter(
-      e => e.type === error.type && 
-      e.timestamp >= new Date(Date.now() - 5 * 60 * 1000) // 最近5分钟
+      e =>
+        e.type === error.type &&
+        e.timestamp >= new Date(Date.now() - 5 * 60 * 1000) // 最近5分钟
     );
 
     if (recentErrors.length >= 10) {
@@ -236,10 +240,20 @@ class ErrorMonitor {
   }
 
   // 触发告警
-  private triggerAlert(alertType: string, error: ErrorRecord, metadata?: any): void {
-    const alertMessage = `Alert: ${alertType} - ${error.message}`;
-    logError(new Error(alertMessage), 'ErrorMonitor');
-    
+  private triggerAlert(
+    alertType: string,
+    error: ErrorRecord,
+    metadata?: any
+  ): void {
+    logger.error('错误告警触发', {
+      alertType,
+      errorId: error.id,
+      errorMessage: error.message,
+      errorType: error.type,
+      severity: error.severity,
+      metadata,
+    });
+
     // 这里可以集成外部告警系统，如邮件、短信、Slack等
     // 例如：await sendSlackAlert(alertMessage, error, metadata);
   }
@@ -255,7 +269,10 @@ export const getErrorStats = errorMonitor.getErrorStats.bind(errorMonitor);
 
 // 自动清理任务（每小时执行一次）
 if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    errorMonitor.cleanupOldErrors();
-  }, 60 * 60 * 1000); // 1小时
+  setInterval(
+    () => {
+      errorMonitor.cleanupOldErrors();
+    },
+    60 * 60 * 1000
+  ); // 1小时
 }

@@ -9,6 +9,33 @@ export * from './client';
 // 导出便捷创建函数
 export { createGulingtongClient, type GulingtongClient } from './client';
 
+// 导出合规组件相关
+export * from './types/compliance';
+export {
+  ComplianceConfigManager,
+  getComplianceConfig,
+  getDisclaimerConfig,
+  getDataSourceConfig,
+  isComplianceEnabled,
+  getPageComplianceConfig,
+} from './client/compliance-config';
+
+// 导出国际化工具函数
+export {
+  LanguageManager,
+  getSystemLanguage,
+  getText,
+  createI18nText,
+  isValidI18nText,
+  getLanguageManager,
+  getCurrentLanguage,
+  setCurrentLanguage,
+  toggleLanguage,
+  onLanguageChange,
+  offLanguageChange,
+  CommonTexts,
+} from './utils/i18n';
+
 // 版本信息
 export const SDK_VERSION = '1.0.0';
 
@@ -34,6 +61,8 @@ export const DEFAULT_CONFIG = {
 /**
  * 获取环境配置
  */
-export function getEnvironmentConfig(env: keyof typeof DEFAULT_CONFIG = 'development') {
+export function getEnvironmentConfig(
+  env: keyof typeof DEFAULT_CONFIG = 'development'
+) {
   return DEFAULT_CONFIG[env];
 }

@@ -1,7 +1,11 @@
 // Export all provider classes
 export { BaseProvider } from './BaseProvider';
 export { MockProvider } from './MockProvider';
-export { DataProviderManager, getDataProviderManager } from './DataProviderManager';
+export { ProviderX } from './ProviderX';
+export {
+  DataProviderManager,
+  getDataProviderManager,
+} from './DataProviderManager';
 
 // Re-export types for convenience
 export type {

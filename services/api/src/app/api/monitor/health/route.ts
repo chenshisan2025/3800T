@@ -1,7 +1,10 @@
 import { NextRequest } from 'next/server';
 import { apiResponse } from '@/utils';
 import { errorMonitor } from '@/lib/errorMonitor';
-import { createRateLimiter, rateLimitConfigs } from '@/lib/middleware/rateLimiter';
+import {
+  createRateLimiter,
+  rateLimitConfigs,
+} from '@/lib/middleware/rateLimiter';
 import { prisma } from '@/lib/prisma';
 import { circuitBreakerManager } from '@/lib/circuitBreaker';
 
@@ -44,7 +47,7 @@ interface ServiceStatus {
 // GET /api/monitor/health - 获取系统健康状态
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
-  
+
   try {
     // 应用速率限制
     const rateLimiter = createRateLimiter(rateLimitConfigs.health);
@@ -67,7 +70,9 @@ export async function GET(request: NextRequest) {
     };
 
     // 确定整体健康状态
-    const serviceStatuses = Object.values(healthStatus.services).map(s => s.status);
+    const serviceStatuses = Object.values(healthStatus.services).map(
+      s => s.status
+    );
     if (serviceStatuses.includes('down')) {
       healthStatus.status = 'unhealthy';
     } else if (serviceStatuses.includes('degraded')) {
@@ -75,10 +80,12 @@ export async function GET(request: NextRequest) {
     }
 
     // 检查错误率
-    if (healthStatus.metrics.errorRate > 0.1) { // 错误率超过10%
+    if (healthStatus.metrics.errorRate > 0.1) {
+      // 错误率超过10%
       healthStatus.status = 'degraded';
     }
-    if (healthStatus.metrics.errorRate > 0.3) { // 错误率超过30%
+    if (healthStatus.metrics.errorRate > 0.3) {
+      // 错误率超过30%
       healthStatus.status = 'unhealthy';
     }
 
@@ -88,16 +95,28 @@ export async function GET(request: NextRequest) {
     return apiResponse.success(healthStatus, '系统健康状态获取成功');
   } catch (error) {
     console.error('Health check failed:', error);
-    
+
     const responseTime = Date.now() - startTime;
     const unhealthyStatus: HealthStatus = {
       status: 'unhealthy',
       timestamp: new Date().toISOString(),
       uptime: process.uptime ? process.uptime() : 0,
       services: {
-        database: { status: 'down', error: 'Health check failed', lastCheck: new Date().toISOString() },
-        errorMonitor: { status: 'down', error: 'Health check failed', lastCheck: new Date().toISOString() },
-        memory: { status: 'down', error: 'Health check failed', lastCheck: new Date().toISOString() },
+        database: {
+          status: 'down',
+          error: 'Health check failed',
+          lastCheck: new Date().toISOString(),
+        },
+        errorMonitor: {
+          status: 'down',
+          error: 'Health check failed',
+          lastCheck: new Date().toISOString(),
+        },
+        memory: {
+          status: 'down',
+          error: 'Health check failed',
+          lastCheck: new Date().toISOString(),
+        },
       },
       metrics: {
         totalErrors: 0,
@@ -114,13 +133,13 @@ export async function GET(request: NextRequest) {
 // 检查数据库健康状态
 async function checkDatabaseHealth(): Promise<ServiceStatus> {
   const startTime = Date.now();
-  
+
   try {
     // 执行简单的数据库查询
     await prisma.$queryRaw`SELECT 1`;
-    
+
     const responseTime = Date.now() - startTime;
-    
+
     return {
       status: responseTime > 1000 ? 'degraded' : 'up', // 响应时间超过1秒认为是降级
       responseTime,
@@ -140,7 +159,7 @@ function checkErrorMonitorHealth(): ServiceStatus {
   try {
     // 检查错误监控系统是否正常工作
     const stats = errorMonitor.getErrorStats(1); // 获取最近1小时的统计
-    
+
     return {
       status: 'up',
       lastCheck: new Date().toISOString(),
@@ -148,7 +167,8 @@ function checkErrorMonitorHealth(): ServiceStatus {
   } catch (error) {
     return {
       status: 'down',
-      error: error instanceof Error ? error.message : 'Error monitor check failed',
+      error:
+        error instanceof Error ? error.message : 'Error monitor check failed',
       lastCheck: new Date().toISOString(),
     };
   }
@@ -162,7 +182,7 @@ function checkMemoryHealth(): ServiceStatus {
       const usedMB = memUsage.heapUsed / 1024 / 1024;
       const totalMB = memUsage.heapTotal / 1024 / 1024;
       const usagePercent = (usedMB / totalMB) * 100;
-      
+
       let status: 'up' | 'degraded' | 'down' = 'up';
       if (usagePercent > 80) {
         status = 'degraded';
@@ -170,13 +190,13 @@ function checkMemoryHealth(): ServiceStatus {
       if (usagePercent > 95) {
         status = 'down';
       }
-      
+
       return {
         status,
         lastCheck: new Date().toISOString(),
       };
     }
-    
+
     return {
       status: 'up',
       lastCheck: new Date().toISOString(),
@@ -194,13 +214,17 @@ function checkMemoryHealth(): ServiceStatus {
 function checkCircuitBreakers(): ServiceStatus {
   try {
     const breakerStates = circuitBreakerManager.getAllStates();
-    const openBreakers = Object.values(breakerStates).filter(state => state.state === 'OPEN');
-    const halfOpenBreakers = Object.values(breakerStates).filter(state => state.state === 'HALF_OPEN');
-    
+    const openBreakers = Object.values(breakerStates).filter(
+      state => state.state === 'OPEN'
+    );
+    const halfOpenBreakers = Object.values(breakerStates).filter(
+      state => state.state === 'HALF_OPEN'
+    );
+
     const totalBreakers = Object.keys(breakerStates).length;
     const openCount = openBreakers.length;
     const halfOpenCount = halfOpenBreakers.length;
-    
+
     if (openCount > 0) {
       return {
         status: 'down',
@@ -224,7 +248,7 @@ function checkCircuitBreakers(): ServiceStatus {
         },
       };
     }
-    
+
     return {
       status: 'up',
       message: '所有熔断器状态正常',
@@ -238,7 +262,8 @@ function checkCircuitBreakers(): ServiceStatus {
   } catch (error) {
     return {
       status: 'down',
-      error: error instanceof Error ? error.message : 'Circuit breaker check failed',
+      error:
+        error instanceof Error ? error.message : 'Circuit breaker check failed',
       lastCheck: new Date().toISOString(),
     };
   }
@@ -249,7 +274,7 @@ async function getSystemMetrics() {
   try {
     const stats = errorMonitor.getErrorStats(1); // 最近1小时
     const totalRequests = 100; // 这里应该从实际的请求统计中获取
-    
+
     // 获取熔断器统计
     const breakerStates = circuitBreakerManager.getAllStates();
     const breakerStats = Object.values(breakerStates).reduce(
@@ -260,18 +285,25 @@ async function getSystemMetrics() {
       },
       { total_requests: 0, total_failures: 0 }
     );
-    
+
     const circuitBreakerMetrics = {
       total_breakers: Object.keys(breakerStates).length,
-      open_breakers: Object.values(breakerStates).filter(s => s.state === 'OPEN').length,
-      half_open_breakers: Object.values(breakerStates).filter(s => s.state === 'HALF_OPEN').length,
+      open_breakers: Object.values(breakerStates).filter(
+        s => s.state === 'OPEN'
+      ).length,
+      half_open_breakers: Object.values(breakerStates).filter(
+        s => s.state === 'HALF_OPEN'
+      ).length,
       total_requests: breakerStats.total_requests,
       total_failures: breakerStats.total_failures,
-      overall_success_rate: breakerStats.total_requests > 0 
-        ? ((breakerStats.total_requests - breakerStats.total_failures) / breakerStats.total_requests * 100)
-        : 100,
+      overall_success_rate:
+        breakerStats.total_requests > 0
+          ? ((breakerStats.total_requests - breakerStats.total_failures) /
+              breakerStats.total_requests) *
+            100
+          : 100,
     };
-    
+
     return {
       totalErrors: stats.total,
       criticalErrors: stats.bySeverity.critical || 0,

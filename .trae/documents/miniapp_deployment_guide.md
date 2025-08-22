@@ -3,6 +3,7 @@
 ## 1. 小程序基本信息配置
 
 ### 1.1 小程序信息
+
 - **小程序名称**: 古灵通
 - **小程序简介**: AI驱动的智能股票分析助手
 - **服务类别**: 金融业 > 证券/基金/期货/外汇
@@ -10,6 +11,7 @@
 - **经营范围**: 软件开发、信息技术咨询服务
 
 ### 1.2 开发者信息
+
 - **开发者**: [公司名称]
 - **联系邮箱**: dev@gulingtong.com
 - **客服电话**: 400-xxx-xxxx
@@ -22,6 +24,7 @@
 在微信公众平台 > 开发 > 开发管理 > 开发设置 > 服务器域名中配置：
 
 #### request合法域名
+
 ```
 https://api.gulingtong.com
 https://data.gulingtong.com
@@ -30,18 +33,21 @@ https://cdn.gulingtong.com
 ```
 
 #### socket合法域名
+
 ```
 wss://ws.gulingtong.com
 wss://realtime.gulingtong.com
 ```
 
 #### uploadFile合法域名
+
 ```
 https://upload.gulingtong.com
 https://oss.gulingtong.com
 ```
 
 #### downloadFile合法域名
+
 ```
 https://cdn.gulingtong.com
 https://static.gulingtong.com
@@ -51,11 +57,13 @@ https://files.gulingtong.com
 ### 2.2 业务域名验证
 
 #### 验证步骤
+
 1. **下载验证文件**
    - 在微信公众平台下载域名验证文件
    - 文件名格式：`MP_verify_xxxxxxxxxx.txt`
 
 2. **上传验证文件**
+
    ```bash
    # 将验证文件上传到各域名根目录
    scp MP_verify_xxxxxxxxxx.txt user@api.gulingtong.com:/var/www/html/
@@ -64,6 +72,7 @@ https://files.gulingtong.com
    ```
 
 3. **验证域名可访问性**
+
    ```bash
    # 测试验证文件是否可访问
    curl https://api.gulingtong.com/MP_verify_xxxxxxxxxx.txt
@@ -78,6 +87,7 @@ https://files.gulingtong.com
 ### 2.3 域名配置检查脚本
 
 创建 `scripts/check-domains.sh`：
+
 ```bash
 #!/bin/bash
 
@@ -136,6 +146,7 @@ echo "\n=== 检查完成 ==="
 ### 3.1 备案材料清单
 
 #### 主体备案材料
+
 - [ ] **营业执照副本**（彩色扫描件）
 - [ ] **法人身份证**（正反面彩色扫描件）
 - [ ] **法人手机号**（备案期间保持畅通）
@@ -143,6 +154,7 @@ echo "\n=== 检查完成 ==="
 - [ ] **公司座机号码**（可选）
 
 #### 网站备案材料
+
 - [ ] **网站负责人身份证**（正反面彩色扫描件）
 - [ ] **网站负责人手机号**（备案期间保持畅通）
 - [ ] **网站负责人邮箱**
@@ -153,6 +165,7 @@ echo "\n=== 检查完成 ==="
 ### 3.2 备案信息表
 
 #### 主体信息
+
 ```
 主办单位名称: [公司全称]
 主办单位性质: 企业
@@ -164,9 +177,10 @@ echo "\n=== 检查完成 ==="
 ```
 
 #### 网站信息
+
 ```
 网站名称: 古灵通官网
-网站域名: 
+网站域名:
   - www.gulingtong.com
   - api.gulingtong.com
   - data.gulingtong.com
@@ -236,6 +250,7 @@ Page({
 ### 4.1 订阅消息模板申请
 
 #### 股价提醒通知
+
 ```
 模板标题: 股价提醒通知
 模板内容:
@@ -254,6 +269,7 @@ Page({
 ```
 
 #### AI分析完成通知
+
 ```
 模板标题: AI分析完成通知
 模板内容:
@@ -270,6 +286,7 @@ Page({
 ```
 
 #### 重要资讯推送
+
 ```
 模板标题: 重要资讯推送
 模板内容:
@@ -288,6 +305,7 @@ Page({
 ### 4.2 订阅消息代码实现
 
 #### 申请订阅权限
+
 ```javascript
 // utils/subscription.js
 class SubscriptionManager {
@@ -295,26 +313,27 @@ class SubscriptionManager {
     this.templateIds = {
       PRICE_ALERT: 'template_id_price_alert',
       AI_ANALYSIS: 'template_id_ai_analysis',
-      NEWS_PUSH: 'template_id_news_push'
+      NEWS_PUSH: 'template_id_news_push',
     };
   }
 
   // 申请订阅权限
   async requestSubscription(templates = []) {
-    const tmplIds = templates.length > 0 ? templates : Object.values(this.templateIds);
-    
+    const tmplIds =
+      templates.length > 0 ? templates : Object.values(this.templateIds);
+
     return new Promise((resolve, reject) => {
       wx.requestSubscribeMessage({
         tmplIds: tmplIds,
-        success: (res) => {
+        success: res => {
           console.log('订阅申请结果:', res);
           this.handleSubscriptionResult(res);
           resolve(res);
         },
-        fail: (err) => {
+        fail: err => {
           console.error('订阅申请失败:', err);
           reject(err);
-        }
+        },
       });
     });
   }
@@ -327,10 +346,10 @@ class SubscriptionManager {
         results[key] = res[templateId] === 'accept';
       }
     });
-    
+
     // 保存订阅状态到本地
     wx.setStorageSync('subscription_status', results);
-    
+
     // 上报到服务器
     this.updateServerSubscription(results);
   }
@@ -343,11 +362,11 @@ class SubscriptionManager {
         method: 'POST',
         data: {
           subscriptions: subscriptions,
-          openid: wx.getStorageSync('openid')
+          openid: wx.getStorageSync('openid'),
         },
         header: {
-          'Authorization': `Bearer ${wx.getStorageSync('token')}`
-        }
+          Authorization: `Bearer ${wx.getStorageSync('token')}`,
+        },
       });
     } catch (error) {
       console.error('更新服务器订阅状态失败:', error);
@@ -364,18 +383,18 @@ class SubscriptionManager {
     const messages = {
       PRICE_ALERT: '开启股价提醒，及时掌握价格变动',
       AI_ANALYSIS: '订阅AI分析通知，第一时间获取分析结果',
-      NEWS_PUSH: '订阅重要资讯，不错过市场机会'
+      NEWS_PUSH: '订阅重要资讯，不错过市场机会',
     };
 
     wx.showModal({
       title: '开启消息通知',
       content: messages[type] || '开启消息通知，获得更好的使用体验',
       confirmText: '立即开启',
-      success: (res) => {
+      success: res => {
         if (res.confirm) {
           this.requestSubscription([this.templateIds[type]]);
         }
-      }
+      },
     });
   }
 }
@@ -384,6 +403,7 @@ export default new SubscriptionManager();
 ```
 
 #### 在页面中使用
+
 ```javascript
 // pages/stock/detail.js
 import SubscriptionManager from '../../utils/subscription';
@@ -393,15 +413,17 @@ Page({
   async setPriceAlert() {
     // 检查是否已订阅
     const subscriptions = SubscriptionManager.getSubscriptionStatus();
-    
+
     if (!subscriptions.PRICE_ALERT) {
       // 引导用户订阅
       try {
-        await SubscriptionManager.requestSubscription(['template_id_price_alert']);
+        await SubscriptionManager.requestSubscription([
+          'template_id_price_alert',
+        ]);
       } catch (error) {
         wx.showToast({
           title: '需要开启消息通知',
-          icon: 'none'
+          icon: 'none',
         });
         return;
       }
@@ -414,7 +436,7 @@ Page({
   // AI分析完成后的通知
   async onAIAnalysisComplete() {
     const subscriptions = SubscriptionManager.getSubscriptionStatus();
-    
+
     if (subscriptions.AI_ANALYSIS) {
       // 发送分析完成通知（由服务器端发送）
       wx.request({
@@ -423,17 +445,18 @@ Page({
         data: {
           openid: wx.getStorageSync('openid'),
           stockCode: this.data.stockCode,
-          analysisResult: this.data.analysisResult
-        }
+          analysisResult: this.data.analysisResult,
+        },
       });
     }
-  }
+  },
 });
 ```
 
 ### 4.3 服务器端消息发送
 
 #### Node.js实现
+
 ```javascript
 // services/wechat-notification.js
 const axios = require('axios');
@@ -471,10 +494,15 @@ class WeChatNotificationService {
   }
 
   // 发送订阅消息
-  async sendSubscribeMessage(openid, templateId, data, page = 'pages/index/index') {
+  async sendSubscribeMessage(
+    openid,
+    templateId,
+    data,
+    page = 'pages/index/index'
+  ) {
     try {
       const accessToken = await this.getAccessToken();
-      
+
       const response = await axios.post(
         `https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=${accessToken}`,
         {
@@ -482,7 +510,8 @@ class WeChatNotificationService {
           template_id: templateId,
           page: page,
           data: data,
-          miniprogram_state: process.env.NODE_ENV === 'production' ? 'formal' : 'trial'
+          miniprogram_state:
+            process.env.NODE_ENV === 'production' ? 'formal' : 'trial',
         }
       );
 
@@ -506,7 +535,7 @@ class WeChatNotificationService {
       character_string2: { value: stockCode },
       amount3: { value: `${currentPrice}元` },
       phrase4: { value: `${changePercent > 0 ? '+' : ''}${changePercent}%` },
-      time5: { value: new Date().toLocaleString('zh-CN') }
+      time5: { value: new Date().toLocaleString('zh-CN') },
     };
 
     return await this.sendSubscribeMessage(
@@ -523,7 +552,7 @@ class WeChatNotificationService {
       thing1: { value: 'AI深度分析已完成' },
       thing2: { value: stockName },
       thing3: { value: analysisResult.substring(0, 20) + '...' },
-      time4: { value: new Date().toLocaleString('zh-CN') }
+      time4: { value: new Date().toLocaleString('zh-CN') },
     };
 
     return await this.sendSubscribeMessage(
@@ -540,7 +569,7 @@ class WeChatNotificationService {
       thing1: { value: '重要公告' },
       thing2: { value: newsTitle.substring(0, 20) + '...' },
       thing3: { value: relatedStock },
-      time4: { value: new Date().toLocaleString('zh-CN') }
+      time4: { value: new Date().toLocaleString('zh-CN') },
     };
 
     return await this.sendSubscribeMessage(
@@ -611,6 +640,7 @@ module.exports = new WeChatNotificationService();
 ## 6. 上架提交清单
 
 ### 6.1 提交前检查
+
 - [ ] 代码审查完成
 - [ ] 功能测试通过
 - [ ] 性能测试达标
@@ -619,6 +649,7 @@ module.exports = new WeChatNotificationService();
 - [ ] 用户体验测试
 
 ### 6.2 提交材料
+
 - [ ] 小程序代码包
 - [ ] 版本说明
 - [ ] 测试账号（如需要）
@@ -627,6 +658,7 @@ module.exports = new WeChatNotificationService();
 - [ ] 用户协议链接
 
 ### 6.3 审核跟进
+
 - [ ] 提交后24小时内关注审核状态
 - [ ] 及时回复审核意见
 - [ ] 修改后重新提交
@@ -634,4 +666,4 @@ module.exports = new WeChatNotificationService();
 
 ---
 
-*小程序部署指南最后更新: 2024年1月*
+_小程序部署指南最后更新: 2024年1月_

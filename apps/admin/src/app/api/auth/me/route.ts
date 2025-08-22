@@ -56,9 +56,8 @@ interface UserInfoResponse {
 
 // 查找用户
 function findUserById(userId: string) {
-  return INTERNAL_ACCOUNTS.find(account => 
-    account.id === userId && 
-    account.status === 'active'
+  return INTERNAL_ACCOUNTS.find(
+    account => account.id === userId && account.status === 'active'
   );
 }
 
@@ -66,20 +65,36 @@ function findUserById(userId: string) {
 function getUserPermissions(role: UserRole): string[] {
   const permissions: Record<UserRole, string[]> = {
     [UserRole.ADMIN]: [
-      'user.read', 'user.write', 'user.delete',
-      'subscription.read', 'subscription.write', 'subscription.delete',
-      'watchlist.read', 'watchlist.write', 'watchlist.delete',
-      'report.read', 'report.write', 'report.delete',
-      'datasource.read', 'datasource.write', 'datasource.delete',
-      'modelkey.read', 'modelkey.write', 'modelkey.delete',
+      'user.read',
+      'user.write',
+      'user.delete',
+      'subscription.read',
+      'subscription.write',
+      'subscription.delete',
+      'watchlist.read',
+      'watchlist.write',
+      'watchlist.delete',
+      'report.read',
+      'report.write',
+      'report.delete',
+      'datasource.read',
+      'datasource.write',
+      'datasource.delete',
+      'modelkey.read',
+      'modelkey.write',
+      'modelkey.delete',
       'audit.read',
-      'system.read', 'system.write',
+      'system.read',
+      'system.write',
     ],
     [UserRole.ANALYST]: [
       'user.read',
-      'subscription.read', 'subscription.write',
-      'watchlist.read', 'watchlist.write',
-      'report.read', 'report.write',
+      'subscription.read',
+      'subscription.write',
+      'watchlist.read',
+      'watchlist.write',
+      'report.read',
+      'report.write',
       'audit.read',
     ],
     [UserRole.SUPPORT]: [
@@ -99,12 +114,15 @@ export async function GET(request: NextRequest) {
   try {
     // 验证认证
     const authResult = await apiAuthMiddleware(request);
-    
+
     if (authResult.status !== 200) {
-      return NextResponse.json<UserInfoResponse>({
-        success: false,
-        message: authResult.message || '认证失败',
-      }, { status: authResult.status });
+      return NextResponse.json<UserInfoResponse>(
+        {
+          success: false,
+          message: authResult.message || '认证失败',
+        },
+        { status: authResult.status }
+      );
     }
 
     const { userId } = authResult.user!;
@@ -112,10 +130,13 @@ export async function GET(request: NextRequest) {
     // 查找用户详细信息
     const user = findUserById(userId);
     if (!user) {
-      return NextResponse.json<UserInfoResponse>({
-        success: false,
-        message: '用户不存在',
-      }, { status: 404 });
+      return NextResponse.json<UserInfoResponse>(
+        {
+          success: false,
+          message: '用户不存在',
+        },
+        { status: 404 }
+      );
     }
 
     // 获取用户权限
@@ -137,34 +158,45 @@ export async function GET(request: NextRequest) {
         permissions,
       },
     });
-
   } catch (error) {
     console.error('Get user info error:', error);
-    return NextResponse.json<UserInfoResponse>({
-      success: false,
-      message: '服务器内部错误',
-    }, { status: 500 });
+    return NextResponse.json<UserInfoResponse>(
+      {
+        success: false,
+        message: '服务器内部错误',
+      },
+      { status: 500 }
+    );
   }
 }
 
 // 不支持其他HTTP方法
 export async function POST() {
-  return NextResponse.json({
-    error: 'Method not allowed',
-    message: '此端点仅支持GET请求',
-  }, { status: 405 });
+  return NextResponse.json(
+    {
+      error: 'Method not allowed',
+      message: '此端点仅支持GET请求',
+    },
+    { status: 405 }
+  );
 }
 
 export async function PUT() {
-  return NextResponse.json({
-    error: 'Method not allowed',
-    message: '此端点仅支持GET请求',
-  }, { status: 405 });
+  return NextResponse.json(
+    {
+      error: 'Method not allowed',
+      message: '此端点仅支持GET请求',
+    },
+    { status: 405 }
+  );
 }
 
 export async function DELETE() {
-  return NextResponse.json({
-    error: 'Method not allowed',
-    message: '此端点仅支持GET请求',
-  }, { status: 405 });
+  return NextResponse.json(
+    {
+      error: 'Method not allowed',
+      message: '此端点仅支持GET请求',
+    },
+    { status: 405 }
+  );
 }

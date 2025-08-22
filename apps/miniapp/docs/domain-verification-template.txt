@@ -1,0 +1,38 @@
+# 微信小程序域名验证文件模板
+# 使用说明：将此文件重命名为微信公众平台提供的验证文件名，并上传到域名根目录
+
+# 验证文件命名格式：MP_verify_xxxxxxxxxx.txt
+# 其中 xxxxxxxxxx 为微信提供的随机字符串
+
+# 文件内容示例（实际内容由微信公众平台提供）：
+# abcdef1234567890abcdef1234567890
+
+# 上传位置示例：
+# https://api.gulingtong.com/MP_verify_xxxxxxxxxx.txt
+# https://cdn.gulingtong.com/MP_verify_xxxxxxxxxx.txt
+# https://upload.gulingtong.com/MP_verify_xxxxxxxxxx.txt
+
+# 验证步骤：
+# 1. 在微信公众平台获取验证文件名和内容
+# 2. 创建对应的验证文件
+# 3. 上传到域名根目录
+# 4. 确保文件可通过HTTPS访问
+# 5. 在微信公众平台点击验证
+
+# 注意事项：
+# - 文件必须放在域名根目录下
+# - 文件内容不能修改
+# - 必须支持HTTPS访问
+# - 验证通过后不要删除文件
+
+# 批量配置脚本（仅供参考）：
+# #!/bin/bash
+# DOMAINS=("api.gulingtong.com" "cdn.gulingtong.com" "upload.gulingtong.com")
+# VERIFY_FILE="MP_verify_xxxxxxxxxx.txt"
+# VERIFY_CONTENT="your_verification_content_here"
+# 
+# for domain in "${DOMAINS[@]}"; do
+#   echo "配置域名: $domain"
+#   # 这里添加具体的文件上传逻辑
+#   # 例如：scp $VERIFY_FILE user@$domain:/var/www/html/
+# done

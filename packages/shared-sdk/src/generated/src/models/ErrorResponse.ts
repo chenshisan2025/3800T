@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * 古灵通股票投资平台 API
- * 古灵通股票投资平台的 RESTful API 服务  ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ``` 
+ * 古灵通股票投资平台的 RESTful API 服务      ## 功能特性 - 用户认证与授权 - 股票数据查询 - 自选股管理 - 投资组合管理 - AI 投资报告 - 实时行情数据  ## 认证方式 使用 Bearer Token 进行身份验证，通过 Supabase Auth 获取访问令牌。  ## 响应格式 所有 API 响应都遵循统一的格式： ```json {   \"success\": true,   \"data\": {},   \"message\": \"操作成功\",   \"timestamp\": \"2024-01-01T00:00:00.000Z\" } ```
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: support@gulingtong.com
@@ -13,14 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { ErrorResponseAllOfError } from './ErrorResponseAllOfError';
-import {
-    ErrorResponseAllOfErrorFromJSON,
-    ErrorResponseAllOfErrorFromJSONTyped,
-    ErrorResponseAllOfErrorToJSON,
-    ErrorResponseAllOfErrorToJSONTyped,
-} from './ErrorResponseAllOfError';
-
 /**
  * 
  * @export
@@ -28,37 +20,35 @@ import {
  */
 export interface ErrorResponse {
     /**
-     * 请求是否成功
+     * 
      * @type {boolean}
      * @memberof ErrorResponse
      */
-    success: boolean;
+    success?: boolean;
     /**
-     * 响应消息
+     * 
+     * @type {string}
+     * @memberof ErrorResponse
+     */
+    error?: string;
+    /**
+     * 
      * @type {string}
      * @memberof ErrorResponse
      */
     message?: string;
     /**
-     * 响应时间戳
+     * 
      * @type {Date}
      * @memberof ErrorResponse
      */
-    timestamp: Date;
-    /**
-     * 
-     * @type {ErrorResponseAllOfError}
-     * @memberof ErrorResponse
-     */
-    error?: ErrorResponseAllOfError;
+    timestamp?: Date;
 }
 
 /**
  * Check if a given object implements the ErrorResponse interface.
  */
 export function instanceOfErrorResponse(value: object): value is ErrorResponse {
-    if (!('success' in value) || value['success'] === undefined) return false;
-    if (!('timestamp' in value) || value['timestamp'] === undefined) return false;
     return true;
 }
 
@@ -72,10 +62,10 @@ export function ErrorResponseFromJSONTyped(json: any, ignoreDiscriminator: boole
     }
     return {
         
-        'success': json['success'],
+        'success': json['success'] == null ? undefined : json['success'],
+        'error': json['error'] == null ? undefined : json['error'],
         'message': json['message'] == null ? undefined : json['message'],
-        'timestamp': (new Date(json['timestamp'])),
-        'error': json['error'] == null ? undefined : ErrorResponseAllOfErrorFromJSON(json['error']),
+        'timestamp': json['timestamp'] == null ? undefined : (new Date(json['timestamp'])),
     };
 }
 
@@ -91,9 +81,9 @@ export function ErrorResponseToJSONTyped(value?: ErrorResponse | null, ignoreDis
     return {
         
         'success': value['success'],
+        'error': value['error'],
         'message': value['message'],
-        'timestamp': ((value['timestamp']).toISOString()),
-        'error': ErrorResponseAllOfErrorToJSON(value['error']),
+        'timestamp': value['timestamp'] == null ? undefined : ((value['timestamp']).toISOString()),
     };
 }
 

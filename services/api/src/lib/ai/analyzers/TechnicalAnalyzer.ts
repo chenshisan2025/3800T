@@ -84,13 +84,13 @@ export class TechnicalAnalyzer {
       }
 
       const klineData = klineResponse.data;
-      
+
       // 计算技术指标
       const indicators = this.calculateTechnicalIndicators(klineData);
-      
+
       // 分析技术信号
       const signals = this.analyzeTechnicalSignals(klineData, indicators);
-      
+
       // 生成分析内容
       let analysis: string;
       let recommendations: string[];
@@ -144,7 +144,6 @@ export class TechnicalAnalyzer {
       });
 
       return result;
-
     } catch (error) {
       logger.error('技术面分析失败', {
         stock_code: stockCode,
@@ -161,21 +160,21 @@ export class TechnicalAnalyzer {
     const closes = klineData.map(k => k.close).reverse(); // 最新数据在前
     const highs = klineData.map(k => k.high).reverse();
     const lows = klineData.map(k => k.low).reverse();
-    
+
     // 计算移动平均线
     const ma5 = this.calculateMA(closes, 5);
     const ma20 = this.calculateMA(closes, 20);
     const ma60 = this.calculateMA(closes, 60);
-    
+
     // 计算RSI
     const rsi = this.calculateRSI(closes, 14);
-    
+
     // 计算MACD
     const macd = this.calculateMACD(closes);
-    
+
     // 计算布林带
     const bollinger = this.calculateBollinger(closes, 20);
-    
+
     return {
       ma5: Math.round(ma5 * 100) / 100,
       ma20: Math.round(ma20 * 100) / 100,
@@ -201,17 +200,25 @@ export class TechnicalAnalyzer {
     const latestClose = klineData[klineData.length - 1].close;
     const latestHigh = klineData[klineData.length - 1].high;
     const latestLow = klineData[klineData.length - 1].low;
-    
+
     // 判断趋势
     let trend: 'bullish' | 'bearish' | 'sideways';
-    if (latestClose > indicators.ma5 && indicators.ma5 > indicators.ma20 && indicators.ma20 > indicators.ma60) {
+    if (
+      latestClose > indicators.ma5 &&
+      indicators.ma5 > indicators.ma20 &&
+      indicators.ma20 > indicators.ma60
+    ) {
       trend = 'bullish';
-    } else if (latestClose < indicators.ma5 && indicators.ma5 < indicators.ma20 && indicators.ma20 < indicators.ma60) {
+    } else if (
+      latestClose < indicators.ma5 &&
+      indicators.ma5 < indicators.ma20 &&
+      indicators.ma20 < indicators.ma60
+    ) {
       trend = 'bearish';
     } else {
       trend = 'sideways';
     }
-    
+
     // 判断动量
     let momentum: 'strong' | 'moderate' | 'weak';
     if (indicators.rsi > 70 || indicators.rsi < 30) {
@@ -221,13 +228,13 @@ export class TechnicalAnalyzer {
     } else {
       momentum = 'weak';
     }
-    
+
     // 计算支撑阻力位
     const recentLows = klineData.slice(-20).map(k => k.low);
     const recentHighs = klineData.slice(-20).map(k => k.high);
     const supportLevel = Math.min(...recentLows);
     const resistanceLevel = Math.max(...recentHighs);
-    
+
     return {
       trend,
       momentum,
@@ -247,13 +254,15 @@ export class TechnicalAnalyzer {
   ) {
     const templates = this.templates[signals.trend];
     const analysis = templates[Math.floor(Math.random() * templates.length)];
-    
+
     const recommendations: string[] = [];
     const latestClose = klineData[klineData.length - 1].close;
-    
+
     // 基于趋势生成建议
     if (signals.trend === 'bullish') {
-      recommendations.push('技术面呈现多头排列，短期内可关注回调买入机会的情景');
+      recommendations.push(
+        '技术面呈现多头排列，短期内可关注回调买入机会的情景'
+      );
       if (latestClose > indicators.bollinger.middle) {
         recommendations.push('股价位于布林带中轨上方，上升倾向较为明确');
       }
@@ -261,7 +270,9 @@ export class TechnicalAnalyzer {
         recommendations.push('MACD指标显示多头动能，支持看涨倾向');
       }
     } else if (signals.trend === 'bearish') {
-      recommendations.push('技术面呈现空头排列，建议谨慎操作，关注反弹减仓情景');
+      recommendations.push(
+        '技术面呈现空头排列，建议谨慎操作，关注反弹减仓情景'
+      );
       if (latestClose < indicators.bollinger.middle) {
         recommendations.push('股价位于布林带中轨下方，下跌倾向需要重视');
       }
@@ -269,34 +280,38 @@ export class TechnicalAnalyzer {
         recommendations.push('MACD指标显示空头动能，确认下跌倾向');
       }
     } else {
-      recommendations.push('技术面呈现震荡格局，建议区间操作，关注突破方向情景');
-      recommendations.push(`关注支撑位${signals.support_level}和阻力位${signals.resistance_level}的突破情况`);
+      recommendations.push(
+        '技术面呈现震荡格局，建议区间操作，关注突破方向情景'
+      );
+      recommendations.push(
+        `关注支撑位${signals.support_level}和阻力位${signals.resistance_level}的突破情况`
+      );
     }
-    
+
     // 基于RSI生成建议
     if (indicators.rsi > 70) {
       recommendations.push('RSI指标显示超买状态，需警惕回调风险情景');
     } else if (indicators.rsi < 30) {
       recommendations.push('RSI指标显示超卖状态，可关注反弹机会倾向');
     }
-    
+
     // 基于布林带生成建议
     if (latestClose > indicators.bollinger.upper) {
       recommendations.push('股价突破布林带上轨，但需注意回归中轨的倾向');
     } else if (latestClose < indicators.bollinger.lower) {
       recommendations.push('股价跌破布林带下轨，存在技术性反弹的情景');
     }
-    
+
     // 计算信心度
     let confidence = 0.6; // 基础信心度
-    
+
     if (signals.trend !== 'sideways') confidence += 0.1;
     if (signals.momentum === 'strong') confidence += 0.1;
     if (indicators.rsi > 30 && indicators.rsi < 70) confidence += 0.05;
     if (Math.abs(indicators.macd.macd) > 0.1) confidence += 0.05;
-    
+
     confidence = Math.min(confidence, 0.9); // 最高0.9
-    
+
     return {
       analysis,
       recommendations,
@@ -315,7 +330,7 @@ export class TechnicalAnalyzer {
     llmProvider: LLMProvider
   ) {
     const latestKline = klineData[klineData.length - 1];
-    
+
     const prompt = `请对股票${stockCode}进行技术面分析，基于以下数据：
 
 最新K线数据：
@@ -354,9 +369,14 @@ export class TechnicalAnalyzer {
         stock_code: stockCode,
         error: error instanceof Error ? error.message : String(error),
       });
-      
+
       // 回退到模板分析
-      return this.generateTemplateAnalysis(stockCode, klineData, indicators, signals);
+      return this.generateTemplateAnalysis(
+        stockCode,
+        klineData,
+        indicators,
+        signals
+      );
     }
   }
 
@@ -365,7 +385,7 @@ export class TechnicalAnalyzer {
    */
   private calculateMA(prices: number[], period: number): number {
     if (prices.length < period) return prices[0] || 0;
-    
+
     const sum = prices.slice(0, period).reduce((a, b) => a + b, 0);
     return sum / period;
   }
@@ -375,10 +395,10 @@ export class TechnicalAnalyzer {
    */
   private calculateRSI(prices: number[], period: number = 14): number {
     if (prices.length < period + 1) return 50;
-    
+
     let gains = 0;
     let losses = 0;
-    
+
     for (let i = 1; i <= period; i++) {
       const change = prices[i - 1] - prices[i];
       if (change > 0) {
@@ -387,14 +407,14 @@ export class TechnicalAnalyzer {
         losses += Math.abs(change);
       }
     }
-    
+
     const avgGain = gains / period;
     const avgLoss = losses / period;
-    
+
     if (avgLoss === 0) return 100;
-    
+
     const rs = avgGain / avgLoss;
-    return 100 - (100 / (1 + rs));
+    return 100 - 100 / (1 + rs);
   }
 
   /**
@@ -404,11 +424,11 @@ export class TechnicalAnalyzer {
     const ema12 = this.calculateEMA(prices, 12);
     const ema26 = this.calculateEMA(prices, 26);
     const dif = ema12 - ema26;
-    
+
     // 简化计算，实际应该用DIF的EMA
     const dea = dif * 0.8; // 模拟DEA
     const macd = (dif - dea) * 2;
-    
+
     return { dif, dea, macd };
   }
 
@@ -417,14 +437,18 @@ export class TechnicalAnalyzer {
    */
   private calculateEMA(prices: number[], period: number): number {
     if (prices.length === 0) return 0;
-    
+
     const multiplier = 2 / (period + 1);
     let ema = prices[prices.length - 1]; // 从最后一个价格开始
-    
-    for (let i = prices.length - 2; i >= Math.max(0, prices.length - period); i--) {
-      ema = (prices[i] * multiplier) + (ema * (1 - multiplier));
+
+    for (
+      let i = prices.length - 2;
+      i >= Math.max(0, prices.length - period);
+      i--
+    ) {
+      ema = prices[i] * multiplier + ema * (1 - multiplier);
     }
-    
+
     return ema;
   }
 
@@ -433,7 +457,7 @@ export class TechnicalAnalyzer {
    */
   private calculateBollinger(prices: number[], period: number = 20) {
     const ma = this.calculateMA(prices, period);
-    
+
     if (prices.length < period) {
       return {
         upper: ma * 1.02,
@@ -441,16 +465,17 @@ export class TechnicalAnalyzer {
         lower: ma * 0.98,
       };
     }
-    
+
     // 计算标准差
     const slice = prices.slice(0, period);
-    const variance = slice.reduce((sum, price) => sum + Math.pow(price - ma, 2), 0) / period;
+    const variance =
+      slice.reduce((sum, price) => sum + Math.pow(price - ma, 2), 0) / period;
     const stdDev = Math.sqrt(variance);
-    
+
     return {
-      upper: ma + (stdDev * 2),
+      upper: ma + stdDev * 2,
       middle: ma,
-      lower: ma - (stdDev * 2),
+      lower: ma - stdDev * 2,
     };
   }
 
@@ -462,7 +487,7 @@ export class TechnicalAnalyzer {
       // 检查数据提供者是否可用
       const dataManager = getDataProviderManager();
       const healthStatus = await dataManager.healthCheck();
-      
+
       return healthStatus.primary || healthStatus.fallback;
     } catch (error) {
       logger.error('TechnicalAnalyzer健康检查失败', {

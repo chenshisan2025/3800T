@@ -3,3 +3,7 @@ export 'custom_button.dart';
 export 'custom_card.dart';
 export 'custom_tag.dart';
 export 'custom_toast.dart';
+
+// 合规组件
+export 'compliance_disclaimer.dart';
+export 'compliance_data_source_hint.dart';

@@ -1,20 +1,20 @@
 import { recordError, ErrorType, ErrorSeverity } from './errorMonitor';
-import { logWarn, logInfo, logError } from './logger';
+import logger from './logger';
 
 // 熔断器状态
 export enum CircuitBreakerState {
-  CLOSED = 'closed',     // 正常状态
-  OPEN = 'open',         // 熔断状态
-  HALF_OPEN = 'half_open' // 半开状态
+  CLOSED = 'closed', // 正常状态
+  OPEN = 'open', // 熔断状态
+  HALF_OPEN = 'half_open', // 半开状态
 }
 
 // 熔断器配置
 interface CircuitBreakerConfig {
-  failureThreshold: number;    // 失败阈值
-  recoveryTimeout: number;     // 恢复超时时间（毫秒）
-  monitoringPeriod: number;    // 监控周期（毫秒）
-  minimumRequests: number;     // 最小请求数
-  successThreshold: number;    // 半开状态下的成功阈值
+  failureThreshold: number; // 失败阈值
+  recoveryTimeout: number; // 恢复超时时间（毫秒）
+  monitoringPeriod: number; // 监控周期（毫秒）
+  minimumRequests: number; // 最小请求数
+  successThreshold: number; // 半开状态下的成功阈值
 }
 
 // 熔断器统计信息
@@ -47,11 +47,11 @@ class CircuitBreaker {
   constructor(name: string, config: Partial<CircuitBreakerConfig> = {}) {
     this.name = name;
     this.config = {
-      failureThreshold: 5,        // 5次失败后熔断
-      recoveryTimeout: 60000,     // 60秒后尝试恢复
-      monitoringPeriod: 300000,   // 5分钟监控周期
-      minimumRequests: 10,        // 最少10个请求才开始统计
-      successThreshold: 3,        // 半开状态下3次成功后恢复
+      failureThreshold: 5, // 5次失败后熔断
+      recoveryTimeout: 60000, // 60秒后尝试恢复
+      monitoringPeriod: 300000, // 5分钟监控周期
+      minimumRequests: 10, // 最少10个请求才开始统计
+      successThreshold: 3, // 半开状态下3次成功后恢复
       ...config,
     };
   }
@@ -61,12 +61,14 @@ class CircuitBreaker {
     // 检查熔断器状态
     if (this.state === CircuitBreakerState.OPEN) {
       if (Date.now() < this.nextAttempt) {
-        throw new Error(`Circuit breaker is OPEN for ${this.name}. Next attempt at ${new Date(this.nextAttempt).toISOString()}`);
+        throw new Error(
+          `Circuit breaker is OPEN for ${this.name}. Next attempt at ${new Date(this.nextAttempt).toISOString()}`
+        );
       } else {
         // 转换到半开状态
         this.state = CircuitBreakerState.HALF_OPEN;
         this.stats.consecutiveSuccesses = 0;
-        logInfo(`Circuit breaker ${this.name} transitioned to HALF_OPEN`);
+        logger.info('熔断器转换到半开状态', { name: this.name });
       }
     }
 
@@ -95,7 +97,7 @@ class CircuitBreaker {
         // 恢复到关闭状态
         this.state = CircuitBreakerState.CLOSED;
         this.resetStats();
-        logInfo(`Circuit breaker ${this.name} recovered to CLOSED state`);
+        logger.info('熔断器恢复到关闭状态', { name: this.name });
       }
     }
   }
@@ -152,8 +154,9 @@ class CircuitBreaker {
   private trip(): void {
     this.state = CircuitBreakerState.OPEN;
     this.nextAttempt = Date.now() + this.config.recoveryTimeout;
-    
-    logWarn(`Circuit breaker ${this.name} tripped to OPEN state`, {
+
+    logger.warn('熔断器触发到开启状态', {
+      name: this.name,
       consecutiveFailures: this.stats.consecutiveFailures,
       totalRequests: this.stats.totalRequests,
       failureRate: this.stats.failedRequests / this.stats.totalRequests,
@@ -192,7 +195,7 @@ class CircuitBreaker {
     this.state = CircuitBreakerState.CLOSED;
     this.nextAttempt = 0;
     this.resetStats();
-    logInfo(`Circuit breaker ${this.name} manually reset`);
+    logger.info('熔断器手动重置', { name: this.name });
   }
 
   // 获取熔断器状态
@@ -201,7 +204,10 @@ class CircuitBreaker {
   }
 
   // 获取统计信息
-  getStats(): CircuitBreakerStats & { state: CircuitBreakerState; name: string } {
+  getStats(): CircuitBreakerStats & {
+    state: CircuitBreakerState;
+    name: string;
+  } {
     return {
       ...this.stats,
       state: this.state,
@@ -229,7 +235,10 @@ class CircuitBreakerManager {
   private breakers: Map<string, CircuitBreaker> = new Map();
 
   // 获取或创建熔断器
-  getBreaker(name: string, config?: Partial<CircuitBreakerConfig>): CircuitBreaker {
+  getBreaker(
+    name: string,
+    config?: Partial<CircuitBreakerConfig>
+  ): CircuitBreaker {
     if (!this.breakers.has(name)) {
       this.breakers.set(name, new CircuitBreaker(name, config));
     }
@@ -237,14 +246,18 @@ class CircuitBreakerManager {
   }
 
   // 获取所有熔断器状态
-  getAllStats(): Array<CircuitBreakerStats & { state: CircuitBreakerState; name: string }> {
-    return Array.from(this.breakers.values()).map(breaker => breaker.getStats());
+  getAllStats(): Array<
+    CircuitBreakerStats & { state: CircuitBreakerState; name: string }
+  > {
+    return Array.from(this.breakers.values()).map(breaker =>
+      breaker.getStats()
+    );
   }
 
   // 重置所有熔断器
   resetAll(): void {
     this.breakers.forEach(breaker => breaker.reset());
-    logInfo('All circuit breakers reset');
+    logger.info('所有熔断器已重置');
   }
 
   // 重置指定熔断器
@@ -269,11 +282,14 @@ class CircuitBreakerManager {
 
     for (const [name, breaker] of this.breakers.entries()) {
       const stats = breaker.getStats();
-      const lastActivity = Math.max(stats.lastSuccessTime, stats.lastFailureTime);
-      
+      const lastActivity = Math.max(
+        stats.lastSuccessTime,
+        stats.lastFailureTime
+      );
+
       if (now - lastActivity > inactiveThreshold && stats.totalRequests === 0) {
         this.breakers.delete(name);
-        logInfo(`Cleaned up inactive circuit breaker: ${name}`);
+        logger.info('清理不活跃的熔断器', { name });
       }
     }
   }
@@ -315,19 +331,34 @@ export const CIRCUIT_BREAKER_CONFIGS = {
 };
 
 // 便捷方法
-export const getDatabaseBreaker = () => 
-  circuitBreakerManager.getBreaker('database', CIRCUIT_BREAKER_CONFIGS.DATABASE);
+export const getDatabaseBreaker = () =>
+  circuitBreakerManager.getBreaker(
+    'database',
+    CIRCUIT_BREAKER_CONFIGS.DATABASE
+  );
 
-export const getAIServiceBreaker = () => 
-  circuitBreakerManager.getBreaker('ai_service', CIRCUIT_BREAKER_CONFIGS.AI_SERVICE);
+export const getAIServiceBreaker = () =>
+  circuitBreakerManager.getBreaker(
+    'ai_service',
+    CIRCUIT_BREAKER_CONFIGS.AI_SERVICE
+  );
 
-export const getExternalAPIBreaker = () => 
-  circuitBreakerManager.getBreaker('external_api', CIRCUIT_BREAKER_CONFIGS.EXTERNAL_API);
+export const getExternalAPIBreaker = () =>
+  circuitBreakerManager.getBreaker(
+    'external_api',
+    CIRCUIT_BREAKER_CONFIGS.EXTERNAL_API
+  );
 
-export const getRateLimitBreaker = () => 
-  circuitBreakerManager.getBreaker('rate_limit', CIRCUIT_BREAKER_CONFIGS.RATE_LIMIT);
+export const getRateLimitBreaker = () =>
+  circuitBreakerManager.getBreaker(
+    'rate_limit',
+    CIRCUIT_BREAKER_CONFIGS.RATE_LIMIT
+  );
 
 // 定期清理任务
-setInterval(() => {
-  circuitBreakerManager.cleanup();
-}, 60 * 60 * 1000); // 每小时清理一次
+setInterval(
+  () => {
+    circuitBreakerManager.cleanup();
+  },
+  60 * 60 * 1000
+); // 每小时清理一次

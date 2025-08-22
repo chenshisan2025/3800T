@@ -12,7 +12,7 @@ async function main() {
       name: '平安银行',
       market: 'sz',
       industry: '银行',
-      currentPrice: 12.50,
+      currentPrice: 12.5,
       changePercent: 2.15,
       volume: BigInt(15000000),
     },
@@ -21,7 +21,7 @@ async function main() {
       name: '万科A',
       market: 'sz',
       industry: '房地产',
-      currentPrice: 18.30,
+      currentPrice: 18.3,
       changePercent: -1.25,
       volume: BigInt(8500000),
     },
@@ -31,7 +31,7 @@ async function main() {
       market: 'sh',
       industry: '银行',
       currentPrice: 8.95,
-      changePercent: 1.80,
+      changePercent: 1.8,
       volume: BigInt(12000000),
     },
     {
@@ -39,7 +39,7 @@ async function main() {
       name: '招商银行',
       market: 'sh',
       industry: '银行',
-      currentPrice: 42.80,
+      currentPrice: 42.8,
       changePercent: 0.95,
       volume: BigInt(6800000),
     },
@@ -48,7 +48,7 @@ async function main() {
       name: '五粮液',
       market: 'sz',
       industry: '食品饮料',
-      currentPrice: 168.50,
+      currentPrice: 168.5,
       changePercent: 3.25,
       volume: BigInt(4200000),
     },
@@ -79,9 +79,9 @@ async function main() {
 
   // 为测试用户创建自选股
   const watchlistItems = [
-    { stockSymbol: '000001', alertPrice: 13.00 },
-    { stockSymbol: '600036', alertPrice: 45.00 },
-    { stockSymbol: '000858', alertPrice: 170.00 },
+    { stockSymbol: '000001', alertPrice: 13.0 },
+    { stockSymbol: '600036', alertPrice: 45.0 },
+    { stockSymbol: '000858', alertPrice: 170.0 },
   ];
 
   for (const item of watchlistItems) {
@@ -111,14 +111,14 @@ async function main() {
       id: 'test-portfolio-id',
       userId: testUser.id,
       name: '我的投资组合',
-      totalValue: 100000.00,
+      totalValue: 100000.0,
     },
   });
 
   // 添加投资组合项目
   const portfolioItems = [
-    { stockSymbol: '000001', quantity: 1000, avgCost: 12.00 },
-    { stockSymbol: '600036', quantity: 500, avgCost: 40.00 },
+    { stockSymbol: '000001', quantity: 1000, avgCost: 12.0 },
+    { stockSymbol: '600036', quantity: 500, avgCost: 40.0 },
   ];
 
   for (const item of portfolioItems) {
@@ -144,7 +144,7 @@ async function main() {
         recommendation: '买入',
         reasons: ['技术指标向好', '成交量放大', 'MACD金叉'],
         riskLevel: '中等',
-        targetPrice: 14.00,
+        targetPrice: 14.0,
       },
       score: 85,
     },
@@ -156,7 +156,7 @@ async function main() {
         recommendation: '持有',
         reasons: ['基本面稳健', '盈利能力强', '分红稳定'],
         riskLevel: '低',
-        targetPrice: 48.00,
+        targetPrice: 48.0,
       },
       score: 92,
     },
@@ -174,7 +174,7 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error('种子数据初始化失败:', e);
     process.exit(1);
   })

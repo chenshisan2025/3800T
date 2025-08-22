@@ -32,7 +32,7 @@ export const auditMiddleware = (action: string, resource: string) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     // 记录开始时间
     req.startTime = Date.now();
-    
+
     // 从JWT token或session中获取用户信息
     const user = (req as any).user;
     if (!user) {
@@ -46,12 +46,12 @@ export const auditMiddleware = (action: string, resource: string) => {
       userRole: user.role || 'USER',
       action,
       resource,
-      details: `${action} ${resource}` // 默认详情，可在路由中覆盖
+      details: `${action} ${resource}`, // 默认详情，可在路由中覆盖
     };
 
     // 监听响应完成事件
     const originalSend = res.send;
-    res.send = function(data) {
+    res.send = function (data) {
       // 记录审计日志
       recordAuditLog(req, res);
       return originalSend.call(this, data);
@@ -72,7 +72,7 @@ async function recordAuditLog(req: Request, res: Response) {
     const duration = req.startTime ? Date.now() - req.startTime : undefined;
     const ipAddress = getClientIP(req);
     const userAgent = req.get('User-Agent') || '';
-    
+
     // 根据HTTP状态码确定操作状态
     let status = 'success';
     if (res.statusCode >= 400 && res.statusCode < 500) {
@@ -93,8 +93,8 @@ async function recordAuditLog(req: Request, res: Response) {
         ipAddress,
         userAgent,
         status,
-        duration
-      }
+        duration,
+      },
     });
   } catch (error) {
     console.error('Failed to record audit log:', error);
@@ -133,8 +133,8 @@ export async function logAuditEvent(
         ipAddress: options.ipAddress || 'unknown',
         userAgent: options.userAgent || 'unknown',
         status: options.status || 'success',
-        duration: options.duration
-      }
+        duration: options.duration,
+      },
     });
   } catch (error) {
     console.error('Failed to log audit event:', error);
@@ -144,7 +144,11 @@ export async function logAuditEvent(
 /**
  * 更新审计上下文详情
  */
-export function updateAuditDetails(req: Request, details: string, resourceId?: string) {
+export function updateAuditDetails(
+  req: Request,
+  details: string,
+  resourceId?: string
+) {
   if (req.auditContext) {
     req.auditContext.details = details;
     if (resourceId) {
@@ -157,16 +161,20 @@ export function updateAuditDetails(req: Request, details: string, resourceId?: s
  * 审计日志装饰器（用于类方法）
  */
 export function Audit(action: string, resource: string) {
-  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  return function (
+    target: any,
+    propertyName: string,
+    descriptor: PropertyDescriptor
+  ) {
     const method = descriptor.value;
-    
+
     descriptor.value = async function (...args: any[]) {
       const req = args.find(arg => arg && arg.method && arg.url); // 找到Request对象
       const startTime = Date.now();
-      
+
       try {
         const result = await method.apply(this, args);
-        
+
         // 记录成功操作
         if (req && req.user) {
           await logAuditEvent(
@@ -180,11 +188,11 @@ export function Audit(action: string, resource: string) {
               ipAddress: getClientIP(req),
               userAgent: req.get('User-Agent'),
               status: 'success',
-              duration: Date.now() - startTime
+              duration: Date.now() - startTime,
             }
           );
         }
-        
+
         return result;
       } catch (error) {
         // 记录失败操作
@@ -200,15 +208,15 @@ export function Audit(action: string, resource: string) {
               ipAddress: getClientIP(req),
               userAgent: req.get('User-Agent'),
               status: 'failed',
-              duration: Date.now() - startTime
+              duration: Date.now() - startTime,
             }
           );
         }
-        
+
         throw error;
       }
     };
-    
+
     return descriptor;
   };
 }

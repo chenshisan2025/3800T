@@ -28,6 +28,7 @@ import {
   DollarOutlined,
 } from '@ant-design/icons';
 import DisclaimerNotice from '@/components/DisclaimerNotice';
+import { Disclaimer, DataSourceHint } from '@/components/compliance';
 // 临时类型定义，后续应该从共享类型中导入
 interface User {
   id: string;
@@ -202,7 +203,9 @@ export default function DashboardPage() {
       dataIndex: 'symbol',
       key: 'symbol',
       render: (symbol: string) => (
-        <Text strong className="font-mono">{symbol}</Text>
+        <Text strong className='font-mono'>
+          {symbol}
+        </Text>
       ),
     },
     {
@@ -214,9 +217,7 @@ export default function DashboardPage() {
       title: '当前价格',
       dataIndex: 'currentPrice',
       key: 'currentPrice',
-      render: (price: number) => (
-        <Text strong>¥{price.toFixed(2)}</Text>
-      ),
+      render: (price: number) => <Text strong>¥{price.toFixed(2)}</Text>,
     },
     {
       title: '涨跌幅',
@@ -228,9 +229,16 @@ export default function DashboardPage() {
         return (
           <Tag
             color={isPositive ? 'red' : isNegative ? 'green' : 'default'}
-            icon={isPositive ? <ArrowUpOutlined /> : isNegative ? <ArrowDownOutlined /> : null}
+            icon={
+              isPositive ? (
+                <ArrowUpOutlined />
+              ) : isNegative ? (
+                <ArrowDownOutlined />
+              ) : null
+            }
           >
-            {change > 0 ? '+' : ''}{change.toFixed(2)}%
+            {change > 0 ? '+' : ''}
+            {change.toFixed(2)}%
           </Tag>
         );
       },
@@ -239,7 +247,7 @@ export default function DashboardPage() {
       title: '操作',
       key: 'action',
       render: () => (
-        <Button type="link" size="small" icon={<EyeOutlined />}>
+        <Button type='link' size='small' icon={<EyeOutlined />}>
           查看详情
         </Button>
       ),
@@ -248,52 +256,66 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <Spin size="large" tip="加载中..." />
+      <div className='flex items-center justify-center min-h-96'>
+        <Spin size='large' tip='加载中...' />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* 页面标题 */}
-      <div className="flex items-center justify-between">
+      <div className='flex items-center justify-between'>
         <div>
-          <Title level={2} className="!mb-2">
+          <Title level={2} className='!mb-2'>
             仪表板
           </Title>
-          <Text type="secondary">
-            欢迎使用古灵通管理后台，这里是系统概览
-          </Text>
+          <Text type='secondary'>欢迎使用古灵通管理后台，这里是系统概览</Text>
         </div>
-        <Button type="primary" icon={<RiseOutlined />}>
+        <Button type='primary' icon={<RiseOutlined />}>
           查看详细报告
         </Button>
       </div>
 
       {/* 系统状态提醒 */}
       <Alert
-        message="系统运行正常"
-        description="所有服务运行正常，数据同步正常，API 响应时间良好。"
-        type="success"
+        message='系统运行正常'
+        description='所有服务运行正常，数据同步正常，API 响应时间良好。'
+        type='success'
         showIcon
         closable
       />
 
-      {/* 免责声明 */}
-      <DisclaimerNotice type="full" closable />
+      {/* 合规组件 */}
+      <div className='space-y-4'>
+        <Disclaimer
+          type='investment'
+          position='inline'
+          theme='light'
+          showIcon={true}
+          closable={true}
+        />
+        <DataSourceHint
+          type='realtime'
+          position='inline'
+          theme='light'
+          showIcon={true}
+          closable={true}
+        />
+      </div>
 
       {/* 统计卡片 */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="总用户数"
+              title='总用户数'
               value={stats.totalUsers}
               prefix={<UserOutlined />}
               suffix={
                 <Tag color={stats.userGrowth > 0 ? 'red' : 'green'}>
-                  {stats.userGrowth > 0 ? '+' : ''}{stats.userGrowth}%
+                  {stats.userGrowth > 0 ? '+' : ''}
+                  {stats.userGrowth}%
                 </Tag>
               }
             />
@@ -302,14 +324,16 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="活跃用户"
+              title='活跃用户'
               value={stats.activeUsers}
               prefix={<UserOutlined />}
               suffix={
                 <Progress
-                  type="circle"
+                  type='circle'
                   size={24}
-                  percent={Math.round((stats.activeUsers / stats.totalUsers) * 100)}
+                  percent={Math.round(
+                    (stats.activeUsers / stats.totalUsers) * 100
+                  )}
                   showInfo={false}
                 />
               }
@@ -319,12 +343,13 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="股票总数"
+              title='股票总数'
               value={stats.totalStocks}
               prefix={<StockOutlined />}
               suffix={
                 <Tag color={stats.stockGrowth > 0 ? 'red' : 'green'}>
-                  {stats.stockGrowth > 0 ? '+' : ''}{stats.stockGrowth}%
+                  {stats.stockGrowth > 0 ? '+' : ''}
+                  {stats.stockGrowth}%
                 </Tag>
               }
             />
@@ -333,12 +358,13 @@ export default function DashboardPage() {
         <Col xs={24} sm={12} lg={6}>
           <Card>
             <Statistic
-              title="AI 报告"
+              title='AI 报告'
               value={stats.totalReports}
               prefix={<FileTextOutlined />}
               suffix={
                 <Tag color={stats.reportGrowth > 0 ? 'red' : 'green'}>
-                  {stats.reportGrowth > 0 ? '+' : ''}{stats.reportGrowth}%
+                  {stats.reportGrowth > 0 ? '+' : ''}
+                  {stats.reportGrowth}%
                 </Tag>
               }
             />
@@ -351,9 +377,9 @@ export default function DashboardPage() {
         {/* 热门股票 */}
         <Col xs={24} lg={14}>
           <Card
-            title="热门股票"
+            title='热门股票'
             extra={
-              <Button type="link" size="small">
+              <Button type='link' size='small'>
                 查看全部
               </Button>
             }
@@ -362,8 +388,8 @@ export default function DashboardPage() {
               dataSource={popularStocks}
               columns={stockColumns}
               pagination={false}
-              size="small"
-              rowKey="id"
+              size='small'
+              rowKey='id'
             />
           </Card>
         </Col>
@@ -371,32 +397,32 @@ export default function DashboardPage() {
         {/* 最新用户 */}
         <Col xs={24} lg={10}>
           <Card
-            title="最新用户"
+            title='最新用户'
             extra={
-              <Button type="link" size="small">
+              <Button type='link' size='small'>
                 查看全部
               </Button>
             }
           >
             <List
               dataSource={recentUsers}
-              renderItem={(user) => (
+              renderItem={user => (
                 <List.Item>
                   <List.Item.Meta
                     avatar={
                       <Avatar
                         src={user.avatar}
                         icon={<UserOutlined />}
-                        className="bg-primary"
+                        className='bg-primary'
                       />
                     }
                     title={user.name || user.email}
                     description={
                       <Space>
-                        <Text type="secondary" className="text-xs">
+                        <Text type='secondary' className='text-xs'>
                           {user.email}
                         </Text>
-                        <Text type="secondary" className="text-xs">
+                        <Text type='secondary' className='text-xs'>
                           {new Date(user.createdAt).toLocaleDateString()}
                         </Text>
                       </Space>
@@ -413,19 +439,24 @@ export default function DashboardPage() {
       <Row>
         <Col span={24}>
           <Card
-            title="最新 AI 报告"
+            title='最新 AI 报告'
             extra={
-              <Button type="link" size="small">
+              <Button type='link' size='small'>
                 查看全部
               </Button>
             }
           >
             <List
               dataSource={recentReports}
-              renderItem={(report) => (
+              renderItem={report => (
                 <List.Item
                   actions={[
-                    <Button key="view" type="link" size="small" icon={<EyeOutlined />}>
+                    <Button
+                      key='view'
+                      type='link'
+                      size='small'
+                      icon={<EyeOutlined />}
+                    >
                       查看
                     </Button>,
                   ]}
@@ -434,21 +465,21 @@ export default function DashboardPage() {
                     avatar={
                       <Avatar
                         icon={<FileTextOutlined />}
-                        className="bg-blue-500"
+                        className='bg-blue-500'
                       />
                     }
                     title={
                       <Space>
                         <Text strong>{report.title}</Text>
-                        <Tag color="blue">{report.type}</Tag>
-                        <Tag color="green">{report.status}</Tag>
+                        <Tag color='blue'>{report.type}</Tag>
+                        <Tag color='green'>{report.status}</Tag>
                       </Space>
                     }
                     description={
                       <div>
-                        <Text type="secondary">{report.summary}</Text>
+                        <Text type='secondary'>{report.summary}</Text>
                         <br />
-                        <Text type="secondary" className="text-xs">
+                        <Text type='secondary' className='text-xs'>
                           {new Date(report.createdAt).toLocaleString()}
                         </Text>
                       </div>

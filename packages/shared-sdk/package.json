@@ -1,9 +1,9 @@
 {
   "name": "@gulingtong/shared-sdk",
-  "version": "1.0.0",
+  "version": "1.1.8",
   "description": "古灵通共享 SDK - OpenAPI 契约和客户端代码生成",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "files": [
     "dist",
     "openapi.yaml",
@@ -18,6 +18,10 @@
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "type-check": "tsc --noEmit",
+    "version:update": "tsx ../../scripts/update-sdk-version.ts",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
@@ -59,5 +63,12 @@
   "bugs": {
     "url": "https://github.com/gulingtong/gulingtong/issues"
   },
-  "homepage": "https://github.com/gulingtong/gulingtong/tree/main/packages/shared-sdk#readme"
+  "homepage": "https://github.com/gulingtong/gulingtong/tree/main/packages/shared-sdk#readme",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.js",
+      "types": "./src/index.d.ts"
+    }
+  }
 }

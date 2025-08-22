@@ -13,36 +13,36 @@ export enum Permission {
   USER_READ = 'user:read',
   USER_WRITE = 'user:write',
   USER_DELETE = 'user:delete',
-  
+
   // 订阅管理权限
   SUBSCRIPTION_READ = 'subscription:read',
   SUBSCRIPTION_WRITE = 'subscription:write',
   SUBSCRIPTION_DELETE = 'subscription:delete',
-  
+
   // 自选股和提醒权限
   WATCHLIST_READ = 'watchlist:read',
   WATCHLIST_WRITE = 'watchlist:write',
   WATCHLIST_DELETE = 'watchlist:delete',
-  
+
   // AI报告权限
   REPORT_READ = 'report:read',
   REPORT_WRITE = 'report:write',
   REPORT_DELETE = 'report:delete',
-  
+
   // 数据源配置权限（仅admin）
   DATASOURCE_READ = 'datasource:read',
   DATASOURCE_WRITE = 'datasource:write',
   DATASOURCE_DELETE = 'datasource:delete',
-  
+
   // 模型Key配置权限（仅admin）
   MODEL_KEY_READ = 'model_key:read',
   MODEL_KEY_WRITE = 'model_key:write',
   MODEL_KEY_DELETE = 'model_key:delete',
-  
+
   // 审计日志权限
   AUDIT_READ = 'audit:read',
   AUDIT_EXPORT = 'audit:export',
-  
+
   // 系统设置权限
   SYSTEM_READ = 'system:read',
   SYSTEM_WRITE = 'system:write',
@@ -127,7 +127,10 @@ export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
 };
 
 // 权限检查函数
-export function hasPermission(userRole: UserRole, permission: Permission): boolean {
+export function hasPermission(
+  userRole: UserRole,
+  permission: Permission
+): boolean {
   const rolePermissions = ROLE_PERMISSIONS[userRole];
   return rolePermissions.includes(permission);
 }
@@ -135,30 +138,58 @@ export function hasPermission(userRole: UserRole, permission: Permission): boole
 // 检查用户是否可以访问页面
 export function canAccessPage(userRole: UserRole, pathname: string): boolean {
   const requiredPermissions = PAGE_PERMISSIONS[pathname];
-  
+
   // 如果页面不需要特殊权限，所有角色都可以访问
   if (!requiredPermissions || requiredPermissions.length === 0) {
     return true;
   }
-  
+
   // 检查用户是否拥有所需的所有权限
-  return requiredPermissions.every(permission => hasPermission(userRole, permission));
+  return requiredPermissions.every(permission =>
+    hasPermission(userRole, permission)
+  );
 }
 
 // 获取用户可访问的菜单项
 export function getAccessibleMenuItems(userRole: UserRole) {
   const allMenuItems = [
     { key: '/dashboard', label: '概览', permission: [] },
-    { key: '/dashboard/users', label: '用户管理', permission: [Permission.USER_READ] },
-    { key: '/dashboard/subscriptions', label: '订阅管理', permission: [Permission.SUBSCRIPTION_READ] },
-    { key: '/dashboard/watchlist', label: 'Watchlist&Alert', permission: [Permission.WATCHLIST_READ] },
-    { key: '/dashboard/reports', label: 'AI报告', permission: [Permission.REPORT_READ] },
-    { key: '/dashboard/datasource', label: '数据源配置', permission: [Permission.DATASOURCE_READ] },
-    { key: '/dashboard/audit', label: '审计日志', permission: [Permission.AUDIT_READ] },
+    {
+      key: '/dashboard/users',
+      label: '用户管理',
+      permission: [Permission.USER_READ],
+    },
+    {
+      key: '/dashboard/subscriptions',
+      label: '订阅管理',
+      permission: [Permission.SUBSCRIPTION_READ],
+    },
+    {
+      key: '/dashboard/watchlist',
+      label: 'Watchlist&Alert',
+      permission: [Permission.WATCHLIST_READ],
+    },
+    {
+      key: '/dashboard/reports',
+      label: 'AI报告',
+      permission: [Permission.REPORT_READ],
+    },
+    {
+      key: '/dashboard/datasource',
+      label: '数据源配置',
+      permission: [Permission.DATASOURCE_READ],
+    },
+    {
+      key: '/dashboard/audit',
+      label: '审计日志',
+      permission: [Permission.AUDIT_READ],
+    },
   ];
-  
+
   return allMenuItems.filter(item => {
     if (item.permission.length === 0) return true;
-    return item.permission.every(permission => hasPermission(userRole, permission));
+    return item.permission.every(permission =>
+      hasPermission(userRole, permission)
+    );
   });
 }

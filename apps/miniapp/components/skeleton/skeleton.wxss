@@ -1,0 +1,182 @@
+/* components/skeleton/skeleton.wxss */
+.skeleton-container {
+  padding: 20rpx;
+  background: #fff;
+}
+
+.skeleton-item {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 8rpx;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 搜索栏骨架 */
+.skeleton-search {
+  margin-bottom: 30rpx;
+}
+
+.skeleton-search-bar {
+  height: 80rpx;
+  border-radius: 40rpx;
+}
+
+/* 市场概览骨架 */
+.skeleton-overview {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
+  padding: 30rpx 20rpx;
+  background: #f8f9fa;
+  border-radius: 16rpx;
+}
+
+.skeleton-overview-item {
+  flex: 1;
+  text-align: center;
+}
+
+.skeleton-overview-item:not(:last-child) {
+  margin-right: 20rpx;
+}
+
+.skeleton-overview-item .skeleton-title {
+  height: 28rpx;
+  width: 80%;
+  margin: 0 auto 16rpx;
+}
+
+.skeleton-overview-item .skeleton-value {
+  height: 36rpx;
+  width: 90%;
+  margin: 0 auto 12rpx;
+}
+
+.skeleton-overview-item .skeleton-change {
+  height: 24rpx;
+  width: 70%;
+  margin: 0 auto;
+}
+
+/* 标签栏骨架 */
+.skeleton-tabs {
+  display: flex;
+  margin-bottom: 30rpx;
+}
+
+.skeleton-tab {
+  height: 60rpx;
+  width: 120rpx;
+  margin-right: 20rpx;
+  border-radius: 30rpx;
+}
+
+/* 排序栏骨架 */
+.skeleton-sort {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+  padding: 20rpx 0;
+}
+
+.skeleton-sort-item {
+  height: 40rpx;
+  width: 120rpx;
+}
+
+/* 列表骨架 */
+.skeleton-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.skeleton-item-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.skeleton-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+}
+
+.skeleton-item-content {
+  flex: 1;
+}
+
+.skeleton-item-content .skeleton-title {
+  height: 32rpx;
+  width: 60%;
+  margin-bottom: 16rpx;
+}
+
+.skeleton-item-content .skeleton-subtitle {
+  height: 24rpx;
+  width: 40%;
+}
+
+.skeleton-item-right {
+  text-align: right;
+}
+
+.skeleton-item-right .skeleton-price {
+  height: 32rpx;
+  width: 120rpx;
+  margin-bottom: 12rpx;
+}
+
+.skeleton-item-right .skeleton-change {
+  height: 24rpx;
+  width: 80rpx;
+}
+
+/* 简化版骨架屏 */
+.skeleton-container[data-simple="true"] .skeleton-overview,
+.skeleton-container[data-simple="true"] .skeleton-tabs,
+.skeleton-container[data-simple="true"] .skeleton-sort {
+  display: none;
+}
+
+.skeleton-container[data-simple="true"] .skeleton-list-item {
+  padding: 20rpx 0;
+}
+
+.skeleton-container[data-simple="true"] .skeleton-avatar {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+/* 响应式适配 */
+@media (max-width: 750rpx) {
+  .skeleton-overview {
+    flex-direction: column;
+  }
+  
+  .skeleton-overview-item:not(:last-child) {
+    margin-right: 0;
+    margin-bottom: 20rpx;
+  }
+  
+  .skeleton-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .skeleton-tab {
+    margin-bottom: 10rpx;
+  }
+}

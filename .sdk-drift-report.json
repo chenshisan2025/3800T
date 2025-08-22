@@ -1,0 +1,214 @@
+{
+  "hasDrift": true,
+  "summary": {
+    "totalFiles": 18,
+    "changedFiles": 1,
+    "addedFiles": 17,
+    "removedFiles": 22
+  },
+  "changes": [
+    {
+      "file": "tsconfig.json",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "tsconfig.esm.json",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "package.json",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "README.md",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/runtime.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/index.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/models/index.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/models/SuccessResponse.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/models/HealthResponseData.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/models/HealthResponse.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/models/ErrorResponse.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/index.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/WatchlistApi.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/SystemApi.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/StocksApi.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/PricingApi.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/PortfolioApi.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/OtherApi.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/NewsApi.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/AuthenticationApi.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/AlertsApi.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "src/apis/AIReportsApi.ts",
+      "type": "removed",
+      "details": "文件已被删除"
+    },
+    {
+      "file": "runtime.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "index.ts",
+      "type": "modified",
+      "details": "文件内容已修改"
+    },
+    {
+      "file": "models/index.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "models/SuccessResponse.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "models/HealthResponseData.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "models/HealthResponse.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "models/ErrorResponse.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/index.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/WatchlistApi.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/SystemApi.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/StocksApi.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/PricingApi.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/PortfolioApi.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/OtherApi.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/NewsApi.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/AuthenticationApi.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/AlertsApi.ts",
+      "type": "added",
+      "details": "新增的文件"
+    },
+    {
+      "file": "apis/AIReportsApi.ts",
+      "type": "added",
+      "details": "新增的文件"
+    }
+  ],
+  "openApiHash": "a74edd98f320898fbbbaa818a3b7126783839233ff1883b1e6da9ec4487a8377",
+  "previousHash": "a74edd98f320898fbbbaa818a3b7126783839233ff1883b1e6da9ec4487a8377",
+  "timestamp": "2025-08-21T13:53:33.515Z"
+}

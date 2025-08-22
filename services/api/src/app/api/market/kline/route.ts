@@ -4,6 +4,13 @@ import logger from '@/lib/logger';
 import { validateRequest } from '@/lib/utils/validation';
 import { dataProviderManager } from '@/lib/providers/DataProviderManager';
 import { KlineQuerySchema } from '@/types';
+import {
+  ok,
+  fail,
+  withErrorHandling,
+  ErrorCodes,
+  getRequestId,
+} from '@/lib/http';
 
 // 使用统一的查询参数验证schema
 const QuerySchema = KlineQuerySchema;
@@ -14,23 +21,23 @@ type KlineQuery = z.infer<typeof KlineQuerySchema>;
  * GET /api/market/kline
  * 获取K线数据
  */
-export async function GET(request: NextRequest) {
-  try {
+export const GET = withErrorHandling(
+  async (request: NextRequest, requestId: string) => {
     // 验证请求参数
     const validation = validateRequest(request, QuerySchema);
     if (!validation.success) {
-      return NextResponse.json(
+      return fail(
         {
-          success: false,
-          error: '请求参数验证失败',
+          code: ErrorCodes.VALIDATION_ERROR,
           message: validation.error,
         },
-        { status: 400 }
+        requestId,
+        400
       );
     }
 
     const { code, period, start_time, end_time, limit } = validation.data;
-    
+
     logger.info('获取K线数据请求', {
       endpoint: '/api/market/kline',
       code,
@@ -53,31 +60,18 @@ export async function GET(request: NextRequest) {
     // 获取当前提供者信息
     const providerInfo = dataProviderManager.getCurrentProviderInfo();
 
-    return NextResponse.json({
-      success: true,
-      data: klineData.data,
-      metadata: {
-        provider: providerInfo.name,
-        isPrimary: providerInfo.isPrimary,
-        timestamp: Date.now(),
-        count: klineData.data.length,
-        ...klineData.metadata,
-      },
-    });
-  } catch (error) {
-    logger.error('获取K线数据失败', {
-      endpoint: '/api/market/kline',
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-
-    return NextResponse.json(
+    return ok(
       {
-        success: false,
-        error: '获取K线数据失败',
-        message: error instanceof Error ? error.message : '未知错误',
+        data: klineData.data,
+        metadata: {
+          ...klineData.metadata,
+          provider: providerInfo.name,
+          isPrimary: providerInfo.isPrimary,
+          count: klineData.data.length,
+        },
       },
-      { status: 500 }
+      undefined,
+      requestId
     );
   }
-}
+);

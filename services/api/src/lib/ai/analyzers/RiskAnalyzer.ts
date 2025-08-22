@@ -100,15 +100,18 @@ export class RiskAnalyzer {
         technicalResult,
         sentimentResult
       );
-      
+
       // 计算综合风险得分
       const riskScore = this.calculateOverallRiskScore(riskFactors);
       const riskLevel = this.getRiskLevel(riskScore);
-      
+
       // 生成风险警示和缓解建议
       const riskWarnings = this.generateRiskWarnings(riskFactors, riskScore);
-      const riskMitigation = this.generateRiskMitigation(riskFactors, riskLevel);
-      
+      const riskMitigation = this.generateRiskMitigation(
+        riskFactors,
+        riskLevel
+      );
+
       // 生成分析内容
       let analysis: string;
       let confidence: number;
@@ -149,7 +152,11 @@ export class RiskAnalyzer {
         risk_warnings: riskWarnings,
         risk_mitigation: riskMitigation,
         confidence,
-        sources: this.generateSources(fundamentalResult, technicalResult, sentimentResult),
+        sources: this.generateSources(
+          fundamentalResult,
+          technicalResult,
+          sentimentResult
+        ),
       };
 
       logger.info('风险分析完成', {
@@ -163,7 +170,6 @@ export class RiskAnalyzer {
       });
 
       return result;
-
     } catch (error) {
       logger.error('风险分析失败', {
         stock_code: stockCode,
@@ -183,19 +189,19 @@ export class RiskAnalyzer {
   ) {
     // 市场风险分析
     const marketRisk = this.analyzeMarketRisk();
-    
+
     // 基本面风险分析
     const fundamentalRisk = this.analyzeFundamentalRisk(fundamentalResult);
-    
+
     // 技术面风险分析
     const technicalRisk = this.analyzeTechnicalRisk(technicalResult);
-    
+
     // 情绪面风险分析
     const sentimentRisk = this.analyzeSentimentRisk(sentimentResult);
-    
+
     // 流动性风险分析
     const liquidityRisk = this.analyzeLiquidityRisk(technicalResult);
-    
+
     return {
       market_risk: marketRisk,
       fundamental_risk: fundamentalRisk,
@@ -211,11 +217,11 @@ export class RiskAnalyzer {
   private analyzeMarketRisk() {
     // 模拟市场风险评估（实际应用中应基于市场指数、波动率等数据）
     const marketVolatility = 15 + Math.random() * 20; // 模拟市场波动率 15-35%
-    
+
     let level: 'high' | 'medium' | 'low';
     let description: string;
     let score: number;
-    
+
     if (marketVolatility > 28) {
       level = 'high';
       description = '当前市场波动剧烈，系统性风险较高，存在大幅调整的情景可能';
@@ -229,7 +235,7 @@ export class RiskAnalyzer {
       description = '市场环境相对稳定，系统性风险较低，整体呈现平稳运行倾向';
       score = 15 + Math.random() * 25;
     }
-    
+
     return {
       level,
       description,
@@ -240,51 +246,54 @@ export class RiskAnalyzer {
   /**
    * 分析基本面风险
    */
-  private analyzeFundamentalRisk(fundamentalResult?: FundamentalAnalysisResult) {
+  private analyzeFundamentalRisk(
+    fundamentalResult?: FundamentalAnalysisResult
+  ) {
     if (!fundamentalResult) {
       return {
         level: 'medium' as const,
-        description: '缺乏基本面数据，无法准确评估财务风险，建议谨慎对待投资情景',
+        description:
+          '缺乏基本面数据，无法准确评估财务风险，建议谨慎对待投资情景',
         score: 50,
       };
     }
-    
+
     const metrics = fundamentalResult.key_metrics;
     let riskScore = 0;
     let riskFactors: string[] = [];
-    
+
     // 估值风险
     if (metrics.pe_ratio && metrics.pe_ratio > 30) {
       riskScore += 20;
       riskFactors.push('估值偏高');
     }
-    
+
     if (metrics.pb_ratio && metrics.pb_ratio > 4) {
       riskScore += 15;
       riskFactors.push('市净率过高');
     }
-    
+
     // 盈利能力风险
     if (metrics.roe && metrics.roe < 8) {
       riskScore += 20;
       riskFactors.push('盈利能力偏弱');
     }
-    
+
     // 财务结构风险
     if (metrics.debt_ratio && metrics.debt_ratio > 60) {
       riskScore += 25;
       riskFactors.push('负债率过高');
     }
-    
+
     // 成长性风险
     if (metrics.revenue_growth && metrics.revenue_growth < -5) {
       riskScore += 20;
       riskFactors.push('营收负增长');
     }
-    
+
     let level: 'high' | 'medium' | 'low';
     let description: string;
-    
+
     if (riskScore > 60) {
       level = 'high';
       description = `基本面存在较高风险，主要体现在${riskFactors.join('、')}等方面，需要谨慎评估投资情景`;
@@ -295,7 +304,7 @@ export class RiskAnalyzer {
       level = 'low';
       description = '基本面风险较低，财务指标表现良好，呈现稳健经营的倾向';
     }
-    
+
     return {
       level,
       description,
@@ -310,14 +319,15 @@ export class RiskAnalyzer {
     if (!technicalResult) {
       return {
         level: 'medium' as const,
-        description: '缺乏技术面数据，无法准确评估技术风险，建议关注价格走势情景',
+        description:
+          '缺乏技术面数据，无法准确评估技术风险，建议关注价格走势情景',
         score: 50,
       };
     }
-    
+
     let riskScore = 0;
     let riskFactors: string[] = [];
-    
+
     // 趋势风险
     if (technicalResult.signals.trend === 'bearish') {
       riskScore += 30;
@@ -326,13 +336,13 @@ export class RiskAnalyzer {
       riskScore += 15;
       riskFactors.push('方向不明');
     }
-    
+
     // 动量风险
     if (technicalResult.signals.momentum === 'weak') {
       riskScore += 20;
       riskFactors.push('动能不足');
     }
-    
+
     // RSI风险
     if (technicalResult.indicators.rsi) {
       if (technicalResult.indicators.rsi > 80) {
@@ -343,16 +353,19 @@ export class RiskAnalyzer {
         riskFactors.push('超买状态');
       }
     }
-    
+
     // MACD风险
-    if (technicalResult.indicators.macd && technicalResult.indicators.macd.macd < -0.5) {
+    if (
+      technicalResult.indicators.macd &&
+      technicalResult.indicators.macd.macd < -0.5
+    ) {
       riskScore += 20;
       riskFactors.push('MACD背离');
     }
-    
+
     let level: 'high' | 'medium' | 'low';
     let description: string;
-    
+
     if (riskScore > 60) {
       level = 'high';
       description = `技术面风险较高，${riskFactors.join('、')}等信号显示价格面临调整压力的情景`;
@@ -361,9 +374,10 @@ export class RiskAnalyzer {
       description = `技术面风险适中，${riskFactors.length > 0 ? `需关注${riskFactors.join('、')}等技术信号` : '技术指标表现相对平衡'}的变化倾向`;
     } else {
       level = 'low';
-      description = '技术面风险较低，技术指标支持当前价格走势，呈现相对稳定的倾向';
+      description =
+        '技术面风险较低，技术指标支持当前价格走势，呈现相对稳定的倾向';
     }
-    
+
     return {
       level,
       description,
@@ -378,14 +392,15 @@ export class RiskAnalyzer {
     if (!sentimentResult) {
       return {
         level: 'medium' as const,
-        description: '缺乏情绪面数据，无法准确评估市场情绪风险，建议关注舆论变化情景',
+        description:
+          '缺乏情绪面数据，无法准确评估市场情绪风险，建议关注舆论变化情景',
         score: 50,
       };
     }
-    
+
     let riskScore = 0;
     let riskFactors: string[] = [];
-    
+
     // 情绪极端化风险
     if (sentimentResult.sentiment_label === 'very_negative') {
       riskScore += 40;
@@ -397,31 +412,34 @@ export class RiskAnalyzer {
       riskScore += 20;
       riskFactors.push('市场情绪偏悲观');
     }
-    
+
     // 媒体关注度风险
-    if (sentimentResult.market_mood.media_attention === 'high' && 
-        sentimentResult.sentiment_score < -0.3) {
+    if (
+      sentimentResult.market_mood.media_attention === 'high' &&
+      sentimentResult.sentiment_score < -0.3
+    ) {
       riskScore += 20;
       riskFactors.push('负面关注度过高');
     }
-    
+
     // 新闻质量风险
     if (sentimentResult.news_summary.total_count < 5) {
       riskScore += 15;
       riskFactors.push('信息透明度不足');
     }
-    
+
     // 情绪波动风险
-    const negativeRatio = sentimentResult.news_summary.negative_count / 
-                         Math.max(1, sentimentResult.news_summary.total_count);
+    const negativeRatio =
+      sentimentResult.news_summary.negative_count /
+      Math.max(1, sentimentResult.news_summary.total_count);
     if (negativeRatio > 0.6) {
       riskScore += 25;
       riskFactors.push('负面消息占主导');
     }
-    
+
     let level: 'high' | 'medium' | 'low';
     let description: string;
-    
+
     if (riskScore > 60) {
       level = 'high';
       description = `情绪面风险较高，${riskFactors.join('、')}可能引发市场恐慌情景`;
@@ -432,7 +450,7 @@ export class RiskAnalyzer {
       level = 'low';
       description = '情绪面风险较低，市场情绪相对理性，呈现平稳发展的倾向';
     }
-    
+
     return {
       level,
       description,
@@ -446,15 +464,15 @@ export class RiskAnalyzer {
   private analyzeLiquidityRisk(technicalResult?: TechnicalAnalysisResult) {
     // 模拟流动性风险评估（实际应用中应基于成交量、换手率等数据）
     const volumeRatio = 0.5 + Math.random() * 1.5; // 模拟成交量比率
-    
+
     let riskScore = 0;
     let riskFactors: string[] = [];
-    
+
     if (volumeRatio < 0.8) {
       riskScore += 30;
       riskFactors.push('成交量萎缩');
     }
-    
+
     // 如果有技术分析结果，考虑价格波动
     if (technicalResult) {
       if (technicalResult.signals.momentum === 'weak') {
@@ -462,17 +480,17 @@ export class RiskAnalyzer {
         riskFactors.push('交易活跃度低');
       }
     }
-    
+
     // 模拟市值因素
     const marketCapFactor = Math.random();
     if (marketCapFactor < 0.3) {
       riskScore += 25;
       riskFactors.push('市值偏小');
     }
-    
+
     let level: 'high' | 'medium' | 'low';
     let description: string;
-    
+
     if (riskScore > 50) {
       level = 'high';
       description = `流动性风险较高，${riskFactors.join('、')}可能影响交易执行情景`;
@@ -483,7 +501,7 @@ export class RiskAnalyzer {
       level = 'low';
       description = '流动性风险较低，交易活跃度良好，呈现充足流动性的倾向';
     }
-    
+
     return {
       level,
       description,
@@ -498,11 +516,11 @@ export class RiskAnalyzer {
     const weights = {
       market_risk: 0.25,
       fundamental_risk: 0.25,
-      technical_risk: 0.20,
+      technical_risk: 0.2,
       sentiment_risk: 0.15,
       liquidity_risk: 0.15,
     };
-    
+
     let weightedScore = 0;
     Object.entries(weights).forEach(([key, weight]) => {
       const factor = riskFactors[key];
@@ -510,14 +528,16 @@ export class RiskAnalyzer {
         weightedScore += factor.score * weight;
       }
     });
-    
+
     return Math.round(weightedScore);
   }
 
   /**
    * 获取风险等级
    */
-  private getRiskLevel(score: number): 'very_high' | 'high' | 'medium' | 'low' | 'very_low' {
+  private getRiskLevel(
+    score: number
+  ): 'very_high' | 'high' | 'medium' | 'low' | 'very_low' {
     if (score >= 80) return 'very_high';
     if (score >= 65) return 'high';
     if (score >= 40) return 'medium';
@@ -530,11 +550,13 @@ export class RiskAnalyzer {
    */
   private generateRiskWarnings(riskFactors: any, riskScore: number): string[] {
     const warnings: string[] = [];
-    
+
     if (riskScore >= 70) {
-      warnings.push('综合风险评估显示高风险情景，不建议风险承受能力有限的投资者参与');
+      warnings.push(
+        '综合风险评估显示高风险情景，不建议风险承受能力有限的投资者参与'
+      );
     }
-    
+
     Object.entries(riskFactors).forEach(([key, factor]: [string, any]) => {
       if (factor.level === 'high') {
         switch (key) {
@@ -551,25 +573,30 @@ export class RiskAnalyzer {
             warnings.push('市场情绪极度悲观，可能引发恐慌性抛售情景');
             break;
           case 'liquidity_risk':
-            warnings.push('流动性不足可能导致交易困难，存在无法及时止损的风险倾向');
+            warnings.push(
+              '流动性不足可能导致交易困难，存在无法及时止损的风险倾向'
+            );
             break;
         }
       }
     });
-    
+
     if (warnings.length === 0) {
       warnings.push('当前风险水平相对可控，但仍需保持谨慎投资的倾向');
     }
-    
+
     return warnings;
   }
 
   /**
    * 生成风险缓解建议
    */
-  private generateRiskMitigation(riskFactors: any, riskLevel: string): string[] {
+  private generateRiskMitigation(
+    riskFactors: any,
+    riskLevel: string
+  ): string[] {
     const mitigation: string[] = [];
-    
+
     // 通用风险管理建议
     if (riskLevel === 'very_high' || riskLevel === 'high') {
       mitigation.push('建议严格控制仓位，单一股票配置不超过总资产的5%');
@@ -578,7 +605,7 @@ export class RiskAnalyzer {
       mitigation.push('建议适度控制仓位，保持合理的风险敞口');
       mitigation.push('密切关注相关风险因素的变化倾向');
     }
-    
+
     // 针对性风险缓解建议
     Object.entries(riskFactors).forEach(([key, factor]: [string, any]) => {
       if (factor.level === 'high' || factor.level === 'medium') {
@@ -601,11 +628,11 @@ export class RiskAnalyzer {
         }
       }
     });
-    
+
     // 通用建议
     mitigation.push('建议分散投资，不要将资金集中在单一股票或行业');
     mitigation.push('保持长期投资视角，避免短期市场波动的干扰倾向');
-    
+
     return mitigation;
   }
 
@@ -618,19 +645,19 @@ export class RiskAnalyzer {
     sentimentResult?: SentimentAnalysisResult
   ): string[] {
     const sources = ['风险评估模型', '综合风险分析算法'];
-    
+
     if (fundamentalResult) {
       sources.push(...fundamentalResult.sources);
     }
-    
+
     if (technicalResult) {
       sources.push(...technicalResult.sources);
     }
-    
+
     if (sentimentResult) {
       sources.push(...sentimentResult.sources);
     }
-    
+
     // 去重
     return [...new Set(sources)];
   }
@@ -646,27 +673,31 @@ export class RiskAnalyzer {
   ) {
     const templates = this.templates[riskLevel as keyof typeof this.templates];
     const analysis = templates[Math.floor(Math.random() * templates.length)];
-    
+
     // 计算信心度
     let confidence = 0.7; // 基础信心度
-    
+
     // 基于风险因素数量调整信心度
-    const highRiskCount = Object.values(riskFactors).filter((factor: any) => factor.level === 'high').length;
-    const mediumRiskCount = Object.values(riskFactors).filter((factor: any) => factor.level === 'medium').length;
-    
+    const highRiskCount = Object.values(riskFactors).filter(
+      (factor: any) => factor.level === 'high'
+    ).length;
+    const mediumRiskCount = Object.values(riskFactors).filter(
+      (factor: any) => factor.level === 'medium'
+    ).length;
+
     if (highRiskCount === 0 && mediumRiskCount <= 2) {
       confidence += 0.1;
     } else if (highRiskCount >= 3) {
       confidence -= 0.1;
     }
-    
+
     // 基于风险得分调整信心度
     if (riskScore < 30 || riskScore > 70) {
       confidence += 0.05; // 极端值更容易判断
     }
-    
+
     confidence = Math.max(0.5, Math.min(0.9, confidence));
-    
+
     return {
       analysis,
       confidence,
@@ -721,7 +752,7 @@ ${riskMitigation.map(mitigation => `- ${mitigation}`).join('\n')}
       if (!llmProvider) {
         throw new Error('LLM provider not available');
       }
-      
+
       const llmResponse = await llmProvider.analyze(prompt);
       return JSON.parse(llmResponse);
     } catch (error) {
@@ -729,9 +760,14 @@ ${riskMitigation.map(mitigation => `- ${mitigation}`).join('\n')}
         stock_code: stockCode,
         error: error instanceof Error ? error.message : String(error),
       });
-      
+
       // 回退到模板分析
-      return this.generateTemplateAnalysis(stockCode, riskLevel, riskFactors, riskScore);
+      return this.generateTemplateAnalysis(
+        stockCode,
+        riskLevel,
+        riskFactors,
+        riskScore
+      );
     }
   }
 

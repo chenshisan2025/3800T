@@ -14,7 +14,7 @@ const ENDPOINTS = [
   '/api/market/indices',
   '/api/market/quotes?codes=000001,000002',
   '/api/market/kline?code=000001&period=daily',
-  '/api/news'
+  '/api/news',
 ];
 
 /**
@@ -30,24 +30,24 @@ function makeRequest(url) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'API-Test-Script/1.0'
-      }
+        'User-Agent': 'API-Test-Script/1.0',
+      },
     };
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, res => {
       let data = '';
-      
-      res.on('data', (chunk) => {
+
+      res.on('data', chunk => {
         data += chunk;
       });
-      
+
       res.on('end', () => {
         try {
           const jsonData = JSON.parse(data);
           resolve({
             statusCode: res.statusCode,
             headers: res.headers,
-            data: jsonData
+            data: jsonData,
           });
         } catch (error) {
           reject(new Error(`JSON解析失败: ${error.message}`));
@@ -55,7 +55,7 @@ function makeRequest(url) {
       });
     });
 
-    req.on('error', (error) => {
+    req.on('error', error => {
       reject(error);
     });
 
@@ -73,44 +73,44 @@ function makeRequest(url) {
  */
 function validateResponse(endpoint, response) {
   const { statusCode, data } = response;
-  
+
   console.log(`\n=== 测试端点: ${endpoint} ===`);
   console.log(`状态码: ${statusCode}`);
-  
+
   if (statusCode !== 200) {
     console.log('❌ 状态码不是200');
     console.log('响应数据:', JSON.stringify(data, null, 2));
     return false;
   }
-  
+
   if (!data.success) {
     console.log('❌ 响应success字段不是true');
     console.log('错误信息:', data.error || data.message);
     return false;
   }
-  
+
   if (!data.metadata) {
     console.log('❌ 缺少metadata字段');
     return false;
   }
-  
+
   if (!data.metadata.provider) {
     console.log('❌ 缺少provider信息');
     return false;
   }
-  
+
   console.log('✅ 响应格式正确');
   console.log(`数据提供者: ${data.metadata.provider}`);
   console.log(`是否为主要提供者: ${data.metadata.isPrimary}`);
   console.log(`数据条数: ${Array.isArray(data.data) ? data.data.length : '1'}`);
-  
+
   // 检查是否为Mock数据
   if (data.metadata.provider.toLowerCase().includes('mock')) {
     console.log('✅ 确认使用Mock数据提供者');
   } else {
     console.log(`⚠️  当前使用的是: ${data.metadata.provider}`);
   }
-  
+
   return true;
 }
 
@@ -120,15 +120,15 @@ function validateResponse(endpoint, response) {
 async function runTests() {
   console.log('开始测试API端点...');
   console.log(`基础URL: ${BASE_URL}`);
-  
+
   let passedTests = 0;
   let totalTests = ENDPOINTS.length;
-  
+
   for (const endpoint of ENDPOINTS) {
     try {
       const fullUrl = BASE_URL + endpoint;
       const response = await makeRequest(fullUrl);
-      
+
       if (validateResponse(endpoint, response)) {
         passedTests++;
       }
@@ -137,10 +137,10 @@ async function runTests() {
       console.log('❌ 请求失败:', error.message);
     }
   }
-  
+
   console.log('\n=== 测试总结 ===');
   console.log(`通过测试: ${passedTests}/${totalTests}`);
-  
+
   if (passedTests === totalTests) {
     console.log('🎉 所有端点测试通过！');
     console.log('✅ 所有端点都返回Mock数据');

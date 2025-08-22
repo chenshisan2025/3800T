@@ -1,9 +1,20 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 import { message } from 'antd';
 import { useRouter } from 'next/navigation';
-import { UserRole, Permission, hasPermission, canAccessPage } from '@/types/rbac';
+import {
+  UserRole,
+  Permission,
+  hasPermission,
+  canAccessPage,
+} from '@/types/rbac';
 
 // 用户接口定义
 interface User {
@@ -57,12 +68,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // 从本地存储获取认证信息
   const getStoredAuth = useCallback(() => {
     if (typeof window === 'undefined') return null;
-    
+
     try {
       const token = localStorage.getItem(AUTH_TOKEN_KEY);
       const refreshToken = localStorage.getItem(AUTH_REFRESH_KEY);
       const authData = localStorage.getItem(AUTH_STORAGE_KEY);
-      
+
       if (token && authData) {
         return {
           token,
@@ -77,64 +88,70 @@ export function AuthProvider({ children }: AuthProviderProps) {
       localStorage.removeItem(AUTH_REFRESH_KEY);
       localStorage.removeItem(AUTH_STORAGE_KEY);
     }
-    
+
     return null;
   }, []);
 
   // 保存认证信息到本地存储
-  const saveAuth = useCallback((token: string, refreshToken: string, userData: User) => {
-    if (typeof window === 'undefined') return;
-    
-    localStorage.setItem(AUTH_TOKEN_KEY, token);
-    localStorage.setItem(AUTH_REFRESH_KEY, refreshToken);
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(userData));
-  }, []);
+  const saveAuth = useCallback(
+    (token: string, refreshToken: string, userData: User) => {
+      if (typeof window === 'undefined') return;
+
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+      localStorage.setItem(AUTH_REFRESH_KEY, refreshToken);
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(userData));
+    },
+    []
+  );
 
   // 清除认证信息
   const clearAuth = useCallback(() => {
     if (typeof window === 'undefined') return;
-    
+
     localStorage.removeItem(AUTH_TOKEN_KEY);
     localStorage.removeItem(AUTH_REFRESH_KEY);
     localStorage.removeItem(AUTH_STORAGE_KEY);
   }, []);
 
   // 登录
-  const login = useCallback(async (credentials: LoginRequest) => {
-    try {
-      setLoading(true);
-      
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
-      
-      const data = await response.json();
-      
-      if (data.success && data.data) {
-        const { user: userData, tokens } = data.data;
-        
-        saveAuth(tokens.accessToken, tokens.refreshToken, userData);
-        setUser(userData);
-        
-        message.success('登录成功');
-        router.push('/dashboard');
-      } else {
-        throw new Error(data.message || '登录失败');
+  const login = useCallback(
+    async (credentials: LoginRequest) => {
+      try {
+        setLoading(true);
+
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(credentials),
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.data) {
+          const { user: userData, tokens } = data.data;
+
+          saveAuth(tokens.accessToken, tokens.refreshToken, userData);
+          setUser(userData);
+
+          message.success('登录成功');
+          router.push('/dashboard');
+        } else {
+          throw new Error(data.message || '登录失败');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        message.error(
+          error instanceof Error ? error.message : '登录失败，请重试'
+        );
+        throw error;
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      message.error(error instanceof Error ? error.message : '登录失败，请重试');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [saveAuth, router]);
-
-
+    },
+    [saveAuth, router]
+  );
 
   // 登出
   const logout = useCallback(async () => {
@@ -161,24 +178,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!storedAuth?.token) {
         throw new Error('No token available');
       }
-      
+
       const response = await fetch('/api/auth/me', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${storedAuth.token}`,
+          Authorization: `Bearer ${storedAuth.token}`,
         },
         credentials: 'include',
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success && data.data) {
         const userData = data.data;
         setUser(userData);
-        
+
         // 更新本地存储的用户信息
         saveAuth(storedAuth.token, storedAuth.refreshToken || '', userData);
-        
+
         return userData;
       } else {
         // 如果获取用户信息失败，可能是 token 过期
@@ -186,12 +203,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     } catch (error) {
       console.error('Refresh user error:', error);
-      
+
       // 清除认证信息并跳转到登录页
       clearAuth();
       setUser(null);
       router.push('/login');
-      
+
       throw error;
     }
   }, [getStoredAuth, saveAuth, clearAuth, router]);
@@ -201,7 +218,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const initAuth = async () => {
       try {
         const storedAuth = getStoredAuth();
-        
+
         if (storedAuth) {
           // 尝试刷新用户信息以验证 token 有效性
           await refreshUser();
@@ -214,23 +231,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setLoading(false);
       }
     };
-    
+
     initAuth();
   }, [getStoredAuth, refreshUser, clearAuth]);
 
   // RBAC 相关功能
   const userRole = user?.role as UserRole | null;
-  
-  const checkPermission = useCallback((permission: Permission): boolean => {
-    if (!userRole) return false;
-    return hasPermission(userRole, permission);
-  }, [userRole]);
-  
-  const checkPageAccess = useCallback((pathname: string): boolean => {
-    if (!userRole) return false;
-    return canAccessPage(userRole, pathname);
-  }, [userRole]);
-  
+
+  const checkPermission = useCallback(
+    (permission: Permission): boolean => {
+      if (!userRole) return false;
+      return hasPermission(userRole, permission);
+    },
+    [userRole]
+  );
+
+  const checkPageAccess = useCallback(
+    (pathname: string): boolean => {
+      if (!userRole) return false;
+      return canAccessPage(userRole, pathname);
+    },
+    [userRole]
+  );
+
   const isAdmin = userRole === UserRole.ADMIN;
   const isAnalyst = userRole === UserRole.ANALYST;
   const isSupport = userRole === UserRole.SUPPORT;
@@ -250,11 +273,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isSupport,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextType {

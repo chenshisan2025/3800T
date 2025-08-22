@@ -7,10 +7,7 @@
 export { Configuration } from '../generated/src/runtime';
 
 // API 服务
-export {
-  GulingtongApiServices,
-  createApiServices,
-} from './api-services';
+export { GulingtongApiServices, createApiServices } from './api-services';
 
 // 重新导出生成的 API 和类型
 export * from './api-services';
@@ -23,7 +20,7 @@ import { createApiServices } from './api-services';
  */
 export function createGulingtongClient(baseUrl: string, accessToken?: string) {
   const services = createApiServices(baseUrl, accessToken);
-  
+
   return {
     services,
     // 便捷访问各个 API

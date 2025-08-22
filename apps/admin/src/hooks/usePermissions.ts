@@ -42,7 +42,9 @@ export function usePermissions() {
   const checkAnyPermission = useMemo(() => {
     return (permissions: Permission[]): boolean => {
       if (!userRole) return false;
-      return permissions.some(permission => hasPermission(userRole, permission));
+      return permissions.some(permission =>
+        hasPermission(userRole, permission)
+      );
     };
   }, [userRole]);
 
@@ -50,7 +52,9 @@ export function usePermissions() {
   const checkAllPermissions = useMemo(() => {
     return (permissions: Permission[]): boolean => {
       if (!userRole) return false;
-      return permissions.every(permission => hasPermission(userRole, permission));
+      return permissions.every(permission =>
+        hasPermission(userRole, permission)
+      );
     };
   }, [userRole]);
 
@@ -80,7 +84,10 @@ export function usePermissions() {
   };
 
   // 权限守卫函数
-  const requirePermission = (permission: Permission, action?: string): boolean => {
+  const requirePermission = (
+    permission: Permission,
+    action?: string
+  ): boolean => {
     const hasAccess = checkPermission(permission);
     if (!hasAccess) {
       handlePermissionDenied(action);

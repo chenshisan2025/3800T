@@ -38,7 +38,12 @@ export interface AnalysisReportSummary {
     };
     sentiment: {
       score: number;
-      mood: 'very_positive' | 'positive' | 'neutral' | 'negative' | 'very_negative';
+      mood:
+        | 'very_positive'
+        | 'positive'
+        | 'neutral'
+        | 'negative'
+        | 'very_negative';
       key_points: string[];
     };
     risk: {
@@ -112,16 +117,22 @@ export class ReportSummarizer {
 
       // 生成投资建议
       const recommendation = this.generateRecommendation(scores, riskResult);
-      
+
       // 生成目标价格（模拟）
-      const targetPrice = this.generateTargetPrice(fundamentalResult, technicalResult);
-      
+      const targetPrice = this.generateTargetPrice(
+        fundamentalResult,
+        technicalResult
+      );
+
       // 确定投资时间范围
       const timeHorizon = this.determineTimeHorizon(recommendation, scores);
-      
+
       // 生成风险警示
-      const riskWarnings = this.generateRiskWarnings(riskResult, recommendation);
-      
+      const riskWarnings = this.generateRiskWarnings(
+        riskResult,
+        recommendation
+      );
+
       // 生成关键考虑因素
       const keyConsiderations = this.generateKeyConsiderations(
         fundamentalResult,
@@ -129,7 +140,7 @@ export class ReportSummarizer {
         sentimentResult,
         riskResult
       );
-      
+
       // 生成各维度汇总
       const summary = this.generateDimensionSummary(
         fundamentalResult,
@@ -138,7 +149,7 @@ export class ReportSummarizer {
         riskResult,
         scores
       );
-      
+
       // 收集数据来源
       const sources = this.collectSources(
         fundamentalResult,
@@ -208,7 +219,6 @@ export class ReportSummarizer {
       });
 
       return result;
-
     } catch (error) {
       logger.error('分析报告汇总生成失败', {
         stock_code: stockCode,
@@ -231,7 +241,8 @@ export class ReportSummarizer {
     let fundamentalScore = 50; // 默认中性
     if (fundamentalResult) {
       const strength = fundamentalResult.fundamental_strength;
-      fundamentalScore = strength === 'strong' ? 80 : strength === 'moderate' ? 60 : 40;
+      fundamentalScore =
+        strength === 'strong' ? 80 : strength === 'moderate' ? 60 : 40;
     }
 
     // 技术面得分（0-100）
@@ -239,10 +250,11 @@ export class ReportSummarizer {
     if (technicalResult) {
       const trend = technicalResult.signals.trend;
       const momentum = technicalResult.signals.momentum;
-      
+
       let baseScore = trend === 'bullish' ? 70 : trend === 'bearish' ? 30 : 50;
-      let momentumBonus = momentum === 'strong' ? 15 : momentum === 'moderate' ? 5 : -10;
-      
+      let momentumBonus =
+        momentum === 'strong' ? 15 : momentum === 'moderate' ? 5 : -10;
+
       technicalScore = Math.max(0, Math.min(100, baseScore + momentumBonus));
     }
 
@@ -271,19 +283,24 @@ export class ReportSummarizer {
    * 生成投资建议
    */
   private generateRecommendation(
-    scores: { fundamental: number; technical: number; sentiment: number; risk: number },
+    scores: {
+      fundamental: number;
+      technical: number;
+      sentiment: number;
+      risk: number;
+    },
     riskResult?: RiskAnalysisResult
   ): InvestmentRecommendation {
     // 计算综合得分（风险得分需要反向计算）
     const weights = {
       fundamental: 0.35,
-      technical: 0.30,
-      sentiment: 0.20,
+      technical: 0.3,
+      sentiment: 0.2,
       risk: 0.15, // 风险权重
     };
 
     const riskAdjustedScore = 100 - scores.risk; // 风险得分反向
-    const compositeScore = 
+    const compositeScore =
       scores.fundamental * weights.fundamental +
       scores.technical * weights.technical +
       scores.sentiment * weights.sentiment +
@@ -291,7 +308,7 @@ export class ReportSummarizer {
 
     // 风险调整
     let recommendation: InvestmentRecommendation;
-    
+
     if (riskResult && riskResult.overall_risk_level === 'very_high') {
       // 极高风险情况下，即使得分高也不建议买入
       recommendation = compositeScore > 70 ? 'NEUTRAL' : 'SELL';
@@ -320,23 +337,26 @@ export class ReportSummarizer {
   ) {
     // 模拟当前价格
     const currentPrice = 50 + Math.random() * 100; // 50-150元
-    
+
     // 基于基本面调整
     let fundamentalMultiplier = 1.0;
     if (fundamentalResult) {
       const strength = fundamentalResult.fundamental_strength;
-      fundamentalMultiplier = strength === 'strong' ? 1.15 : strength === 'moderate' ? 1.05 : 0.95;
+      fundamentalMultiplier =
+        strength === 'strong' ? 1.15 : strength === 'moderate' ? 1.05 : 0.95;
     }
-    
+
     // 基于技术面调整
     let technicalMultiplier = 1.0;
     if (technicalResult) {
       const trend = technicalResult.signals.trend;
-      technicalMultiplier = trend === 'bullish' ? 1.10 : trend === 'bearish' ? 0.90 : 1.0;
+      technicalMultiplier =
+        trend === 'bullish' ? 1.1 : trend === 'bearish' ? 0.9 : 1.0;
     }
-    
-    const baseTarget = currentPrice * fundamentalMultiplier * technicalMultiplier;
-    
+
+    const baseTarget =
+      currentPrice * fundamentalMultiplier * technicalMultiplier;
+
     return {
       high: Math.round(baseTarget * 1.15 * 100) / 100,
       medium: Math.round(baseTarget * 100) / 100,
@@ -349,18 +369,23 @@ export class ReportSummarizer {
    */
   private determineTimeHorizon(
     recommendation: InvestmentRecommendation,
-    scores: { fundamental: number; technical: number; sentiment: number; risk: number }
+    scores: {
+      fundamental: number;
+      technical: number;
+      sentiment: number;
+      risk: number;
+    }
   ): '短期' | '中期' | '长期' {
     // 基本面得分高适合长期投资
     if (scores.fundamental > 70 && recommendation === 'BUY') {
       return '长期';
     }
-    
+
     // 技术面得分高适合短期投资
     if (scores.technical > 70 && scores.fundamental < 60) {
       return '短期';
     }
-    
+
     // 其他情况适合中期投资
     return '中期';
   }
@@ -373,28 +398,37 @@ export class ReportSummarizer {
     recommendation?: InvestmentRecommendation
   ): string[] {
     const warnings: string[] = [];
-    
+
     if (riskResult) {
       // 添加风险分析中的警示
       warnings.push(...riskResult.risk_warnings);
-      
+
       // 基于风险等级添加通用警示
-      if (riskResult.overall_risk_level === 'very_high' || riskResult.overall_risk_level === 'high') {
-        warnings.push('该股票风险水平较高，请严格控制仓位规模，建议单一持仓不超过总资产的5%');
+      if (
+        riskResult.overall_risk_level === 'very_high' ||
+        riskResult.overall_risk_level === 'high'
+      ) {
+        warnings.push(
+          '该股票风险水平较高，请严格控制仓位规模，建议单一持仓不超过总资产的5%'
+        );
       }
     }
-    
+
     // 基于建议类型添加警示
     if (recommendation === 'BUY') {
-      warnings.push('投资有风险，买入需谨慎，建议分批建仓以降低时点风险的影响倾向');
+      warnings.push(
+        '投资有风险，买入需谨慎，建议分批建仓以降低时点风险的影响倾向'
+      );
     } else if (recommendation === 'SELL') {
       warnings.push('市场变化迅速，建议及时关注相关因素变化，适时调整投资策略');
     }
-    
+
     // 通用风险提示
-    warnings.push('本分析仅供参考，不构成投资建议，投资者应根据自身情况谨慎决策');
+    warnings.push(
+      '本分析仅供参考，不构成投资建议，投资者应根据自身情况谨慎决策'
+    );
     warnings.push('股市有风险，入市需谨慎，过往业绩不代表未来表现的情景');
-    
+
     return [...new Set(warnings)]; // 去重
   }
 
@@ -408,7 +442,7 @@ export class ReportSummarizer {
     riskResult?: RiskAnalysisResult
   ): string[] {
     const considerations: string[] = [];
-    
+
     // 基本面考虑因素
     if (fundamentalResult) {
       if (fundamentalResult.fundamental_strength === 'strong') {
@@ -417,7 +451,7 @@ export class ReportSummarizer {
         considerations.push('公司基本面存在问题，需关注财务状况改善情景');
       }
     }
-    
+
     // 技术面考虑因素
     if (technicalResult) {
       if (technicalResult.signals.trend === 'bullish') {
@@ -426,29 +460,45 @@ export class ReportSummarizer {
         considerations.push('技术面显示下跌趋势，需等待技术修复信号的出现情景');
       }
     }
-    
+
     // 情绪面考虑因素
     if (sentimentResult) {
-      if (sentimentResult.sentiment_label === 'very_positive' || sentimentResult.sentiment_label === 'positive') {
+      if (
+        sentimentResult.sentiment_label === 'very_positive' ||
+        sentimentResult.sentiment_label === 'positive'
+      ) {
         considerations.push('市场情绪相对乐观，有利于股价表现的积极倾向');
-      } else if (sentimentResult.sentiment_label === 'very_negative' || sentimentResult.sentiment_label === 'negative') {
+      } else if (
+        sentimentResult.sentiment_label === 'very_negative' ||
+        sentimentResult.sentiment_label === 'negative'
+      ) {
         considerations.push('市场情绪偏悲观，可能对股价形成压制的不利情景');
       }
     }
-    
+
     // 风险考虑因素
     if (riskResult) {
-      if (riskResult.overall_risk_level === 'low' || riskResult.overall_risk_level === 'very_low') {
+      if (
+        riskResult.overall_risk_level === 'low' ||
+        riskResult.overall_risk_level === 'very_low'
+      ) {
         considerations.push('整体风险水平较低，适合稳健型投资者配置的安全倾向');
-      } else if (riskResult.overall_risk_level === 'high' || riskResult.overall_risk_level === 'very_high') {
-        considerations.push('风险水平较高，仅适合风险承受能力强的投资者参与情景');
+      } else if (
+        riskResult.overall_risk_level === 'high' ||
+        riskResult.overall_risk_level === 'very_high'
+      ) {
+        considerations.push(
+          '风险水平较高，仅适合风险承受能力强的投资者参与情景'
+        );
       }
     }
-    
+
     // 通用考虑因素
     considerations.push('建议结合个人风险承受能力和投资目标制定合适的投资策略');
-    considerations.push('密切关注相关政策变化和行业发展动态对投资标的的影响倾向');
-    
+    considerations.push(
+      '密切关注相关政策变化和行业发展动态对投资标的的影响倾向'
+    );
+
     return considerations;
   }
 
@@ -460,44 +510,73 @@ export class ReportSummarizer {
     technicalResult?: TechnicalAnalysisResult,
     sentimentResult?: SentimentAnalysisResult,
     riskResult?: RiskAnalysisResult,
-    scores?: { fundamental: number; technical: number; sentiment: number; risk: number }
+    scores?: {
+      fundamental: number;
+      technical: number;
+      sentiment: number;
+      risk: number;
+    }
   ) {
     return {
       fundamental: {
         score: scores?.fundamental || 50,
-        strength: (fundamentalResult?.fundamental_strength || 'moderate') as 'strong' | 'moderate' | 'weak',
-        key_points: fundamentalResult ? [
-          `PE比率: ${fundamentalResult.key_metrics.pe_ratio?.toFixed(2) || 'N/A'}`,
-          `ROE: ${fundamentalResult.key_metrics.roe?.toFixed(2) || 'N/A'}%`,
-          `负债率: ${fundamentalResult.key_metrics.debt_ratio?.toFixed(2) || 'N/A'}%`,
-        ] : ['基本面数据不足'],
+        strength: (fundamentalResult?.fundamental_strength || 'moderate') as
+          | 'strong'
+          | 'moderate'
+          | 'weak',
+        key_points: fundamentalResult
+          ? [
+              `PE比率: ${fundamentalResult.key_metrics.pe_ratio?.toFixed(2) || 'N/A'}`,
+              `ROE: ${fundamentalResult.key_metrics.roe?.toFixed(2) || 'N/A'}%`,
+              `负债率: ${fundamentalResult.key_metrics.debt_ratio?.toFixed(2) || 'N/A'}%`,
+            ]
+          : ['基本面数据不足'],
       },
       technical: {
         score: scores?.technical || 50,
-        trend: (technicalResult?.signals.trend || 'sideways') as 'bullish' | 'bearish' | 'sideways',
-        key_points: technicalResult ? [
-          `趋势: ${technicalResult.signals.trend}`,
-          `动量: ${technicalResult.signals.momentum}`,
-          `RSI: ${technicalResult.indicators.rsi?.toFixed(2) || 'N/A'}`,
-        ] : ['技术面数据不足'],
+        trend: (technicalResult?.signals.trend || 'sideways') as
+          | 'bullish'
+          | 'bearish'
+          | 'sideways',
+        key_points: technicalResult
+          ? [
+              `趋势: ${technicalResult.signals.trend}`,
+              `动量: ${technicalResult.signals.momentum}`,
+              `RSI: ${technicalResult.indicators.rsi?.toFixed(2) || 'N/A'}`,
+            ]
+          : ['技术面数据不足'],
       },
       sentiment: {
         score: scores?.sentiment || 50,
-        mood: (sentimentResult?.sentiment_label || 'neutral') as 'very_positive' | 'positive' | 'neutral' | 'negative' | 'very_negative',
-        key_points: sentimentResult ? [
-          `情绪得分: ${sentimentResult.sentiment_score.toFixed(2)}`,
-          `正面新闻: ${sentimentResult.news_summary.positive_count}条`,
-          `负面新闻: ${sentimentResult.news_summary.negative_count}条`,
-        ] : ['情绪面数据不足'],
+        mood: (sentimentResult?.sentiment_label || 'neutral') as
+          | 'very_positive'
+          | 'positive'
+          | 'neutral'
+          | 'negative'
+          | 'very_negative',
+        key_points: sentimentResult
+          ? [
+              `情绪得分: ${sentimentResult.sentiment_score.toFixed(2)}`,
+              `正面新闻: ${sentimentResult.news_summary.positive_count}条`,
+              `负面新闻: ${sentimentResult.news_summary.negative_count}条`,
+            ]
+          : ['情绪面数据不足'],
       },
       risk: {
         score: scores?.risk || 50,
-        level: (riskResult?.overall_risk_level || 'medium') as 'very_high' | 'high' | 'medium' | 'low' | 'very_low',
-        key_points: riskResult ? [
-          `综合风险得分: ${riskResult.risk_score}/100`,
-          `市场风险: ${riskResult.risk_factors.market_risk.level}`,
-          `基本面风险: ${riskResult.risk_factors.fundamental_risk.level}`,
-        ] : ['风险评估数据不足'],
+        level: (riskResult?.overall_risk_level || 'medium') as
+          | 'very_high'
+          | 'high'
+          | 'medium'
+          | 'low'
+          | 'very_low',
+        key_points: riskResult
+          ? [
+              `综合风险得分: ${riskResult.risk_score}/100`,
+              `市场风险: ${riskResult.risk_factors.market_risk.level}`,
+              `基本面风险: ${riskResult.risk_factors.fundamental_risk.level}`,
+            ]
+          : ['风险评估数据不足'],
       },
     };
   }
@@ -512,12 +591,12 @@ export class ReportSummarizer {
     riskResult?: RiskAnalysisResult
   ): string[] {
     const sources = ['AI分析报告汇总系统', '综合投资建议算法'];
-    
+
     if (fundamentalResult) sources.push(...fundamentalResult.sources);
     if (technicalResult) sources.push(...technicalResult.sources);
     if (sentimentResult) sources.push(...sentimentResult.sources);
     if (riskResult) sources.push(...riskResult.sources);
-    
+
     return [...new Set(sources)]; // 去重
   }
 
@@ -526,7 +605,12 @@ export class ReportSummarizer {
    */
   private generateTemplateSummary(
     recommendation: InvestmentRecommendation,
-    scores: { fundamental: number; technical: number; sentiment: number; risk: number },
+    scores: {
+      fundamental: number;
+      technical: number;
+      sentiment: number;
+      risk: number;
+    },
     fundamentalResult?: FundamentalAnalysisResult,
     technicalResult?: TechnicalAnalysisResult,
     sentimentResult?: SentimentAnalysisResult,
@@ -534,18 +618,20 @@ export class ReportSummarizer {
   ) {
     const templates = this.recommendationTemplates[recommendation];
     const reason = templates[Math.floor(Math.random() * templates.length)];
-    
+
     // 计算信心度
     let confidence = 0.7; // 基础信心度
-    
+
     // 基于各维度得分的一致性调整信心度
     const scoreVariance = this.calculateScoreVariance(scores);
-    if (scoreVariance < 200) { // 得分较为一致
+    if (scoreVariance < 200) {
+      // 得分较为一致
       confidence += 0.1;
-    } else if (scoreVariance > 500) { // 得分差异较大
+    } else if (scoreVariance > 500) {
+      // 得分差异较大
       confidence -= 0.1;
     }
-    
+
     // 基于风险水平调整信心度
     if (riskResult) {
       if (riskResult.overall_risk_level === 'very_high') {
@@ -554,14 +640,16 @@ export class ReportSummarizer {
         confidence += 0.1;
       }
     }
-    
+
     // 基于数据完整性调整信心度
-    const dataCompleteness = [fundamentalResult, technicalResult, sentimentResult, riskResult]
-      .filter(result => result !== undefined).length / 4;
+    const dataCompleteness =
+      [fundamentalResult, technicalResult, sentimentResult, riskResult].filter(
+        result => result !== undefined
+      ).length / 4;
     confidence *= dataCompleteness;
-    
+
     confidence = Math.max(0.4, Math.min(0.9, confidence));
-    
+
     return {
       reason,
       confidence,
@@ -571,10 +659,22 @@ export class ReportSummarizer {
   /**
    * 计算得分方差
    */
-  private calculateScoreVariance(scores: { fundamental: number; technical: number; sentiment: number; risk: number }): number {
-    const values = [scores.fundamental, scores.technical, scores.sentiment, 100 - scores.risk];
+  private calculateScoreVariance(scores: {
+    fundamental: number;
+    technical: number;
+    sentiment: number;
+    risk: number;
+  }): number {
+    const values = [
+      scores.fundamental,
+      scores.technical,
+      scores.sentiment,
+      100 - scores.risk,
+    ];
     const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
-    const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+    const variance =
+      values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) /
+      values.length;
     return variance;
   }
 
@@ -584,7 +684,12 @@ export class ReportSummarizer {
   private async generateLLMSummary(
     stockCode: string,
     recommendation: InvestmentRecommendation,
-    scores: { fundamental: number; technical: number; sentiment: number; risk: number },
+    scores: {
+      fundamental: number;
+      technical: number;
+      sentiment: number;
+      risk: number;
+    },
     fundamentalResult?: FundamentalAnalysisResult,
     technicalResult?: TechnicalAnalysisResult,
     sentimentResult?: SentimentAnalysisResult,
@@ -630,7 +735,7 @@ export class ReportSummarizer {
       if (!llmProvider) {
         throw new Error('LLM provider not available');
       }
-      
+
       const llmResponse = await llmProvider.analyze(prompt);
       return JSON.parse(llmResponse);
     } catch (error) {
@@ -638,7 +743,7 @@ export class ReportSummarizer {
         stock_code: stockCode,
         error: error instanceof Error ? error.message : String(error),
       });
-      
+
       // 回退到模板分析
       return this.generateTemplateSummary(
         recommendation,

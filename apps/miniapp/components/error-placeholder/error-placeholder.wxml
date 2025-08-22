@@ -1,0 +1,77 @@
+<!-- components/error-placeholder/error-placeholder.wxml -->
+<view class="error-placeholder" wx:if="{{show}}">
+  <view class="error-content">
+    <!-- 错误图标 -->
+    <view class="error-icon">
+      <image 
+        wx:if="{{type === 'network'}}"
+        src="/images/icons/network-error.png" 
+        class="error-image"
+        mode="aspectFit"
+      />
+      <image 
+        wx:elif="{{type === 'empty'}}"
+        src="/images/icons/empty-data.png" 
+        class="error-image"
+        mode="aspectFit"
+      />
+      <image 
+        wx:elif="{{type === 'server'}}"
+        src="/images/icons/server-error.png" 
+        class="error-image"
+        mode="aspectFit"
+      />
+      <view wx:else class="error-icon-default">
+        <text class="error-icon-text">!</text>
+      </view>
+    </view>
+    
+    <!-- 错误标题 -->
+    <view class="error-title">{{title || defaultTitle}}</view>
+    
+    <!-- 错误描述 -->
+    <view class="error-description" wx:if="{{description || defaultDescription}}">
+      {{description || defaultDescription}}
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="error-actions" wx:if="{{showRetry || showRefresh || customActions.length > 0}}">
+      <!-- 重试按钮 -->
+      <button 
+        wx:if="{{showRetry}}"
+        class="error-btn error-btn-primary"
+        bindtap="handleRetry"
+        loading="{{retrying}}"
+      >
+        {{retrying ? '重试中...' : (retryText || '重试')}}
+      </button>
+      
+      <!-- 刷新按钮 -->
+      <button 
+        wx:if="{{showRefresh}}"
+        class="error-btn error-btn-secondary"
+        bindtap="handleRefresh"
+        loading="{{refreshing}}"
+      >
+        {{refreshing ? '刷新中...' : (refreshText || '刷新')}}
+      </button>
+      
+      <!-- 自定义操作按钮 -->
+      <button 
+        wx:for="{{customActions}}"
+        wx:key="key"
+        class="error-btn {{item.type === 'primary' ? 'error-btn-primary' : 'error-btn-secondary'}}"
+        bindtap="handleCustomAction"
+        data-action="{{item.key}}"
+        loading="{{item.loading}}"
+      >
+        {{item.loading ? (item.loadingText || '处理中...') : item.text}}
+      </button>
+    </view>
+    
+    <!-- 额外信息 -->
+    <view class="error-extra" wx:if="{{extraInfo}}">
+      <text class="error-extra-text">{{extraInfo}}</text>
+    </view>
+  </view>
+</view>
