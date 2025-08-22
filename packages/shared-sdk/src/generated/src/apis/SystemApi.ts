@@ -12,53 +12,55 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  ErrorResponse,
-  SuccessResponse,
-} from '../models/index';
+import type { ErrorResponse, SuccessResponse } from '../models/index';
 import {
-    ErrorResponseFromJSON,
-    ErrorResponseToJSON,
-    SuccessResponseFromJSON,
-    SuccessResponseToJSON,
+  ErrorResponseFromJSON,
+  ErrorResponseToJSON,
+  SuccessResponseFromJSON,
+  SuccessResponseToJSON,
 } from '../models/index';
 
 /**
- * 
+ *
  */
 export class SystemApi extends runtime.BaseAPI {
+  /**
+   * 健康检查的详细操作
+   * 健康检查
+   */
+  async apiMonitorHealthGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-    /**
-     * 健康检查的详细操作
-     * 健康检查
-     */
-    async apiMonitorHealthGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    let urlPath = `/api/monitor/health`;
 
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        let urlPath = `/api/monitor/health`;
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 健康检查的详细操作
-     * 健康检查
-     */
-    async apiMonitorHealthGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiMonitorHealthGetRaw(initOverrides);
-        return await response.value();
-    }
-
+  /**
+   * 健康检查的详细操作
+   * 健康检查
+   */
+  async apiMonitorHealthGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiMonitorHealthGetRaw(initOverrides);
+    return await response.value();
+  }
 }

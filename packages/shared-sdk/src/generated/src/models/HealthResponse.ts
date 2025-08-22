@@ -15,67 +15,75 @@
 import { mapValues } from '../runtime';
 import type { HealthResponseData } from './HealthResponseData';
 import {
-    HealthResponseDataFromJSON,
-    HealthResponseDataFromJSONTyped,
-    HealthResponseDataToJSON,
-    HealthResponseDataToJSONTyped,
+  HealthResponseDataFromJSON,
+  HealthResponseDataFromJSONTyped,
+  HealthResponseDataToJSON,
+  HealthResponseDataToJSONTyped,
 } from './HealthResponseData';
 
 /**
- * 
+ *
  * @export
  * @interface HealthResponse
  */
 export interface HealthResponse {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof HealthResponse
-     */
-    success?: boolean;
-    /**
-     * 
-     * @type {HealthResponseData}
-     * @memberof HealthResponse
-     */
-    data?: HealthResponseData;
+  /**
+   *
+   * @type {boolean}
+   * @memberof HealthResponse
+   */
+  success?: boolean;
+  /**
+   *
+   * @type {HealthResponseData}
+   * @memberof HealthResponse
+   */
+  data?: HealthResponseData;
 }
 
 /**
  * Check if a given object implements the HealthResponse interface.
  */
-export function instanceOfHealthResponse(value: object): value is HealthResponse {
-    return true;
+export function instanceOfHealthResponse(
+  value: object
+): value is HealthResponse {
+  return true;
 }
 
 export function HealthResponseFromJSON(json: any): HealthResponse {
-    return HealthResponseFromJSONTyped(json, false);
+  return HealthResponseFromJSONTyped(json, false);
 }
 
-export function HealthResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): HealthResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'success': json['success'] == null ? undefined : json['success'],
-        'data': json['data'] == null ? undefined : HealthResponseDataFromJSON(json['data']),
-    };
+export function HealthResponseFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): HealthResponse {
+  if (json == null) {
+    return json;
+  }
+  return {
+    success: json['success'] == null ? undefined : json['success'],
+    data:
+      json['data'] == null
+        ? undefined
+        : HealthResponseDataFromJSON(json['data']),
+  };
 }
 
 export function HealthResponseToJSON(json: any): HealthResponse {
-    return HealthResponseToJSONTyped(json, false);
+  return HealthResponseToJSONTyped(json, false);
 }
 
-export function HealthResponseToJSONTyped(value?: HealthResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function HealthResponseToJSONTyped(
+  value?: HealthResponse | null,
+  ignoreDiscriminator: boolean = false
+): any {
+  if (value == null) {
+    return value;
+  }
 
-    return {
-        
-        'success': value['success'],
-        'data': HealthResponseDataToJSON(value['data']),
-    };
+  return {
+    success: value['success'],
+    data: HealthResponseDataToJSON(value['data']),
+  };
 }
-

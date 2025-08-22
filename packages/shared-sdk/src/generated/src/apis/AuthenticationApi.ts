@@ -12,533 +12,659 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  ErrorResponse,
-  SuccessResponse,
-} from '../models/index';
+import type { ErrorResponse, SuccessResponse } from '../models/index';
 import {
-    ErrorResponseFromJSON,
-    ErrorResponseToJSON,
-    SuccessResponseFromJSON,
-    SuccessResponseToJSON,
+  ErrorResponseFromJSON,
+  ErrorResponseToJSON,
+  SuccessResponseFromJSON,
+  SuccessResponseToJSON,
 } from '../models/index';
 
 export interface ApiAuthCallbackPostRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiAuthLoginPostRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiAuthLogoutPostRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiAuthMagicLinkPostRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiAuthRegisterPostRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiAuthStartPostRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiAuthWxCallbackPostRequest {
-    body: object;
+  body: object;
 }
 
 /**
- * 
+ *
  */
 export class AuthenticationApi extends runtime.BaseAPI {
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiAuthCallbackGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiAuthCallbackGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/auth/callback`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiAuthCallbackGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthCallbackGetRaw(initOverrides);
-        return await response.value();
+    let urlPath = `/api/auth/callback`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiAuthCallbackGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthCallbackGetRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiAuthCallbackPostRaw(
+    requestParameters: ApiAuthCallbackPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiAuthCallbackPost().'
+      );
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiAuthCallbackPostRaw(requestParameters: ApiAuthCallbackPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiAuthCallbackPost().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        headerParameters['Content-Type'] = 'application/json';
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/auth/callback`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiAuthCallbackPost(requestParameters: ApiAuthCallbackPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthCallbackPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/auth/callback`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiAuthCallbackPost(
+    requestParameters: ApiAuthCallbackPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthCallbackPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 用户登录的详细操作
+   * 用户登录
+   */
+  async apiAuthLoginPostRaw(
+    requestParameters: ApiAuthLoginPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiAuthLoginPost().'
+      );
     }
 
-    /**
-     * 用户登录的详细操作
-     * 用户登录
-     */
-    async apiAuthLoginPostRaw(requestParameters: ApiAuthLoginPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiAuthLoginPost().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        headerParameters['Content-Type'] = 'application/json';
+    let urlPath = `/api/auth/login`;
 
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
 
-        let urlPath = `/api/auth/login`;
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
+  /**
+   * 用户登录的详细操作
+   * 用户登录
+   */
+  async apiAuthLoginPost(
+    requestParameters: ApiAuthLoginPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthLoginPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 用户登出的详细操作
+   * 用户登出
+   */
+  async apiAuthLogoutGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 用户登录的详细操作
-     * 用户登录
-     */
-    async apiAuthLoginPost(requestParameters: ApiAuthLoginPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthLoginPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/auth/logout`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 用户登出的详细操作
+   * 用户登出
+   */
+  async apiAuthLogoutGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthLogoutGetRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * 用户登出的详细操作
+   * 用户登出
+   */
+  async apiAuthLogoutPostRaw(
+    requestParameters: ApiAuthLogoutPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiAuthLogoutPost().'
+      );
     }
 
-    /**
-     * 用户登出的详细操作
-     * 用户登出
-     */
-    async apiAuthLogoutGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    const queryParameters: any = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+    headerParameters['Content-Type'] = 'application/json';
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        let urlPath = `/api/auth/logout`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 用户登出的详细操作
-     * 用户登出
-     */
-    async apiAuthLogoutGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthLogoutGetRaw(initOverrides);
-        return await response.value();
+    let urlPath = `/api/auth/logout`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 用户登出的详细操作
+   * 用户登出
+   */
+  async apiAuthLogoutPost(
+    requestParameters: ApiAuthLogoutPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthLogoutPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiAuthMagicLinkGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 用户登出的详细操作
-     * 用户登出
-     */
-    async apiAuthLogoutPostRaw(requestParameters: ApiAuthLogoutPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiAuthLogoutPost().'
-            );
-        }
+    let urlPath = `/api/auth/magic-link`;
 
-        const queryParameters: any = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        headerParameters['Content-Type'] = 'application/json';
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiAuthMagicLinkGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthMagicLinkGetRaw(initOverrides);
+    return await response.value();
+  }
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/auth/logout`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiAuthMagicLinkPostRaw(
+    requestParameters: ApiAuthMagicLinkPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiAuthMagicLinkPost().'
+      );
     }
 
-    /**
-     * 用户登出的详细操作
-     * 用户登出
-     */
-    async apiAuthLogoutPost(requestParameters: ApiAuthLogoutPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthLogoutPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiAuthMagicLinkGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    let urlPath = `/api/auth/magic-link`;
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiAuthMagicLinkPost(
+    requestParameters: ApiAuthMagicLinkPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthMagicLinkPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 
-        let urlPath = `/api/auth/magic-link`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 用户注册的详细操作
+   * 用户注册
+   */
+  async apiAuthRegisterPostRaw(
+    requestParameters: ApiAuthRegisterPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiAuthRegisterPost().'
+      );
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiAuthMagicLinkGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthMagicLinkGetRaw(initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    let urlPath = `/api/auth/register`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 用户注册的详细操作
+   * 用户注册
+   */
+  async apiAuthRegisterPost(
+    requestParameters: ApiAuthRegisterPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthRegisterPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiAuthStartPostRaw(
+    requestParameters: ApiAuthStartPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiAuthStartPost().'
+      );
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiAuthMagicLinkPostRaw(requestParameters: ApiAuthMagicLinkPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiAuthMagicLinkPost().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        headerParameters['Content-Type'] = 'application/json';
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/auth/magic-link`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiAuthMagicLinkPost(requestParameters: ApiAuthMagicLinkPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthMagicLinkPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/auth/start`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiAuthStartPost(
+    requestParameters: ApiAuthStartPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthStartPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiAuthWxCallbackGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 用户注册的详细操作
-     * 用户注册
-     */
-    async apiAuthRegisterPostRaw(requestParameters: ApiAuthRegisterPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiAuthRegisterPost().'
-            );
-        }
+    let urlPath = `/api/auth/wx/callback`;
 
-        const queryParameters: any = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        headerParameters['Content-Type'] = 'application/json';
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiAuthWxCallbackGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthWxCallbackGetRaw(initOverrides);
+    return await response.value();
+  }
 
-
-        let urlPath = `/api/auth/register`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiAuthWxCallbackPostRaw(
+    requestParameters: ApiAuthWxCallbackPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiAuthWxCallbackPost().'
+      );
     }
 
-    /**
-     * 用户注册的详细操作
-     * 用户注册
-     */
-    async apiAuthRegisterPost(requestParameters: ApiAuthRegisterPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthRegisterPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiAuthStartPostRaw(requestParameters: ApiAuthStartPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiAuthStartPost().'
-            );
-        }
+    let urlPath = `/api/auth/wx/callback`;
 
-        const queryParameters: any = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/auth/start`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiAuthStartPost(requestParameters: ApiAuthStartPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthStartPostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiAuthWxCallbackGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/auth/wx/callback`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiAuthWxCallbackGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthWxCallbackGetRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiAuthWxCallbackPostRaw(requestParameters: ApiAuthWxCallbackPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiAuthWxCallbackPost().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/auth/wx/callback`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiAuthWxCallbackPost(requestParameters: ApiAuthWxCallbackPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAuthWxCallbackPostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiAuthWxCallbackPost(
+    requestParameters: ApiAuthWxCallbackPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAuthWxCallbackPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 }

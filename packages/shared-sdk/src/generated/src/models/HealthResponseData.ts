@@ -14,76 +14,83 @@
 
 import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface HealthResponseData
  */
 export interface HealthResponseData {
-    /**
-     * 
-     * @type {string}
-     * @memberof HealthResponseData
-     */
-    status?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof HealthResponseData
-     */
-    database?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof HealthResponseData
-     */
-    uptime?: number;
-    /**
-     * 
-     * @type {Date}
-     * @memberof HealthResponseData
-     */
-    timestamp?: Date;
+  /**
+   *
+   * @type {string}
+   * @memberof HealthResponseData
+   */
+  status?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HealthResponseData
+   */
+  database?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof HealthResponseData
+   */
+  uptime?: number;
+  /**
+   *
+   * @type {Date}
+   * @memberof HealthResponseData
+   */
+  timestamp?: Date;
 }
 
 /**
  * Check if a given object implements the HealthResponseData interface.
  */
-export function instanceOfHealthResponseData(value: object): value is HealthResponseData {
-    return true;
+export function instanceOfHealthResponseData(
+  value: object
+): value is HealthResponseData {
+  return true;
 }
 
 export function HealthResponseDataFromJSON(json: any): HealthResponseData {
-    return HealthResponseDataFromJSONTyped(json, false);
+  return HealthResponseDataFromJSONTyped(json, false);
 }
 
-export function HealthResponseDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): HealthResponseData {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'status': json['status'] == null ? undefined : json['status'],
-        'database': json['database'] == null ? undefined : json['database'],
-        'uptime': json['uptime'] == null ? undefined : json['uptime'],
-        'timestamp': json['timestamp'] == null ? undefined : (new Date(json['timestamp'])),
-    };
+export function HealthResponseDataFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): HealthResponseData {
+  if (json == null) {
+    return json;
+  }
+  return {
+    status: json['status'] == null ? undefined : json['status'],
+    database: json['database'] == null ? undefined : json['database'],
+    uptime: json['uptime'] == null ? undefined : json['uptime'],
+    timestamp:
+      json['timestamp'] == null ? undefined : new Date(json['timestamp']),
+  };
 }
 
 export function HealthResponseDataToJSON(json: any): HealthResponseData {
-    return HealthResponseDataToJSONTyped(json, false);
+  return HealthResponseDataToJSONTyped(json, false);
 }
 
-export function HealthResponseDataToJSONTyped(value?: HealthResponseData | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function HealthResponseDataToJSONTyped(
+  value?: HealthResponseData | null,
+  ignoreDiscriminator: boolean = false
+): any {
+  if (value == null) {
+    return value;
+  }
 
-    return {
-        
-        'status': value['status'],
-        'database': value['database'],
-        'uptime': value['uptime'],
-        'timestamp': value['timestamp'] == null ? undefined : ((value['timestamp']).toISOString()),
-    };
+  return {
+    status: value['status'],
+    database: value['database'],
+    uptime: value['uptime'],
+    timestamp:
+      value['timestamp'] == null ? undefined : value['timestamp'].toISOString(),
+  };
 }
-

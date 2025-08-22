@@ -12,151 +12,180 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  ErrorResponse,
-  SuccessResponse,
-} from '../models/index';
+import type { ErrorResponse, SuccessResponse } from '../models/index';
 import {
-    ErrorResponseFromJSON,
-    ErrorResponseToJSON,
-    SuccessResponseFromJSON,
-    SuccessResponseToJSON,
+  ErrorResponseFromJSON,
+  ErrorResponseToJSON,
+  SuccessResponseFromJSON,
+  SuccessResponseToJSON,
 } from '../models/index';
 
 export interface ApiPricingUpgradePromptsFeatureGetRequest {
-    feature: string;
+  feature: string;
 }
 
 /**
- * 
+ *
  */
 export class PricingApi extends runtime.BaseAPI {
+  /**
+   * 获取定价信息的详细操作
+   * 获取定价信息
+   */
+  async apiPricingCompareGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-    /**
-     * 获取定价信息的详细操作
-     * 获取定价信息
-     */
-    async apiPricingCompareGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/pricing/compare`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取定价信息的详细操作
-     * 获取定价信息
-     */
-    async apiPricingCompareGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiPricingCompareGetRaw(initOverrides);
-        return await response.value();
+    let urlPath = `/api/pricing/compare`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取定价信息的详细操作
+   * 获取定价信息
+   */
+  async apiPricingCompareGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiPricingCompareGetRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * 获取定价信息的详细操作
+   * 获取定价信息
+   */
+  async apiPricingGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取定价信息的详细操作
-     * 获取定价信息
-     */
-    async apiPricingGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    let urlPath = `/api/pricing`;
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
+  /**
+   * 获取定价信息的详细操作
+   * 获取定价信息
+   */
+  async apiPricingGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiPricingGetRaw(initOverrides);
+    return await response.value();
+  }
 
-        let urlPath = `/api/pricing`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 获取定价信息的详细操作
+   * 获取定价信息
+   */
+  async apiPricingUpgradePromptsFeatureGetRaw(
+    requestParameters: ApiPricingUpgradePromptsFeatureGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['feature'] == null) {
+      throw new runtime.RequiredError(
+        'feature',
+        'Required parameter "feature" was null or undefined when calling apiPricingUpgradePromptsFeatureGet().'
+      );
     }
 
-    /**
-     * 获取定价信息的详细操作
-     * 获取定价信息
-     */
-    async apiPricingGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiPricingGetRaw(initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取定价信息的详细操作
-     * 获取定价信息
-     */
-    async apiPricingUpgradePromptsFeatureGetRaw(requestParameters: ApiPricingUpgradePromptsFeatureGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['feature'] == null) {
-            throw new runtime.RequiredError(
-                'feature',
-                'Required parameter "feature" was null or undefined when calling apiPricingUpgradePromptsFeatureGet().'
-            );
-        }
+    let urlPath = `/api/pricing/upgrade-prompts/[feature]`;
+    urlPath = urlPath.replace(
+      `{${'feature'}}`,
+      encodeURIComponent(String(requestParameters['feature']))
+    );
 
-        const queryParameters: any = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/pricing/upgrade-prompts/[feature]`;
-        urlPath = urlPath.replace(`{${"feature"}}`, encodeURIComponent(String(requestParameters['feature'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 获取定价信息的详细操作
-     * 获取定价信息
-     */
-    async apiPricingUpgradePromptsFeatureGet(requestParameters: ApiPricingUpgradePromptsFeatureGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiPricingUpgradePromptsFeatureGetRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
+  /**
+   * 获取定价信息的详细操作
+   * 获取定价信息
+   */
+  async apiPricingUpgradePromptsFeatureGet(
+    requestParameters: ApiPricingUpgradePromptsFeatureGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiPricingUpgradePromptsFeatureGetRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 }

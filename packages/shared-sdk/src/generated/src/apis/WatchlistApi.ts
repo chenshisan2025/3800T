@@ -12,445 +12,555 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  ErrorResponse,
-  SuccessResponse,
-} from '../models/index';
+import type { ErrorResponse, SuccessResponse } from '../models/index';
 import {
-    ErrorResponseFromJSON,
-    ErrorResponseToJSON,
-    SuccessResponseFromJSON,
-    SuccessResponseToJSON,
+  ErrorResponseFromJSON,
+  ErrorResponseToJSON,
+  SuccessResponseFromJSON,
+  SuccessResponseToJSON,
 } from '../models/index';
 
 export interface ApiUsersWatchlistGetRequest {
-    page?: number;
-    limit?: number;
+  page?: number;
+  limit?: number;
 }
 
 export interface ApiUsersWatchlistIdDeleteRequest {
-    id: string;
+  id: string;
 }
 
 export interface ApiUsersWatchlistIdGetRequest {
-    id: string;
-    page?: number;
-    limit?: number;
+  id: string;
+  page?: number;
+  limit?: number;
 }
 
 export interface ApiUsersWatchlistIdPutRequest {
-    id: string;
-    body: object;
+  id: string;
+  body: object;
 }
 
 export interface ApiUsersWatchlistPostRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiWatchlistGetRequest {
-    page?: number;
-    limit?: number;
+  page?: number;
+  limit?: number;
 }
 
 export interface ApiWatchlistPostRequest {
-    body: object;
+  body: object;
 }
 
 /**
- * 
+ *
  */
 export class WatchlistApi extends runtime.BaseAPI {
+  /**
+   * 获取自选股的详细操作
+   * 获取自选股
+   */
+  async apiUsersWatchlistGetRaw(
+    requestParameters: ApiUsersWatchlistGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-    /**
-     * 获取自选股的详细操作
-     * 获取自选股
-     */
-    async apiUsersWatchlistGetRaw(requestParameters: ApiUsersWatchlistGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
-
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
-        }
-
-        if (requestParameters['limit'] != null) {
-            queryParameters['limit'] = requestParameters['limit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/watchlist`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    if (requestParameters['page'] != null) {
+      queryParameters['page'] = requestParameters['page'];
     }
 
-    /**
-     * 获取自选股的详细操作
-     * 获取自选股
-     */
-    async apiUsersWatchlistGet(requestParameters: ApiUsersWatchlistGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersWatchlistGetRaw(requestParameters, initOverrides);
-        return await response.value();
+    if (requestParameters['limit'] != null) {
+      queryParameters['limit'] = requestParameters['limit'];
     }
 
-    /**
-     * 删除自选股的详细操作
-     * 删除自选股
-     */
-    async apiUsersWatchlistIdDeleteRaw(requestParameters: ApiUsersWatchlistIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersWatchlistIdDelete().'
-            );
-        }
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/watchlist/[id]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 删除自选股的详细操作
-     * 删除自选股
-     */
-    async apiUsersWatchlistIdDelete(requestParameters: ApiUsersWatchlistIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersWatchlistIdDeleteRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/users/watchlist`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取自选股的详细操作
+   * 获取自选股
+   */
+  async apiUsersWatchlistGet(
+    requestParameters: ApiUsersWatchlistGetRequest = {},
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersWatchlistGetRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 删除自选股的详细操作
+   * 删除自选股
+   */
+  async apiUsersWatchlistIdDeleteRaw(
+    requestParameters: ApiUsersWatchlistIdDeleteRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersWatchlistIdDelete().'
+      );
     }
 
-    /**
-     * 获取自选股的详细操作
-     * 获取自选股
-     */
-    async apiUsersWatchlistIdGetRaw(requestParameters: ApiUsersWatchlistIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersWatchlistIdGet().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
-        }
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (requestParameters['limit'] != null) {
-            queryParameters['limit'] = requestParameters['limit'];
-        }
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/watchlist/[id]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取自选股的详细操作
-     * 获取自选股
-     */
-    async apiUsersWatchlistIdGet(requestParameters: ApiUsersWatchlistIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersWatchlistIdGetRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/users/watchlist/[id]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 删除自选股的详细操作
+   * 删除自选股
+   */
+  async apiUsersWatchlistIdDelete(
+    requestParameters: ApiUsersWatchlistIdDeleteRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersWatchlistIdDeleteRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 获取自选股的详细操作
+   * 获取自选股
+   */
+  async apiUsersWatchlistIdGetRaw(
+    requestParameters: ApiUsersWatchlistIdGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersWatchlistIdGet().'
+      );
     }
 
-    /**
-     * 更新自选股的详细操作
-     * 更新自选股
-     */
-    async apiUsersWatchlistIdPutRaw(requestParameters: ApiUsersWatchlistIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersWatchlistIdPut().'
-            );
-        }
+    const queryParameters: any = {};
 
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiUsersWatchlistIdPut().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/watchlist/[id]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    if (requestParameters['page'] != null) {
+      queryParameters['page'] = requestParameters['page'];
     }
 
-    /**
-     * 更新自选股的详细操作
-     * 更新自选股
-     */
-    async apiUsersWatchlistIdPut(requestParameters: ApiUsersWatchlistIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersWatchlistIdPutRaw(requestParameters, initOverrides);
-        return await response.value();
+    if (requestParameters['limit'] != null) {
+      queryParameters['limit'] = requestParameters['limit'];
     }
 
-    /**
-     * 创建自选股的详细操作
-     * 创建自选股
-     */
-    async apiUsersWatchlistPostRaw(requestParameters: ApiUsersWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiUsersWatchlistPost().'
-            );
-        }
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/watchlist`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 创建自选股的详细操作
-     * 创建自选股
-     */
-    async apiUsersWatchlistPost(requestParameters: ApiUsersWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersWatchlistPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/users/watchlist/[id]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取自选股的详细操作
+   * 获取自选股
+   */
+  async apiUsersWatchlistIdGet(
+    requestParameters: ApiUsersWatchlistIdGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersWatchlistIdGetRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 更新自选股的详细操作
+   * 更新自选股
+   */
+  async apiUsersWatchlistIdPutRaw(
+    requestParameters: ApiUsersWatchlistIdPutRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersWatchlistIdPut().'
+      );
     }
 
-    /**
-     * 删除自选股的详细操作
-     * 删除自选股
-     */
-    async apiWatchlistDeleteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/watchlist`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiUsersWatchlistIdPut().'
+      );
     }
 
-    /**
-     * 删除自选股的详细操作
-     * 删除自选股
-     */
-    async apiWatchlistDelete(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiWatchlistDeleteRaw(initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取自选股的详细操作
-     * 获取自选股
-     */
-    async apiWatchlistGetRaw(requestParameters: ApiWatchlistGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    let urlPath = `/api/users/watchlist/[id]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
 
-        if (requestParameters['page'] != null) {
-            queryParameters['page'] = requestParameters['page'];
-        }
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'PUT',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
 
-        if (requestParameters['limit'] != null) {
-            queryParameters['limit'] = requestParameters['limit'];
-        }
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        const headerParameters: runtime.HTTPHeaders = {};
+  /**
+   * 更新自选股的详细操作
+   * 更新自选股
+   */
+  async apiUsersWatchlistIdPut(
+    requestParameters: ApiUsersWatchlistIdPutRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersWatchlistIdPutRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/watchlist`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 创建自选股的详细操作
+   * 创建自选股
+   */
+  async apiUsersWatchlistPostRaw(
+    requestParameters: ApiUsersWatchlistPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiUsersWatchlistPost().'
+      );
     }
 
-    /**
-     * 获取自选股的详细操作
-     * 获取自选股
-     */
-    async apiWatchlistGet(requestParameters: ApiWatchlistGetRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiWatchlistGetRaw(requestParameters, initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 创建自选股的详细操作
-     * 创建自选股
-     */
-    async apiWatchlistPostRaw(requestParameters: ApiWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiWatchlistPost().'
-            );
-        }
+    let urlPath = `/api/users/watchlist`;
 
-        const queryParameters: any = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        headerParameters['Content-Type'] = 'application/json';
+  /**
+   * 创建自选股的详细操作
+   * 创建自选股
+   */
+  async apiUsersWatchlistPost(
+    requestParameters: ApiUsersWatchlistPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersWatchlistPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+  /**
+   * 删除自选股的详细操作
+   * 删除自选股
+   */
+  async apiWatchlistDeleteRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        let urlPath = `/api/watchlist`;
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 创建自选股的详细操作
-     * 创建自选股
-     */
-    async apiWatchlistPost(requestParameters: ApiWatchlistPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiWatchlistPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/watchlist`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 删除自选股的详细操作
+   * 删除自选股
+   */
+  async apiWatchlistDelete(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiWatchlistDeleteRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * 获取自选股的详细操作
+   * 获取自选股
+   */
+  async apiWatchlistGetRaw(
+    requestParameters: ApiWatchlistGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
+
+    if (requestParameters['page'] != null) {
+      queryParameters['page'] = requestParameters['page'];
     }
 
+    if (requestParameters['limit'] != null) {
+      queryParameters['limit'] = requestParameters['limit'];
+    }
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
+    }
+
+    let urlPath = `/api/watchlist`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取自选股的详细操作
+   * 获取自选股
+   */
+  async apiWatchlistGet(
+    requestParameters: ApiWatchlistGetRequest = {},
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiWatchlistGetRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 创建自选股的详细操作
+   * 创建自选股
+   */
+  async apiWatchlistPostRaw(
+    requestParameters: ApiWatchlistPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiWatchlistPost().'
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
+    }
+
+    let urlPath = `/api/watchlist`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 创建自选股的详细操作
+   * 创建自选股
+   */
+  async apiWatchlistPost(
+    requestParameters: ApiWatchlistPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiWatchlistPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 }

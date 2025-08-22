@@ -12,546 +12,668 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  ErrorResponse,
-  SuccessResponse,
-} from '../models/index';
+import type { ErrorResponse, SuccessResponse } from '../models/index';
 import {
-    ErrorResponseFromJSON,
-    ErrorResponseToJSON,
-    SuccessResponseFromJSON,
-    SuccessResponseToJSON,
+  ErrorResponseFromJSON,
+  ErrorResponseToJSON,
+  SuccessResponseFromJSON,
+  SuccessResponseToJSON,
 } from '../models/index';
 
 export interface ApiCronPostRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiMonitorCircuitBreakersPostRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiMonitorErrorsPatchRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiMonitorErrorsPostRequest {
-    body: object;
+  body: object;
 }
 
 /**
- * 
+ *
  */
 export class OtherApi extends runtime.BaseAPI {
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiCronGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiCronGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/cron`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiCronGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiCronGetRaw(initOverrides);
-        return await response.value();
+    let urlPath = `/api/cron`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiCronGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiCronGetRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiCronPostRaw(
+    requestParameters: ApiCronPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiCronPost().'
+      );
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiCronPostRaw(requestParameters: ApiCronPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiCronPost().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        headerParameters['Content-Type'] = 'application/json';
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/cron`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiCronPost(requestParameters: ApiCronPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiCronPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/cron`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiCronPost(
+    requestParameters: ApiCronPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiCronPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiDataIndicesGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiDataIndicesGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    let urlPath = `/api/data/indices`;
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiDataIndicesGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiDataIndicesGetRaw(initOverrides);
+    return await response.value();
+  }
 
-        let urlPath = `/api/data/indices`;
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiDataKlineGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiDataIndicesGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiDataIndicesGetRaw(initOverrides);
-        return await response.value();
+    let urlPath = `/api/data/kline`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiDataKlineGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiDataKlineGetRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiDataQuotesGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiDataKlineGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    let urlPath = `/api/data/quotes`;
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiDataQuotesGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiDataQuotesGetRaw(initOverrides);
+    return await response.value();
+  }
 
-        let urlPath = `/api/data/kline`;
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiLegalGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiDataKlineGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiDataKlineGetRaw(initOverrides);
-        return await response.value();
+    let urlPath = `/api/legal`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiLegalGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiLegalGetRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiMonitorCircuitBreakersGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiDataQuotesGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    let urlPath = `/api/monitor/circuit-breakers`;
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiMonitorCircuitBreakersGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiMonitorCircuitBreakersGetRaw(initOverrides);
+    return await response.value();
+  }
 
-        let urlPath = `/api/data/quotes`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiMonitorCircuitBreakersPostRaw(
+    requestParameters: ApiMonitorCircuitBreakersPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiMonitorCircuitBreakersPost().'
+      );
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiDataQuotesGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiDataQuotesGetRaw(initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiLegalGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    let urlPath = `/api/monitor/circuit-breakers`;
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiMonitorCircuitBreakersPost(
+    requestParameters: ApiMonitorCircuitBreakersPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiMonitorCircuitBreakersPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 
-        let urlPath = `/api/legal`;
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiMonitorErrorsGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiLegalGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiLegalGetRaw(initOverrides);
-        return await response.value();
+    let urlPath = `/api/monitor/errors`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiMonitorErrorsGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiMonitorErrorsGetRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * 修改资源的详细操作
+   * 修改资源
+   */
+  async apiMonitorErrorsPatchRaw(
+    requestParameters: ApiMonitorErrorsPatchRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiMonitorErrorsPatch().'
+      );
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiMonitorCircuitBreakersGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    const queryParameters: any = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+    headerParameters['Content-Type'] = 'application/json';
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        let urlPath = `/api/monitor/circuit-breakers`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiMonitorCircuitBreakersGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiMonitorCircuitBreakersGetRaw(initOverrides);
-        return await response.value();
+    let urlPath = `/api/monitor/errors`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'PATCH',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 修改资源的详细操作
+   * 修改资源
+   */
+  async apiMonitorErrorsPatch(
+    requestParameters: ApiMonitorErrorsPatchRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiMonitorErrorsPatchRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiMonitorErrorsPostRaw(
+    requestParameters: ApiMonitorErrorsPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiMonitorErrorsPost().'
+      );
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiMonitorCircuitBreakersPostRaw(requestParameters: ApiMonitorCircuitBreakersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiMonitorCircuitBreakersPost().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        headerParameters['Content-Type'] = 'application/json';
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/monitor/circuit-breakers`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiMonitorCircuitBreakersPost(requestParameters: ApiMonitorCircuitBreakersPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiMonitorCircuitBreakersPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/monitor/errors`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiMonitorErrorsPost(
+    requestParameters: ApiMonitorErrorsPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiMonitorErrorsPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiTestLoggerGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiMonitorErrorsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    let urlPath = `/api/test-logger`;
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/monitor/errors`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiMonitorErrorsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiMonitorErrorsGetRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * 修改资源的详细操作
-     * 修改资源
-     */
-    async apiMonitorErrorsPatchRaw(requestParameters: ApiMonitorErrorsPatchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiMonitorErrorsPatch().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/monitor/errors`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 修改资源的详细操作
-     * 修改资源
-     */
-    async apiMonitorErrorsPatch(requestParameters: ApiMonitorErrorsPatchRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiMonitorErrorsPatchRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiMonitorErrorsPostRaw(requestParameters: ApiMonitorErrorsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiMonitorErrorsPost().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/monitor/errors`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiMonitorErrorsPost(requestParameters: ApiMonitorErrorsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiMonitorErrorsPostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiTestLoggerGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/test-logger`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
-    }
-
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiTestLoggerGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiTestLoggerGetRaw(initOverrides);
-        return await response.value();
-    }
-
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiTestLoggerGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiTestLoggerGetRaw(initOverrides);
+    return await response.value();
+  }
 }

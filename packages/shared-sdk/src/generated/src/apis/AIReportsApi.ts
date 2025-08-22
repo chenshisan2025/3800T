@@ -12,370 +12,461 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  ErrorResponse,
-  SuccessResponse,
-} from '../models/index';
+import type { ErrorResponse, SuccessResponse } from '../models/index';
 import {
-    ErrorResponseFromJSON,
-    ErrorResponseToJSON,
-    SuccessResponseFromJSON,
-    SuccessResponseToJSON,
+  ErrorResponseFromJSON,
+  ErrorResponseToJSON,
+  SuccessResponseFromJSON,
+  SuccessResponseToJSON,
 } from '../models/index';
 
 export interface ApiAiAnalyzePostRequest {
-    body: object;
+  body: object;
 }
 
 export interface ApiAiReportsIdDeleteRequest {
-    id: string;
+  id: string;
 }
 
 export interface ApiAiReportsIdGetRequest {
-    id: string;
+  id: string;
 }
 
 export interface ApiAiReportsIdPutRequest {
-    id: string;
-    body: object;
+  id: string;
+  body: object;
 }
 
 export interface ApiAiReportsPostRequest {
-    body: object;
+  body: object;
 }
 
 /**
- * 
+ *
  */
 export class AIReportsApi extends runtime.BaseAPI {
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiAiAnalyzeGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiAiAnalyzeGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/ai/analyze`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取资源的详细操作
-     * 获取资源
-     */
-    async apiAiAnalyzeGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAiAnalyzeGetRaw(initOverrides);
-        return await response.value();
+    let urlPath = `/api/ai/analyze`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取资源的详细操作
+   * 获取资源
+   */
+  async apiAiAnalyzeGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAiAnalyzeGetRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiAiAnalyzePostRaw(
+    requestParameters: ApiAiAnalyzePostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiAiAnalyzePost().'
+      );
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiAiAnalyzePostRaw(requestParameters: ApiAiAnalyzePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiAiAnalyzePost().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        headerParameters['Content-Type'] = 'application/json';
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/ai/analyze`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 创建资源的详细操作
-     * 创建资源
-     */
-    async apiAiAnalyzePost(requestParameters: ApiAiAnalyzePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAiAnalyzePostRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/ai/analyze`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 创建资源的详细操作
+   * 创建资源
+   */
+  async apiAiAnalyzePost(
+    requestParameters: ApiAiAnalyzePostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAiAnalyzePostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 获取AI报告的详细操作
+   * 获取AI报告
+   */
+  async apiAiReportsGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取AI报告的详细操作
-     * 获取AI报告
-     */
-    async apiAiReportsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    let urlPath = `/api/ai/reports`;
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
+  /**
+   * 获取AI报告的详细操作
+   * 获取AI报告
+   */
+  async apiAiReportsGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAiReportsGetRaw(initOverrides);
+    return await response.value();
+  }
 
-        let urlPath = `/api/ai/reports`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 删除AI报告的详细操作
+   * 删除AI报告
+   */
+  async apiAiReportsIdDeleteRaw(
+    requestParameters: ApiAiReportsIdDeleteRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiAiReportsIdDelete().'
+      );
     }
 
-    /**
-     * 获取AI报告的详细操作
-     * 获取AI报告
-     */
-    async apiAiReportsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAiReportsGetRaw(initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 删除AI报告的详细操作
-     * 删除AI报告
-     */
-    async apiAiReportsIdDeleteRaw(requestParameters: ApiAiReportsIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiAiReportsIdDelete().'
-            );
-        }
+    let urlPath = `/api/ai/reports/[id]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
 
-        const queryParameters: any = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+  /**
+   * 删除AI报告的详细操作
+   * 删除AI报告
+   */
+  async apiAiReportsIdDelete(
+    requestParameters: ApiAiReportsIdDeleteRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAiReportsIdDeleteRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/ai/reports/[id]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 获取AI报告的详细操作
+   * 获取AI报告
+   */
+  async apiAiReportsIdGetRaw(
+    requestParameters: ApiAiReportsIdGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiAiReportsIdGet().'
+      );
     }
 
-    /**
-     * 删除AI报告的详细操作
-     * 删除AI报告
-     */
-    async apiAiReportsIdDelete(requestParameters: ApiAiReportsIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAiReportsIdDeleteRaw(requestParameters, initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取AI报告的详细操作
-     * 获取AI报告
-     */
-    async apiAiReportsIdGetRaw(requestParameters: ApiAiReportsIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiAiReportsIdGet().'
-            );
-        }
+    let urlPath = `/api/ai/reports/[id]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
 
-        const queryParameters: any = {};
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
+  /**
+   * 获取AI报告的详细操作
+   * 获取AI报告
+   */
+  async apiAiReportsIdGet(
+    requestParameters: ApiAiReportsIdGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAiReportsIdGetRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/ai/reports/[id]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 更新AI报告的详细操作
+   * 更新AI报告
+   */
+  async apiAiReportsIdPutRaw(
+    requestParameters: ApiAiReportsIdPutRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiAiReportsIdPut().'
+      );
     }
 
-    /**
-     * 获取AI报告的详细操作
-     * 获取AI报告
-     */
-    async apiAiReportsIdGet(requestParameters: ApiAiReportsIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAiReportsIdGetRaw(requestParameters, initOverrides);
-        return await response.value();
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiAiReportsIdPut().'
+      );
     }
 
-    /**
-     * 更新AI报告的详细操作
-     * 更新AI报告
-     */
-    async apiAiReportsIdPutRaw(requestParameters: ApiAiReportsIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiAiReportsIdPut().'
-            );
-        }
+    const queryParameters: any = {};
 
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiAiReportsIdPut().'
-            );
-        }
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/ai/reports/[id]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 更新AI报告的详细操作
-     * 更新AI报告
-     */
-    async apiAiReportsIdPut(requestParameters: ApiAiReportsIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAiReportsIdPutRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/ai/reports/[id]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'PUT',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 更新AI报告的详细操作
+   * 更新AI报告
+   */
+  async apiAiReportsIdPut(
+    requestParameters: ApiAiReportsIdPutRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAiReportsIdPutRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 创建AI报告的详细操作
+   * 创建AI报告
+   */
+  async apiAiReportsPostRaw(
+    requestParameters: ApiAiReportsPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiAiReportsPost().'
+      );
     }
 
-    /**
-     * 创建AI报告的详细操作
-     * 创建AI报告
-     */
-    async apiAiReportsPostRaw(requestParameters: ApiAiReportsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiAiReportsPost().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        headerParameters['Content-Type'] = 'application/json';
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/ai/reports`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 创建AI报告的详细操作
-     * 创建AI报告
-     */
-    async apiAiReportsPost(requestParameters: ApiAiReportsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiAiReportsPostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
+    let urlPath = `/api/ai/reports`;
 
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 创建AI报告的详细操作
+   * 创建AI报告
+   */
+  async apiAiReportsPost(
+    requestParameters: ApiAiReportsPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiAiReportsPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 }

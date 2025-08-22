@@ -12,582 +12,744 @@
  * Do not edit the class manually.
  */
 
-
 import * as runtime from '../runtime';
-import type {
-  ErrorResponse,
-  SuccessResponse,
-} from '../models/index';
+import type { ErrorResponse, SuccessResponse } from '../models/index';
 import {
-    ErrorResponseFromJSON,
-    ErrorResponseToJSON,
-    SuccessResponseFromJSON,
-    SuccessResponseToJSON,
+  ErrorResponseFromJSON,
+  ErrorResponseToJSON,
+  SuccessResponseFromJSON,
+  SuccessResponseToJSON,
 } from '../models/index';
 
 export interface ApiUsersPortfolioIdDeleteRequest {
-    id: string;
+  id: string;
 }
 
 export interface ApiUsersPortfolioIdGetRequest {
-    id: string;
+  id: string;
 }
 
 export interface ApiUsersPortfolioIdItemsGetRequest {
-    id: string;
+  id: string;
 }
 
 export interface ApiUsersPortfolioIdItemsItemIdDeleteRequest {
-    id: string;
-    itemId: string;
+  id: string;
+  itemId: string;
 }
 
 export interface ApiUsersPortfolioIdItemsItemIdGetRequest {
-    id: string;
-    itemId: string;
+  id: string;
+  itemId: string;
 }
 
 export interface ApiUsersPortfolioIdItemsItemIdPutRequest {
-    id: string;
-    itemId: string;
-    body: object;
+  id: string;
+  itemId: string;
+  body: object;
 }
 
 export interface ApiUsersPortfolioIdItemsPostRequest {
-    id: string;
-    body: object;
+  id: string;
+  body: object;
 }
 
 export interface ApiUsersPortfolioIdPutRequest {
-    id: string;
-    body: object;
+  id: string;
+  body: object;
 }
 
 export interface ApiUsersPortfolioPostRequest {
-    body: object;
+  body: object;
 }
 
 /**
- * 
+ *
  */
 export class PortfolioApi extends runtime.BaseAPI {
+  /**
+   * 获取投资组合的详细操作
+   * 获取投资组合
+   */
+  async apiUsersPortfolioGetRaw(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    const queryParameters: any = {};
 
-    /**
-     * 获取投资组合的详细操作
-     * 获取投资组合
-     */
-    async apiUsersPortfolioGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/portfolio`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取投资组合的详细操作
-     * 获取投资组合
-     */
-    async apiUsersPortfolioGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersPortfolioGetRaw(initOverrides);
-        return await response.value();
+    let urlPath = `/api/users/portfolio`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取投资组合的详细操作
+   * 获取投资组合
+   */
+  async apiUsersPortfolioGet(
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersPortfolioGetRaw(initOverrides);
+    return await response.value();
+  }
+
+  /**
+   * 删除投资组合的详细操作
+   * 删除投资组合
+   */
+  async apiUsersPortfolioIdDeleteRaw(
+    requestParameters: ApiUsersPortfolioIdDeleteRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdDelete().'
+      );
     }
 
-    /**
-     * 删除投资组合的详细操作
-     * 删除投资组合
-     */
-    async apiUsersPortfolioIdDeleteRaw(requestParameters: ApiUsersPortfolioIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdDelete().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/portfolio/[id]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 删除投资组合的详细操作
-     * 删除投资组合
-     */
-    async apiUsersPortfolioIdDelete(requestParameters: ApiUsersPortfolioIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersPortfolioIdDeleteRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/users/portfolio/[id]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 删除投资组合的详细操作
+   * 删除投资组合
+   */
+  async apiUsersPortfolioIdDelete(
+    requestParameters: ApiUsersPortfolioIdDeleteRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersPortfolioIdDeleteRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 获取投资组合的详细操作
+   * 获取投资组合
+   */
+  async apiUsersPortfolioIdGetRaw(
+    requestParameters: ApiUsersPortfolioIdGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdGet().'
+      );
     }
 
-    /**
-     * 获取投资组合的详细操作
-     * 获取投资组合
-     */
-    async apiUsersPortfolioIdGetRaw(requestParameters: ApiUsersPortfolioIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdGet().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/portfolio/[id]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取投资组合的详细操作
-     * 获取投资组合
-     */
-    async apiUsersPortfolioIdGet(requestParameters: ApiUsersPortfolioIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersPortfolioIdGetRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/users/portfolio/[id]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取投资组合的详细操作
+   * 获取投资组合
+   */
+  async apiUsersPortfolioIdGet(
+    requestParameters: ApiUsersPortfolioIdGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersPortfolioIdGetRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 获取投资组合的详细操作
+   * 获取投资组合
+   */
+  async apiUsersPortfolioIdItemsGetRaw(
+    requestParameters: ApiUsersPortfolioIdItemsGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdItemsGet().'
+      );
     }
 
-    /**
-     * 获取投资组合的详细操作
-     * 获取投资组合
-     */
-    async apiUsersPortfolioIdItemsGetRaw(requestParameters: ApiUsersPortfolioIdItemsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdItemsGet().'
-            );
-        }
+    const queryParameters: any = {};
 
-        const queryParameters: any = {};
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/portfolio/[id]/items`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取投资组合的详细操作
-     * 获取投资组合
-     */
-    async apiUsersPortfolioIdItemsGet(requestParameters: ApiUsersPortfolioIdItemsGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersPortfolioIdItemsGetRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/users/portfolio/[id]/items`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取投资组合的详细操作
+   * 获取投资组合
+   */
+  async apiUsersPortfolioIdItemsGet(
+    requestParameters: ApiUsersPortfolioIdItemsGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersPortfolioIdItemsGetRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 删除投资组合的详细操作
+   * 删除投资组合
+   */
+  async apiUsersPortfolioIdItemsItemIdDeleteRaw(
+    requestParameters: ApiUsersPortfolioIdItemsItemIdDeleteRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdItemsItemIdDelete().'
+      );
     }
 
-    /**
-     * 删除投资组合的详细操作
-     * 删除投资组合
-     */
-    async apiUsersPortfolioIdItemsItemIdDeleteRaw(requestParameters: ApiUsersPortfolioIdItemsItemIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdItemsItemIdDelete().'
-            );
-        }
-
-        if (requestParameters['itemId'] == null) {
-            throw new runtime.RequiredError(
-                'itemId',
-                'Required parameter "itemId" was null or undefined when calling apiUsersPortfolioIdItemsItemIdDelete().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/portfolio/[id]/items/[itemId]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-        urlPath = urlPath.replace(`{${"itemId"}}`, encodeURIComponent(String(requestParameters['itemId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'DELETE',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    if (requestParameters['itemId'] == null) {
+      throw new runtime.RequiredError(
+        'itemId',
+        'Required parameter "itemId" was null or undefined when calling apiUsersPortfolioIdItemsItemIdDelete().'
+      );
     }
 
-    /**
-     * 删除投资组合的详细操作
-     * 删除投资组合
-     */
-    async apiUsersPortfolioIdItemsItemIdDelete(requestParameters: ApiUsersPortfolioIdItemsItemIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersPortfolioIdItemsItemIdDeleteRaw(requestParameters, initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 获取投资组合的详细操作
-     * 获取投资组合
-     */
-    async apiUsersPortfolioIdItemsItemIdGetRaw(requestParameters: ApiUsersPortfolioIdItemsItemIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdItemsItemIdGet().'
-            );
-        }
+    let urlPath = `/api/users/portfolio/[id]/items/[itemId]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+    urlPath = urlPath.replace(
+      `{${'itemId'}}`,
+      encodeURIComponent(String(requestParameters['itemId']))
+    );
 
-        if (requestParameters['itemId'] == null) {
-            throw new runtime.RequiredError(
-                'itemId',
-                'Required parameter "itemId" was null or undefined when calling apiUsersPortfolioIdItemsItemIdGet().'
-            );
-        }
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'DELETE',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
 
-        const queryParameters: any = {};
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
 
-        const headerParameters: runtime.HTTPHeaders = {};
+  /**
+   * 删除投资组合的详细操作
+   * 删除投资组合
+   */
+  async apiUsersPortfolioIdItemsItemIdDelete(
+    requestParameters: ApiUsersPortfolioIdItemsItemIdDeleteRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersPortfolioIdItemsItemIdDeleteRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/portfolio/[id]/items/[itemId]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-        urlPath = urlPath.replace(`{${"itemId"}}`, encodeURIComponent(String(requestParameters['itemId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+  /**
+   * 获取投资组合的详细操作
+   * 获取投资组合
+   */
+  async apiUsersPortfolioIdItemsItemIdGetRaw(
+    requestParameters: ApiUsersPortfolioIdItemsItemIdGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdItemsItemIdGet().'
+      );
     }
 
-    /**
-     * 获取投资组合的详细操作
-     * 获取投资组合
-     */
-    async apiUsersPortfolioIdItemsItemIdGet(requestParameters: ApiUsersPortfolioIdItemsItemIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersPortfolioIdItemsItemIdGetRaw(requestParameters, initOverrides);
-        return await response.value();
+    if (requestParameters['itemId'] == null) {
+      throw new runtime.RequiredError(
+        'itemId',
+        'Required parameter "itemId" was null or undefined when calling apiUsersPortfolioIdItemsItemIdGet().'
+      );
     }
 
-    /**
-     * 更新投资组合的详细操作
-     * 更新投资组合
-     */
-    async apiUsersPortfolioIdItemsItemIdPutRaw(requestParameters: ApiUsersPortfolioIdItemsItemIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdItemsItemIdPut().'
-            );
-        }
+    const queryParameters: any = {};
 
-        if (requestParameters['itemId'] == null) {
-            throw new runtime.RequiredError(
-                'itemId',
-                'Required parameter "itemId" was null or undefined when calling apiUsersPortfolioIdItemsItemIdPut().'
-            );
-        }
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiUsersPortfolioIdItemsItemIdPut().'
-            );
-        }
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/portfolio/[id]/items/[itemId]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-        urlPath = urlPath.replace(`{${"itemId"}}`, encodeURIComponent(String(requestParameters['itemId'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 更新投资组合的详细操作
-     * 更新投资组合
-     */
-    async apiUsersPortfolioIdItemsItemIdPut(requestParameters: ApiUsersPortfolioIdItemsItemIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersPortfolioIdItemsItemIdPutRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/users/portfolio/[id]/items/[itemId]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+    urlPath = urlPath.replace(
+      `{${'itemId'}}`,
+      encodeURIComponent(String(requestParameters['itemId']))
+    );
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'GET',
+        headers: headerParameters,
+        query: queryParameters,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 获取投资组合的详细操作
+   * 获取投资组合
+   */
+  async apiUsersPortfolioIdItemsItemIdGet(
+    requestParameters: ApiUsersPortfolioIdItemsItemIdGetRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersPortfolioIdItemsItemIdGetRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 更新投资组合的详细操作
+   * 更新投资组合
+   */
+  async apiUsersPortfolioIdItemsItemIdPutRaw(
+    requestParameters: ApiUsersPortfolioIdItemsItemIdPutRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdItemsItemIdPut().'
+      );
     }
 
-    /**
-     * 创建投资组合的详细操作
-     * 创建投资组合
-     */
-    async apiUsersPortfolioIdItemsPostRaw(requestParameters: ApiUsersPortfolioIdItemsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdItemsPost().'
-            );
-        }
-
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiUsersPortfolioIdItemsPost().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/portfolio/[id]/items`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    if (requestParameters['itemId'] == null) {
+      throw new runtime.RequiredError(
+        'itemId',
+        'Required parameter "itemId" was null or undefined when calling apiUsersPortfolioIdItemsItemIdPut().'
+      );
     }
 
-    /**
-     * 创建投资组合的详细操作
-     * 创建投资组合
-     */
-    async apiUsersPortfolioIdItemsPost(requestParameters: ApiUsersPortfolioIdItemsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersPortfolioIdItemsPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiUsersPortfolioIdItemsItemIdPut().'
+      );
     }
 
-    /**
-     * 更新投资组合的详细操作
-     * 更新投资组合
-     */
-    async apiUsersPortfolioIdPutRaw(requestParameters: ApiUsersPortfolioIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['id'] == null) {
-            throw new runtime.RequiredError(
-                'id',
-                'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdPut().'
-            );
-        }
+    const queryParameters: any = {};
 
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiUsersPortfolioIdPut().'
-            );
-        }
+    const headerParameters: runtime.HTTPHeaders = {};
 
-        const queryParameters: any = {};
+    headerParameters['Content-Type'] = 'application/json';
 
-        const headerParameters: runtime.HTTPHeaders = {};
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
 
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/portfolio/[id]`;
-        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
-    /**
-     * 更新投资组合的详细操作
-     * 更新投资组合
-     */
-    async apiUsersPortfolioIdPut(requestParameters: ApiUsersPortfolioIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersPortfolioIdPutRaw(requestParameters, initOverrides);
-        return await response.value();
+    let urlPath = `/api/users/portfolio/[id]/items/[itemId]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+    urlPath = urlPath.replace(
+      `{${'itemId'}}`,
+      encodeURIComponent(String(requestParameters['itemId']))
+    );
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'PUT',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 更新投资组合的详细操作
+   * 更新投资组合
+   */
+  async apiUsersPortfolioIdItemsItemIdPut(
+    requestParameters: ApiUsersPortfolioIdItemsItemIdPutRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersPortfolioIdItemsItemIdPutRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 创建投资组合的详细操作
+   * 创建投资组合
+   */
+  async apiUsersPortfolioIdItemsPostRaw(
+    requestParameters: ApiUsersPortfolioIdItemsPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdItemsPost().'
+      );
     }
 
-    /**
-     * 创建投资组合的详细操作
-     * 创建投资组合
-     */
-    async apiUsersPortfolioPostRaw(requestParameters: ApiUsersPortfolioPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SuccessResponse>> {
-        if (requestParameters['body'] == null) {
-            throw new runtime.RequiredError(
-                'body',
-                'Required parameter "body" was null or undefined when calling apiUsersPortfolioPost().'
-            );
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("BearerAuth", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-
-        let urlPath = `/api/users/portfolio`;
-
-        const response = await this.request({
-            path: urlPath,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: requestParameters['body'] as any,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => SuccessResponseFromJSON(jsonValue));
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiUsersPortfolioIdItemsPost().'
+      );
     }
 
-    /**
-     * 创建投资组合的详细操作
-     * 创建投资组合
-     */
-    async apiUsersPortfolioPost(requestParameters: ApiUsersPortfolioPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SuccessResponse> {
-        const response = await this.apiUsersPortfolioPostRaw(requestParameters, initOverrides);
-        return await response.value();
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
     }
 
+    let urlPath = `/api/users/portfolio/[id]/items`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 创建投资组合的详细操作
+   * 创建投资组合
+   */
+  async apiUsersPortfolioIdItemsPost(
+    requestParameters: ApiUsersPortfolioIdItemsPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersPortfolioIdItemsPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 更新投资组合的详细操作
+   * 更新投资组合
+   */
+  async apiUsersPortfolioIdPutRaw(
+    requestParameters: ApiUsersPortfolioIdPutRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['id'] == null) {
+      throw new runtime.RequiredError(
+        'id',
+        'Required parameter "id" was null or undefined when calling apiUsersPortfolioIdPut().'
+      );
+    }
+
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiUsersPortfolioIdPut().'
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
+    }
+
+    let urlPath = `/api/users/portfolio/[id]`;
+    urlPath = urlPath.replace(
+      `{${'id'}}`,
+      encodeURIComponent(String(requestParameters['id']))
+    );
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'PUT',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 更新投资组合的详细操作
+   * 更新投资组合
+   */
+  async apiUsersPortfolioIdPut(
+    requestParameters: ApiUsersPortfolioIdPutRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersPortfolioIdPutRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
+
+  /**
+   * 创建投资组合的详细操作
+   * 创建投资组合
+   */
+  async apiUsersPortfolioPostRaw(
+    requestParameters: ApiUsersPortfolioPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<runtime.ApiResponse<SuccessResponse>> {
+    if (requestParameters['body'] == null) {
+      throw new runtime.RequiredError(
+        'body',
+        'Required parameter "body" was null or undefined when calling apiUsersPortfolioPost().'
+      );
+    }
+
+    const queryParameters: any = {};
+
+    const headerParameters: runtime.HTTPHeaders = {};
+
+    headerParameters['Content-Type'] = 'application/json';
+
+    if (this.configuration && this.configuration.accessToken) {
+      const token = this.configuration.accessToken;
+      const tokenString = await token('BearerAuth', []);
+
+      if (tokenString) {
+        headerParameters['Authorization'] = `Bearer ${tokenString}`;
+      }
+    }
+
+    let urlPath = `/api/users/portfolio`;
+
+    const response = await this.request(
+      {
+        path: urlPath,
+        method: 'POST',
+        headers: headerParameters,
+        query: queryParameters,
+        body: requestParameters['body'] as any,
+      },
+      initOverrides
+    );
+
+    return new runtime.JSONApiResponse(response, jsonValue =>
+      SuccessResponseFromJSON(jsonValue)
+    );
+  }
+
+  /**
+   * 创建投资组合的详细操作
+   * 创建投资组合
+   */
+  async apiUsersPortfolioPost(
+    requestParameters: ApiUsersPortfolioPostRequest,
+    initOverrides?: RequestInit | runtime.InitOverrideFunction
+  ): Promise<SuccessResponse> {
+    const response = await this.apiUsersPortfolioPostRaw(
+      requestParameters,
+      initOverrides
+    );
+    return await response.value();
+  }
 }

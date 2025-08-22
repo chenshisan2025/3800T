@@ -47,6 +47,7 @@
 ```
 
 支持的类型：
+
 - `feat`: 新功能
 - `fix`: 修复 bug
 - `docs`: 文档更新
@@ -85,18 +86,22 @@
 ### 日常开发
 
 1. **代码编写**: 按照项目规范编写代码
-2. **提交代码**: 
+2. **提交代码**:
+
    ```bash
    git add .
    git commit -m "feat: add new feature"
    ```
+
    - pre-commit 钩子会自动格式化和检查代码
    - commit-msg 钩子会验证提交消息格式
 
 3. **推送代码**:
+
    ```bash
    git push
    ```
+
    - pre-push 钩子会运行测试
 
 ### 手动执行命令
@@ -147,7 +152,7 @@ git push --no-verify
 
 ### 常见问题
 
-1. **ESLint 错误**: 
+1. **ESLint 错误**:
    - 检查 `.eslintrc.json` 配置文件
    - 运行 `pnpm lint:fix` 自动修复
 

@@ -14,76 +14,81 @@
 
 import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface ErrorResponse
  */
 export interface ErrorResponse {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ErrorResponse
-     */
-    success?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof ErrorResponse
-     */
-    error?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ErrorResponse
-     */
-    message?: string;
-    /**
-     * 
-     * @type {Date}
-     * @memberof ErrorResponse
-     */
-    timestamp?: Date;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ErrorResponse
+   */
+  success?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof ErrorResponse
+   */
+  error?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ErrorResponse
+   */
+  message?: string;
+  /**
+   *
+   * @type {Date}
+   * @memberof ErrorResponse
+   */
+  timestamp?: Date;
 }
 
 /**
  * Check if a given object implements the ErrorResponse interface.
  */
 export function instanceOfErrorResponse(value: object): value is ErrorResponse {
-    return true;
+  return true;
 }
 
 export function ErrorResponseFromJSON(json: any): ErrorResponse {
-    return ErrorResponseFromJSONTyped(json, false);
+  return ErrorResponseFromJSONTyped(json, false);
 }
 
-export function ErrorResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): ErrorResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'success': json['success'] == null ? undefined : json['success'],
-        'error': json['error'] == null ? undefined : json['error'],
-        'message': json['message'] == null ? undefined : json['message'],
-        'timestamp': json['timestamp'] == null ? undefined : (new Date(json['timestamp'])),
-    };
+export function ErrorResponseFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): ErrorResponse {
+  if (json == null) {
+    return json;
+  }
+  return {
+    success: json['success'] == null ? undefined : json['success'],
+    error: json['error'] == null ? undefined : json['error'],
+    message: json['message'] == null ? undefined : json['message'],
+    timestamp:
+      json['timestamp'] == null ? undefined : new Date(json['timestamp']),
+  };
 }
 
 export function ErrorResponseToJSON(json: any): ErrorResponse {
-    return ErrorResponseToJSONTyped(json, false);
+  return ErrorResponseToJSONTyped(json, false);
 }
 
-export function ErrorResponseToJSONTyped(value?: ErrorResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function ErrorResponseToJSONTyped(
+  value?: ErrorResponse | null,
+  ignoreDiscriminator: boolean = false
+): any {
+  if (value == null) {
+    return value;
+  }
 
-    return {
-        
-        'success': value['success'],
-        'error': value['error'],
-        'message': value['message'],
-        'timestamp': value['timestamp'] == null ? undefined : ((value['timestamp']).toISOString()),
-    };
+  return {
+    success: value['success'],
+    error: value['error'],
+    message: value['message'],
+    timestamp:
+      value['timestamp'] == null ? undefined : value['timestamp'].toISOString(),
+  };
 }
-

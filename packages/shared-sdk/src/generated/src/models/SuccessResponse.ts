@@ -14,68 +14,75 @@
 
 import { mapValues } from '../runtime';
 /**
- * 
+ *
  * @export
  * @interface SuccessResponse
  */
 export interface SuccessResponse {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof SuccessResponse
-     */
-    success?: boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof SuccessResponse
-     */
-    message?: string;
-    /**
-     * 
-     * @type {Date}
-     * @memberof SuccessResponse
-     */
-    timestamp?: Date;
+  /**
+   *
+   * @type {boolean}
+   * @memberof SuccessResponse
+   */
+  success?: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof SuccessResponse
+   */
+  message?: string;
+  /**
+   *
+   * @type {Date}
+   * @memberof SuccessResponse
+   */
+  timestamp?: Date;
 }
 
 /**
  * Check if a given object implements the SuccessResponse interface.
  */
-export function instanceOfSuccessResponse(value: object): value is SuccessResponse {
-    return true;
+export function instanceOfSuccessResponse(
+  value: object
+): value is SuccessResponse {
+  return true;
 }
 
 export function SuccessResponseFromJSON(json: any): SuccessResponse {
-    return SuccessResponseFromJSONTyped(json, false);
+  return SuccessResponseFromJSONTyped(json, false);
 }
 
-export function SuccessResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): SuccessResponse {
-    if (json == null) {
-        return json;
-    }
-    return {
-        
-        'success': json['success'] == null ? undefined : json['success'],
-        'message': json['message'] == null ? undefined : json['message'],
-        'timestamp': json['timestamp'] == null ? undefined : (new Date(json['timestamp'])),
-    };
+export function SuccessResponseFromJSONTyped(
+  json: any,
+  ignoreDiscriminator: boolean
+): SuccessResponse {
+  if (json == null) {
+    return json;
+  }
+  return {
+    success: json['success'] == null ? undefined : json['success'],
+    message: json['message'] == null ? undefined : json['message'],
+    timestamp:
+      json['timestamp'] == null ? undefined : new Date(json['timestamp']),
+  };
 }
 
 export function SuccessResponseToJSON(json: any): SuccessResponse {
-    return SuccessResponseToJSONTyped(json, false);
+  return SuccessResponseToJSONTyped(json, false);
 }
 
-export function SuccessResponseToJSONTyped(value?: SuccessResponse | null, ignoreDiscriminator: boolean = false): any {
-    if (value == null) {
-        return value;
-    }
+export function SuccessResponseToJSONTyped(
+  value?: SuccessResponse | null,
+  ignoreDiscriminator: boolean = false
+): any {
+  if (value == null) {
+    return value;
+  }
 
-    return {
-        
-        'success': value['success'],
-        'message': value['message'],
-        'timestamp': value['timestamp'] == null ? undefined : ((value['timestamp']).toISOString()),
-    };
+  return {
+    success: value['success'],
+    message: value['message'],
+    timestamp:
+      value['timestamp'] == null ? undefined : value['timestamp'].toISOString(),
+  };
 }
-
